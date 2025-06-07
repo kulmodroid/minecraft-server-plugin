@@ -77,6 +77,38 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    @EventHandler
+    public void onShoot(EntityShootBowEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+        ItemStack bow = event.getBow();
+        if (bow != null && isPigBow(bow)) {
+            event.getProjectile().setMetadata(PIG_ARROW_KEY,
+                    new FixedMetadataValue(this, true));
+        }
+    }
+
+    @EventHandler
+    public void onArrowHit(ProjectileHitEvent event) {
+        if (!(event.getEntity() instanceof Arrow arrow)) {
+            return;
+        }
+        if (!arrow.hasMetadata(PIG_ARROW_KEY)) {
+            return;
+        }
+
+        arrow.removeMetadata(PIG_ARROW_KEY, this);
+        Location loc = arrow.getLocation();
+        World world = arrow.getWorld();
+        arrow.remove();
+        for (int i = 0; i < 5; i++) {
+            Pig pig = (Pig) world.spawnEntity(loc, EntityType.PIG);
+            Vector velocity = new Vector(Math.random() - 0.5, 0.5, Math.random() - 0.5);
+            pig.setVelocity(velocity);
+        }
+    }
+
     private boolean isLightningStaff(ItemStack item) {
         if (item.getType() != Material.BLAZE_ROD) {
             return false;
