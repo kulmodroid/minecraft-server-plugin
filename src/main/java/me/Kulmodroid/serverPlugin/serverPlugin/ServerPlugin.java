@@ -58,7 +58,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         witchShop = new WitchShop(this);
         lightningStaff = new LightningStaff(this);
         pigBow = new PigBow(this);
-        breezeRod = new BreezeRod();
+        breezeRod = new BreezeRod(this);
 
         for (World world : getServer().getWorlds()) {
             world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
