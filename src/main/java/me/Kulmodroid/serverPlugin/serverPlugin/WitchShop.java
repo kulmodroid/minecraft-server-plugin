@@ -65,8 +65,9 @@ public class WitchShop implements Listener {
         Location loc = new Location(world, -50, 11, 25);
 
         // If a witch with our custom name already exists, reuse it.
-        for (Entity entity : world.getNearbyEntities(loc, 1, 3, 1)) {
-            if (entity instanceof Witch existing && (ChatColor.DARK_PURPLE + "Shopkeeper").equals(existing.getCustomName())) {
+        for (Entity entity : world.getEntities()) {
+            if (entity instanceof Witch existing
+                    && (ChatColor.DARK_PURPLE + "Shopkeeper").equals(existing.getCustomName())) {
                 witchIds.add(existing.getUniqueId());
                 return;
             }
