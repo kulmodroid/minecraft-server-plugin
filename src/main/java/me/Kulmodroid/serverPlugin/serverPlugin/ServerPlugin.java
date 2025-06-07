@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,11 +23,18 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (event.getItem() != null && event.getItem().getType() == Material.COMPASS) {
-            if (event.getPlayer() != null) {
-                event.setCancelled(true);
-                gameSelection.open(event.getPlayer());
-            }
+        if (event.getItem() == null || event.getItem().getType() != Material.COMPASS) {
+            return;
+        }
+
+        Action action = event.getAction();
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        if (event.getPlayer() != null) {
+            event.setCancelled(true);
+            gameSelection.open(event.getPlayer());
         }
     }
 
