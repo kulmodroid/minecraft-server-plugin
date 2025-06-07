@@ -15,12 +15,15 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -39,23 +42,34 @@ public class WitchShop implements Listener {
     private static final InventoryHolder HOLDER = new ShopHolder();
 
     private final JavaPlugin plugin;
-    private UUID witchId;
+    private final Set<UUID> witchIds = new HashSet<>();
     private Inventory shopInv;
 
     public WitchShop(JavaPlugin plugin) {
         this.plugin = plugin;
-        spawnWitch();
+        spawnWitches();
         setupInventory();
     }
 
-    private void spawnWitch() {
-        World world = Bukkit.getServer().getWorlds().get(0);
-        Location loc = new Location(world, 6, 11, 44);
+    private void spawnWitches() {
+        for (World world : Bukkit.getServer().getWorlds()) {
+            spawnWitch(world);
+        }
+    }
+
+    private void spawnWitch(World world) {
+        Location loc = new Location(world, -50, 11, 25);
         Witch witch = (Witch) world.spawnEntity(loc, EntityType.WITCH);
         witch.setAI(false);
         witch.setCustomName(ChatColor.DARK_PURPLE + "Shopkeeper");
         witch.setCustomNameVisible(true);
-        this.witchId = witch.getUniqueId();
+        witch.setRemoveWhenFarAway(false);
+        try {
+            witch.setPersistent(true);
+        } catch (NoSuchMethodError ignore) {
+            // method not available on older API versions
+        }
+        witchIds.add(witch.getUniqueId());
     }
 
     private void setupInventory() {
@@ -78,7 +92,7 @@ public class WitchShop implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEntityEvent event) {
         Entity entity = event.getRightClicked();
-        if (!entity.getUniqueId().equals(witchId)) {
+        if (!witchIds.contains(entity.getUniqueId())) {
             return;
         }
         Player player = event.getPlayer();
@@ -112,15 +126,23 @@ public class WitchShop implements Listener {
     // Prevent natural despawn or damage to the witch
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if (event.getEntity().getUniqueId().equals(witchId)) {
+        if (witchIds.contains(event.getEntity().getUniqueId())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onSpawn(CreatureSpawnEvent event) {
-        if (event.getEntity().getUniqueId().equals(witchId)) {
-            event.setCancelled(false);
+        if (witchIds.contains(event.getEntity().getUniqueId())) {
+            return;
         }
+        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        spawnWitch(event.getWorld());
     }
 }
