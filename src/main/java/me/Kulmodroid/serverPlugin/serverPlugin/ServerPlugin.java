@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.GameRule;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pig;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,6 +30,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
     private static final ItemStack LIGHTNING_STAFF;
     private static final ItemStack PIG_BOW;
+    private static final String PIG_ARROW_KEY = "pig-bow-arrow";
 
     static {
         LIGHTNING_STAFF = new ItemStack(Material.BLAZE_ROD);
