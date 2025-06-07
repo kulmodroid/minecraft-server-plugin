@@ -1,6 +1,8 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
 import org.bukkit.Material;
+import org.bukkit.GameRule;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -43,6 +45,10 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         duelManager = new DuelManager(this);
         gameSelection = new GameSelection(duelManager);
         witchShop = new WitchShop(this);
+
+        for (World world : getServer().getWorlds()) {
+            world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        }
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(gameSelection, this);
