@@ -21,6 +21,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private DuelManager duelManager;
     private GameSelection gameSelection;
     private WitchShop witchShop;
+    private WateringCanMob wateringCanMob;
 
     private LightningStaff lightningStaff;
     private PigBow pigBow;
@@ -56,6 +57,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         duelManager = new DuelManager(this);
         gameSelection = new GameSelection(duelManager);
         witchShop = new WitchShop(this);
+        wateringCanMob = new WateringCanMob(this);
         lightningStaff = new LightningStaff(this);
         pigBow = new PigBow(this);
         breezeRod = new BreezeRod(this);
@@ -68,6 +70,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(gameSelection, this);
         getServer().getPluginManager().registerEvents(duelManager, this);
         getServer().getPluginManager().registerEvents(witchShop, this);
+        getServer().getPluginManager().registerEvents(wateringCanMob, this);
         getServer().getPluginManager().registerEvents(lightningStaff, this);
         getServer().getPluginManager().registerEvents(pigBow, this);
         getServer().getPluginManager().registerEvents(breezeRod, this);
