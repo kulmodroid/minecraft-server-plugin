@@ -1,29 +1,27 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class GameSelectionCommand implements CommandExecutor
-{
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-    {
-        if (sender instanceof Player)
-        {
-            Bukkit.getServer().getPluginManager().callEvent(new GameSelectionEvent((Player) sender));
-            return true;
-        }
+/**
+ * Command to open the game selection GUI.
+ */
+public class GameSelectionCommand implements CommandExecutor {
 
-        else
-        {
-            Bukkit.getLogger().info("You must be a player to run this command!");
+    private final GameSelection gameSelection;
 
-        }
-
-        return false;
+    public GameSelectionCommand(GameSelection gameSelection) {
+        this.gameSelection = gameSelection;
     }
 
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (sender instanceof Player player) {
+            gameSelection.open(player);
+            return true;
+        }
+        return false;
+    }
 }
