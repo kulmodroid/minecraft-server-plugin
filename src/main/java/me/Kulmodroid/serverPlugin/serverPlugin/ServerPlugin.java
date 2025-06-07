@@ -4,15 +4,20 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.GameRule;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
@@ -23,12 +28,18 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private WitchShop witchShop;
 
     private static final ItemStack LIGHTNING_STAFF;
+    private static final ItemStack PIG_BOW;
 
     static {
         LIGHTNING_STAFF = new ItemStack(Material.BLAZE_ROD);
         ItemMeta meta = LIGHTNING_STAFF.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD + "Lightning Staff");
         LIGHTNING_STAFF.setItemMeta(meta);
+
+        PIG_BOW = new ItemStack(Material.BOW);
+        ItemMeta bowMeta = PIG_BOW.getItemMeta();
+        bowMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Pig Bow");
+        PIG_BOW.setItemMeta(bowMeta);
     }
 
     @EventHandler
@@ -36,6 +47,8 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         event.getPlayer().sendMessage("Welcome to our server, " + event.getPlayer().getName() + ", your current ping is: " + event.getPlayer().getPing());
         event.getPlayer().getInventory().addItem(new ItemStack(Material.COMPASS));
         event.getPlayer().getInventory().addItem(LIGHTNING_STAFF.clone());
+        event.getPlayer().getInventory().addItem(PIG_BOW.clone());
+        event.getPlayer().getInventory().addItem(new ItemStack(Material.ARROW, 64));
     }
 
     @EventHandler
@@ -57,6 +70,8 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         } else if (isLightningStaff(item)) {
             event.setCancelled(true);
             strikeLightningLine(player);
+        } else if (isPigBow(item)) {
+            // Right click with pig bow should not trigger any special action
         }
     }
 
@@ -66,6 +81,14 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         }
         ItemMeta meta = item.getItemMeta();
         return meta != null && meta.hasDisplayName() && meta.getDisplayName().equals(LIGHTNING_STAFF.getItemMeta().getDisplayName());
+    }
+
+    private boolean isPigBow(ItemStack item) {
+        if (item.getType() != Material.BOW) {
+            return false;
+        }
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && meta.hasDisplayName() && meta.getDisplayName().equals(PIG_BOW.getItemMeta().getDisplayName());
     }
 
     private void strikeLightningLine(Player player) {

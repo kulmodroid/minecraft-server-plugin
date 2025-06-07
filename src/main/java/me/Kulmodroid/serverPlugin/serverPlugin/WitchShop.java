@@ -49,6 +49,10 @@ public class WitchShop implements Listener {
         this.plugin = plugin;
         spawnWitches();
         setupInventory();
+
+        // Periodically ensure the shopkeeper exists in case the entity was
+        // removed by the server (for example in peaceful mode).
+        Bukkit.getScheduler().runTaskTimer(plugin, this::checkWitches, 20L, 20L * 60L);
     }
 
     private void spawnWitches() {
@@ -59,11 +63,21 @@ public class WitchShop implements Listener {
 
     private void spawnWitch(World world) {
         Location loc = new Location(world, -50, 11, 25);
+
+        // If a witch with our custom name already exists, reuse it.
+        for (Entity entity : world.getNearbyEntities(loc, 1, 3, 1)) {
+            if (entity instanceof Witch existing && (ChatColor.DARK_PURPLE + "Shopkeeper").equals(existing.getCustomName())) {
+                witchIds.add(existing.getUniqueId());
+                return;
+            }
+        }
+
         Witch witch = (Witch) world.spawnEntity(loc, EntityType.WITCH);
         witch.setAI(false);
         witch.setCustomName(ChatColor.DARK_PURPLE + "Shopkeeper");
         witch.setCustomNameVisible(true);
         witch.setRemoveWhenFarAway(false);
+        witch.setInvulnerable(true);
         try {
             witch.setPersistent(true);
         } catch (NoSuchMethodError ignore) {
@@ -113,12 +127,12 @@ public class WitchShop implements Listener {
         if (clicked == null || clicked.getType() == Material.AIR) {
             return;
         }
-        if (!player.getInventory().containsAtLeast(new ItemStack(Material.GOLD_BLOCK), 1)) {
-            player.sendMessage(ChatColor.RED + "Not enough gold blocks!");
+        if (!player.getInventory().containsAtLeast(new ItemStack(Material.GOLD_INGOT), 1)) {
+            player.sendMessage(ChatColor.RED + "Not enough gold ingots!");
             return;
         }
 
-        player.getInventory().removeItem(new ItemStack(Material.GOLD_BLOCK, 1));
+        player.getInventory().removeItem(new ItemStack(Material.GOLD_INGOT, 1));
         player.getInventory().addItem(new ItemStack(clicked.getType()));
         player.sendMessage(ChatColor.GREEN + "Purchased " + clicked.getType().name().toLowerCase());
     }
@@ -144,5 +158,25 @@ public class WitchShop implements Listener {
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
         spawnWitch(event.getWorld());
+    }
+    
+    /**
+     * Verify the shopkeeper is present in each world and respawn if missing.
+     */
+    private void checkWitches() {
+        for (World world : Bukkit.getServer().getWorlds()) {
+            boolean found = false;
+            loop: for (UUID id : new HashSet<>(witchIds)) {
+                for (Entity e : world.getEntities()) {
+                    if (e instanceof Witch && e.getUniqueId().equals(id)) {
+                        found = true;
+                        break loop;
+                    }
+                }
+            }
+            if (!found) {
+                spawnWitch(world);
+            }
+        }
     }
 }
