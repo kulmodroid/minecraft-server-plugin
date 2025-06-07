@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -15,6 +16,16 @@ import org.bukkit.inventory.meta.ItemMeta;
  * Displays the game selection GUI.
  */
 public class GameSelection implements Listener {
+
+    /* Marker holder used to identify the custom inventory. */
+    private static class GameSelectionHolder implements InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
+    private static final InventoryHolder HOLDER = new GameSelectionHolder();
 
     private final DuelManager duelManager;
 
@@ -24,7 +35,7 @@ public class GameSelection implements Listener {
 
     /** Opens the GUI for the given player. */
     public void open(Player player) {
-        Inventory gui = Bukkit.createInventory(null, 9 * 4, ChatColor.BLUE + "Game selection");
+        Inventory gui = Bukkit.createInventory(HOLDER, 9 * 4, ChatColor.BLUE + "Game selection");
 
         ItemStack swordItem = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta swordMeta = swordItem.getItemMeta();
@@ -38,10 +49,7 @@ public class GameSelection implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inv = event.getInventory();
-        if (inv.getHolder() != null) {
-            return;
-        }
-        if (!ChatColor.stripColor(inv.getTitle()).equals("Game selection")) {
+        if (!(inv.getHolder() instanceof GameSelectionHolder)) {
             return;
         }
 
