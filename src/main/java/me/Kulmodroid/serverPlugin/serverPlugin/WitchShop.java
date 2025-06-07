@@ -49,8 +49,8 @@ public class WitchShop implements Listener {
     }
 
     private void spawnWitch() {
-        World world = Bukkit.getWorlds().get(0);
-        Location loc = world.getSpawnLocation().add(2, 0, 2);
+        World world = Bukkit.getServer().getWorlds().get(0);
+        Location loc = new Location(world, 6, 11, 44);
         Witch witch = (Witch) world.spawnEntity(loc, EntityType.WITCH);
         witch.setAI(false);
         witch.setCustomName(ChatColor.DARK_PURPLE + "Shopkeeper");
