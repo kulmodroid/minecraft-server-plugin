@@ -1,6 +1,8 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,78 +11,44 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class GameSelection implements Listener
-{
-    boolean isDuelOpponentHere;
-    boolean isDuelOpponentWaiting;
+/**
+ * Displays the game selection GUI.
+ */
+public class GameSelection implements Listener {
 
-    private Inventory gameSelection;
+    private final DuelManager duelManager;
 
-    public void openNewGui(Player player)
-    {
-        gameSelection = Bukkit.createInventory(null, 9 * 4, ChatColor.BLUE + "Game selection");
+    public GameSelection(DuelManager duelManager) {
+        this.duelManager = duelManager;
+    }
+
+    /** Opens the GUI for the given player. */
+    public void open(Player player) {
+        Inventory gui = Bukkit.createInventory(null, 9 * 4, ChatColor.BLUE + "Game selection");
 
         ItemStack swordItem = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta swordMeta = swordItem.getItemMeta();
         swordMeta.setDisplayName("Duel" + ChatColor.AQUA);
         swordItem.setItemMeta(swordMeta);
 
-        ItemStack bedItem = new ItemStack(Material.RED_BED);
-        ItemMeta bedMeta = bedItem.getItemMeta();
-        bedMeta.setDisplayName("Bedfight" + ChatColor.RED);
-        bedItem.setItemMeta(bedMeta);
-
-        gameSelection.setItem(0, swordItem);
-
-        gameSelection.setItem(1, bedItem);
-
-        player.openInventory(gameSelection);
+        gui.setItem(0, swordItem);
+        player.openInventory(gui);
     }
 
     @EventHandler
-    public void guiClickEvent(InventoryClickEvent event)
-    {
-        if(!event.getInventory().equals(gameSelection))
-        {
+    public void onInventoryClick(InventoryClickEvent event) {
+        Inventory inv = event.getInventory();
+        if (inv.getHolder() != null) {
+            return;
+        }
+        if (!ChatColor.stripColor(inv.getTitle()).equals("Game selection")) {
             return;
         }
 
         event.setCancelled(true);
-
-
-
-        switch(event.getSlot())
-        {
-            case 0:
-                if (!isDuelOpponentWaiting)
-                {
-                    Player duelPlayer1 = (Player) event.getWhoClicked();
-                    duelPlayer1.closeInventory();
-                    duelPlayer1.sendMessage(ChatColor.RED + "Waiting for the opponent...");
-                    new DuelExecuter().onDuelQueue(duelPlayer1);
-                }
-                if(isDuelOpponentWaiting)
-                {
-                    Player duelPlayer2 = (Player) event.getWhoClicked();
-                    new DuelExecuter().player2 = duelPlayer2;
-                    isDuelOpponentHere = true;
-                    duelPlayer2.teleport(new Location(duelPlayer2.getLocation().getWorld(), 2000, 2, -1));
-                    isDuelOpponentHere = false;
-                }
-
-                break;
-
-            case 1:
-                Player bedfightPlayer = (Player) event.getWhoClicked();
-                bedfightPlayer.closeInventory();
-                bedfightPlayer.sendMessage(ChatColor.RED +"You are queueing for the Bedfight (programming in progress... uhhh...)");
-//              // BEDFIGHT
-                break;
+        if (event.getSlot() == 0 && event.getWhoClicked() instanceof Player player) {
+            player.closeInventory();
+            duelManager.queuePlayer(player);
         }
-    }
-    @EventHandler
-    public void openGuiEvent(GameSelectionEvent event)
-    {
-        openNewGui(event.getPlayer());
     }
 }
