@@ -58,11 +58,17 @@ public class WitchShop implements Listener {
     }
 
     private void spawnWitch(World world) {
-        Location loc = new Location(world, 6, 11, 44);
+        Location loc = new Location(world, -50, 11, 25);
         Witch witch = (Witch) world.spawnEntity(loc, EntityType.WITCH);
         witch.setAI(false);
         witch.setCustomName(ChatColor.DARK_PURPLE + "Shopkeeper");
         witch.setCustomNameVisible(true);
+        witch.setRemoveWhenFarAway(false);
+        try {
+            witch.setPersistent(true);
+        } catch (NoSuchMethodError ignore) {
+            // method not available on older API versions
+        }
         witchIds.add(witch.getUniqueId());
     }
 
@@ -128,7 +134,10 @@ public class WitchShop implements Listener {
     @EventHandler
     public void onSpawn(CreatureSpawnEvent event) {
         if (witchIds.contains(event.getEntity().getUniqueId())) {
-            event.setCancelled(false);
+            return;
+        }
+        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
+            event.setCancelled(true);
         }
     }
 
