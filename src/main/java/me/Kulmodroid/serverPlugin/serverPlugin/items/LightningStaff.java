@@ -66,6 +66,7 @@ public class LightningStaff implements Listener {
         Location start = player.getLocation();
         Vector direction = start.getDirection().normalize();
         World world = player.getWorld();
+        player.getInventory().removeItem(ITEM);
         for (int i = 3; i <= 40; i++) {
             Location loc = start.clone().add(direction.clone().multiply(i));
             world.strikeLightning(loc);

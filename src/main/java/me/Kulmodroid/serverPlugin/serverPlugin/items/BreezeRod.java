@@ -33,7 +33,7 @@ public class BreezeRod implements Listener {
     static {
         ITEM = new ItemStack(Material.BREEZE_ROD);
         ItemMeta meta = ITEM.getItemMeta();
-        meta.setDisplayName(ChatColor.AQUA + "Breeze Rod");
+        meta.setDisplayName(ChatColor.AQUA + "litlle army spawn");
         ITEM.setItemMeta(meta);
     }
 
@@ -71,6 +71,7 @@ public class BreezeRod implements Listener {
     private void spawnVexes(Player player) {
         Location center = player.getLocation();
         World world = player.getWorld();
+        player.getInventory().removeItem(ITEM);
         double radius = 5.0;
         for (int i = 0; i < 10; i++) {
             double angle = 2 * Math.PI * i / 10;
