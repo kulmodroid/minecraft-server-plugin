@@ -44,13 +44,14 @@ public class WateringCanMob implements Listener {
         Location loc = new Location(world, -48, 11, 25); // near the witch shop
 
         for (Entity entity : world.getEntities()) {
-            if (entity instanceof ArmorStand stand && ChatColor.GRAY + "Walking Watering Can".equals(stand.getCustomName())) {
+            if (entity instanceof ArmorStand stand
+                    && (ChatColor.GRAY + "Walking Watering Can").equals(stand.getCustomName())) {
                 canIds.add(stand.getUniqueId());
                 return;
             }
         }
 
-        ArmorStand stand = (ArmorStand) world.spawnEntity(loc, EntityType.ARMOR_STAND, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        ArmorStand stand = (ArmorStand) world.spawnEntity(loc, EntityType.ARMOR_STAND);
         stand.setCustomName(ChatColor.GRAY + "Walking Watering Can");
         stand.setCustomNameVisible(true);
         stand.setGravity(false);
