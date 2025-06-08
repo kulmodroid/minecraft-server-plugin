@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.BreezeRod;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.LightningStaff;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.PigBow;
+import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
 
 public final class ServerPlugin extends JavaPlugin implements Listener {
 
@@ -26,6 +27,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private LightningStaff lightningStaff;
     private PigBow pigBow;
     private BreezeRod breezeRod;
+    private JumpBow jumpBow;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -35,6 +37,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         player.getInventory().addItem(lightningStaff.getItem());
         player.getInventory().addItem(pigBow.getItem());
         player.getInventory().addItem(breezeRod.getItem());
+        player.getInventory().addItem(jumpBow.getItem());
         player.getInventory().addItem(new ItemStack(Material.ARROW, 64));
     }
 
@@ -61,6 +64,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         lightningStaff = new LightningStaff(this);
         pigBow = new PigBow(this);
         breezeRod = new BreezeRod(this);
+        jumpBow = new JumpBow(this);
 
         for (World world : getServer().getWorlds()) {
             world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
@@ -74,6 +78,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(lightningStaff, this);
         getServer().getPluginManager().registerEvents(pigBow, this);
         getServer().getPluginManager().registerEvents(breezeRod, this);
+        getServer().getPluginManager().registerEvents(jumpBow, this);
 
         getCommand("gameselection").setExecutor(new GameSelectionCommand(gameSelection));
         getCommand("ping").setExecutor(new PingCommand());
