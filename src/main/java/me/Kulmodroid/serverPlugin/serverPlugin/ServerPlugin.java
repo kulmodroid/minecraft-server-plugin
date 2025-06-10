@@ -18,6 +18,8 @@ import me.Kulmodroid.serverPlugin.serverPlugin.items.LightningStaff;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.PigBow;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
 
+import me.Kulmodroid.serverPlugin.serverPlugin.BlockProtection;
+
 public final class ServerPlugin extends JavaPlugin implements Listener {
 
     private DuelManager duelManager;
@@ -30,6 +32,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private BreezeRod breezeRod;
     private JumpBow jumpBow;
     private ZoneLimiter zoneLimiter;
+    private BlockProtection blockProtection;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -67,6 +70,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         pigBow = new PigBow(this);
         breezeRod = new BreezeRod(this);
         jumpBow = new JumpBow(this);
+        blockProtection = new BlockProtection();
 
         for (World world : getServer().getWorlds()) {
             world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
@@ -89,6 +93,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(breezeRod, this);
         getServer().getPluginManager().registerEvents(jumpBow, this);
         getServer().getPluginManager().registerEvents(zoneLimiter, this);
+        getServer().getPluginManager().registerEvents(blockProtection, this);
 
         getCommand("gameselection").setExecutor(new GameSelectionCommand(gameSelection));
         getCommand("ping").setExecutor(new PingCommand());
