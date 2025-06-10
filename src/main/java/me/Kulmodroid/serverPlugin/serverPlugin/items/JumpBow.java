@@ -95,7 +95,7 @@ public class JumpBow implements Listener {
                         public void run() {
                             target.setType(Material.AIR);
                         }
-                    }.runTaskLater(plugin, 20L * 30);
+                    }.runTaskLater(plugin, 20L * 5);
                 }
             }
         }
