@@ -3,6 +3,7 @@ package me.Kulmodroid.serverPlugin.serverPlugin;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,6 +29,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private PigBow pigBow;
     private BreezeRod breezeRod;
     private JumpBow jumpBow;
+    private ZoneLimiter zoneLimiter;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -68,7 +70,14 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
         for (World world : getServer().getWorlds()) {
             world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+
+            WorldBorder border = world.getWorldBorder();
+            border.setWarningDistance(0);
+            border.setWarningTime(0);
         }
+
+        zoneLimiter = new ZoneLimiter(this, getServer().getWorlds().get(0),
+                -100, 0, -100, 100, 256, 100);
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(gameSelection, this);
@@ -79,6 +88,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(pigBow, this);
         getServer().getPluginManager().registerEvents(breezeRod, this);
         getServer().getPluginManager().registerEvents(jumpBow, this);
+        getServer().getPluginManager().registerEvents(zoneLimiter, this);
 
         getCommand("gameselection").setExecutor(new GameSelectionCommand(gameSelection));
         getCommand("ping").setExecutor(new PingCommand());
