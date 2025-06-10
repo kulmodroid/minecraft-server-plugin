@@ -80,7 +80,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         }
 
         zoneLimiter = new ZoneLimiter(this, getServer().getWorlds().get(0),
-                -100, 0, -100, 100, 256, 100);
+                -80, -64, -80, 80, 256, 80);
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(gameSelection, this);
