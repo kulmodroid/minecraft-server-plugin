@@ -1,6 +1,5 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
-import org.bukkit.Material;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,8 +20,20 @@ public class BlockProtection implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        // Track locations of all blocks players place so they can be broken later
-        placedBlocks.add(event.getBlock().getLocation());
+        Location loc = event.getBlock().getLocation();
+        Player player = event.getPlayer();
+
+        if (player.isOp() || player.hasPermission("serverPlugin.admin")) {
+            return;
+        }
+
+        if (loc.getY() > 50) {
+            event.setCancelled(true);
+            player.sendMessage("You cannot place blocks above level 50");
+            return;
+        }
+
+        placedBlocks.add(loc);
     }
 
     @EventHandler
@@ -36,9 +47,7 @@ public class BlockProtection implements Listener {
 
         // Allow breaking only for blocks placed after the plugin was enabled
         if (!placedBlocks.contains(loc)) {
-            if (event.getBlock().getType() != Material.AIR) {
-                event.setCancelled(true);
-            }
+            event.setCancelled(true);
         } else {
             // Remove from set so the block can be placed again in future
             placedBlocks.remove(loc);
