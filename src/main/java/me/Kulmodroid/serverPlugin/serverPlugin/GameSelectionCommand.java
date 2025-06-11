@@ -19,6 +19,10 @@ public class GameSelectionCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player player) {
+            if(!player.isOp()){
+                player.sendMessage("You need an Admin persmission to use this command!");
+                return false;
+            }
             gameSelection.open(player);
             return true;
         }
