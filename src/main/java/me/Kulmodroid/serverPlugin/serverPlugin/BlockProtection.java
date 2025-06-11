@@ -1,5 +1,6 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +30,12 @@ public class BlockProtection implements Listener {
 
         if (loc.getY() > 50) {
             event.setCancelled(true);
-            player.sendMessage("You cannot place blocks above level 50");
+            player.sendMessage(ChatColor.RED + "You cannot place blocks above level 50!");
+            return;
+        }
+        if (loc.getY() < 20) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You cannot place blocks there!");
             return;
         }
 

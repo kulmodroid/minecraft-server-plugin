@@ -1,9 +1,6 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
-import org.bukkit.GameRule;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldBorder;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -62,6 +59,8 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        World defaultWorld = getServer().getWorlds().get(0);
+
         duelManager = new DuelManager(this);
         gameSelection = new GameSelection(duelManager);
         bedwarsShop = new WitchShop(this);
@@ -70,6 +69,11 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         breezeRod = new BreezeRod(this);
         jumpBow = new JumpBow(this);
         blockProtection = new BlockProtection();
+        BedwarsManager bedwarsManager = new BedwarsManager(
+                this,
+                new Location(defaultWorld, 0, 46, 0),
+                new Location(defaultWorld, 0, 34, -50),
+                5);
 
         for (World world : getServer().getWorlds()) {
             world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
@@ -79,8 +83,9 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
             border.setWarningTime(0);
         }
 
-        zoneLimiter = new ZoneLimiter(this, getServer().getWorlds().get(0),
-                -80, -64, -80, 80, 256, 80);
+        zoneLimiter = new ZoneLimiter(this, defaultWorld,
+                -80, -60, -80, 80, 256, 80,
+                15, bedwarsManager);
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(gameSelection, this);
