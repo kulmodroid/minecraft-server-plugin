@@ -1,6 +1,7 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -22,15 +23,21 @@ public class ZoneLimiter implements Listener {
     private final World world;
     private final Vector min;
     private final Vector max;
+    private final double fellY;
     private final Map<Player, Location> lastValid = new HashMap<>();
+    private final GameManager gameManager;
 
     public ZoneLimiter(JavaPlugin plugin, World world,
                        double x1, double y1, double z1,
-                       double x2, double y2, double z2) {
+                       double x2, double y2, double z2,
+                       double fellY,
+                       GameManager gameManager) {
         this.plugin = plugin;
         this.world = world;
+        this.gameManager = gameManager;
         this.min = new Vector(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2));
         this.max = new Vector(Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
+        this.fellY = fellY;
     }
 
     private boolean isInside(Location loc) {
@@ -42,11 +49,19 @@ public class ZoneLimiter implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
+        if (player.isOp() || player.getGameMode().equals(GameMode.SPECTATOR)) {
+            return;
+        }
         if (!player.getWorld().equals(world)) {
             return;
         }
         Location to = event.getTo();
         if (to == null) {
+            return;
+        }
+        if (to.getY() < this.fellY) {
+            event.setCancelled(true);
+            this.gameManager.onPlayerFell(player);
             return;
         }
         if (isInside(to)) {

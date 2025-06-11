@@ -1,9 +1,6 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
-import org.bukkit.GameRule;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldBorder;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,16 +14,13 @@ import me.Kulmodroid.serverPlugin.serverPlugin.items.BreezeRod;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.LightningStaff;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.PigBow;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
-
-import me.Kulmodroid.serverPlugin.serverPlugin.BlockProtection;
 import me.Kulmodroid.serverPlugin.serverPlugin.BackupManager;
 
 public final class ServerPlugin extends JavaPlugin implements Listener {
 
     private DuelManager duelManager;
     private GameSelection gameSelection;
-    private WitchShop witchShop;
-    private WateringCanMob wateringCanMob;
+    private WitchShop bedwarsShop;
 
     private LightningStaff lightningStaff;
     private PigBow pigBow;
@@ -39,13 +33,14 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        player.getInventory().clear();
         player.sendMessage("Welcome to our server, " + player.getName() + ", your current ping is: " + player.getPing());
         player.getInventory().addItem(new ItemStack(Material.COMPASS));
         player.getInventory().addItem(lightningStaff.getItem());
         player.getInventory().addItem(pigBow.getItem());
         player.getInventory().addItem(breezeRod.getItem());
         player.getInventory().addItem(jumpBow.getItem());
-        player.getInventory().addItem(new ItemStack(Material.ARROW, 64));
+        player.getInventory().addItem(new ItemStack(Material.ARROW, 3));
     }
 
     @EventHandler
@@ -64,16 +59,22 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        World defaultWorld = getServer().getWorlds().get(0);
+
         duelManager = new DuelManager(this);
         gameSelection = new GameSelection(duelManager);
-        witchShop = new WitchShop(this);
-        wateringCanMob = new WateringCanMob(this);
+        bedwarsShop = new WitchShop(this);
         lightningStaff = new LightningStaff(this);
         pigBow = new PigBow(this);
         breezeRod = new BreezeRod(this);
         jumpBow = new JumpBow(this);
         blockProtection = new BlockProtection();
         backupManager = new BackupManager(this);
+        BedwarsManager bedwarsManager = new BedwarsManager(
+                this,
+                new Location(defaultWorld, 0, 46, 0),
+                new Location(defaultWorld, 0, 34, -50),
+                5);
 
         for (World world : getServer().getWorlds()) {
             world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
@@ -83,14 +84,14 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
             border.setWarningTime(0);
         }
 
-        zoneLimiter = new ZoneLimiter(this, getServer().getWorlds().get(0),
-                -100, 0, -100, 100, 256, 100);
+        zoneLimiter = new ZoneLimiter(this, defaultWorld,
+                -80, -60, -80, 80, 256, 80,
+                15, bedwarsManager);
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(gameSelection, this);
         getServer().getPluginManager().registerEvents(duelManager, this);
-        getServer().getPluginManager().registerEvents(witchShop, this);
-        getServer().getPluginManager().registerEvents(wateringCanMob, this);
+        getServer().getPluginManager().registerEvents(bedwarsShop, this);
         getServer().getPluginManager().registerEvents(lightningStaff, this);
         getServer().getPluginManager().registerEvents(pigBow, this);
         getServer().getPluginManager().registerEvents(breezeRod, this);
