@@ -15,8 +15,6 @@ import me.Kulmodroid.serverPlugin.serverPlugin.items.LightningStaff;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.PigBow;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
 
-import me.Kulmodroid.serverPlugin.serverPlugin.BlockProtection;
-
 public final class ServerPlugin extends JavaPlugin implements Listener {
 
     private DuelManager duelManager;
