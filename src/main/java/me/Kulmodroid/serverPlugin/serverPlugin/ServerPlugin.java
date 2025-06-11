@@ -14,6 +14,7 @@ import me.Kulmodroid.serverPlugin.serverPlugin.items.BreezeRod;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.LightningStaff;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.PigBow;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
+import me.Kulmodroid.serverPlugin.serverPlugin.BackupManager;
 
 public final class ServerPlugin extends JavaPlugin implements Listener {
 
@@ -27,6 +28,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private JumpBow jumpBow;
     private ZoneLimiter zoneLimiter;
     private BlockProtection blockProtection;
+    private BackupManager backupManager;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -67,6 +69,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         breezeRod = new BreezeRod(this);
         jumpBow = new JumpBow(this);
         blockProtection = new BlockProtection();
+        backupManager = new BackupManager(this);
         BedwarsManager bedwarsManager = new BedwarsManager(
                 this,
                 new Location(defaultWorld, 0, 46, 0),
@@ -95,6 +98,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(jumpBow, this);
         getServer().getPluginManager().registerEvents(zoneLimiter, this);
         getServer().getPluginManager().registerEvents(blockProtection, this);
+        getServer().getPluginManager().registerEvents(backupManager, this);
 
         getCommand("gameselection").setExecutor(new GameSelectionCommand(gameSelection));
         getCommand("ping").setExecutor(new PingCommand());
