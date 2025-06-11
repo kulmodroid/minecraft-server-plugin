@@ -56,12 +56,12 @@ public class DuelManager implements Listener {
 
     private void equip(Player player) {
         player.getInventory().clear();
-        player.getInventory().setItem(0, new ItemStack(Material.DIAMOND_SWORD));
-        player.getInventory().setItem(1, new ItemStack(Material.GOLDEN_APPLE, 2));
-        player.getInventory().setItem(103, new ItemStack(Material.DIAMOND_HELMET));
-        player.getInventory().setItem(102, new ItemStack(Material.DIAMOND_CHESTPLATE));
-        player.getInventory().setItem(101, new ItemStack(Material.DIAMOND_LEGGINGS));
-        player.getInventory().setItem(100, new ItemStack(Material.DIAMOND_BOOTS));
+        player.getInventory().setItem(1, new ItemStack(Material.DIAMOND_SWORD));
+        player.getInventory().setItem(2, new ItemStack(Material.GOLDEN_APPLE, 2));
+        player.getInventory().setItem(39, new ItemStack(Material.DIAMOND_HELMET));
+        player.getInventory().setItem(38, new ItemStack(Material.DIAMOND_CHESTPLATE));
+        player.getInventory().setItem(37, new ItemStack(Material.DIAMOND_LEGGINGS));
+        player.getInventory().setItem(36, new ItemStack(Material.DIAMOND_BOOTS));
     }
 
     @EventHandler

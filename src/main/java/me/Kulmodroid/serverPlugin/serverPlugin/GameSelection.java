@@ -41,8 +41,14 @@ public class GameSelection implements Listener {
         ItemMeta swordMeta = swordItem.getItemMeta();
         swordMeta.setDisplayName("Duel" + ChatColor.AQUA);
         swordItem.setItemMeta(swordMeta);
-
         gui.setItem(0, swordItem);
+
+        ItemStack bedwarsItem4 = new ItemStack(Material.RED_BED);
+        ItemMeta bedwarsMeta4 = bedwarsItem4.getItemMeta();
+        bedwarsMeta4.setDisplayName("Bedwars squads" + ChatColor.AQUA);
+        bedwarsItem4.setItemMeta(bedwarsMeta4);
+        gui.setItem(0, bedwarsItem4);
+
         player.openInventory(gui);
     }
 
@@ -57,6 +63,10 @@ public class GameSelection implements Listener {
         if (event.getSlot() == 0 && event.getWhoClicked() instanceof Player player) {
             player.closeInventory();
             duelManager.queuePlayer(player);
+        }
+        if (event.getSlot() == 1 && event.getWhoClicked() instanceof Player player) {
+            player.closeInventory();
+            // BedwarsManager.queuePlayer(player);
         }
     }
 }
