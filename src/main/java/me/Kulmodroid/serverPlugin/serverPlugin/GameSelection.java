@@ -47,7 +47,7 @@ public class GameSelection implements Listener {
         ItemMeta bedwarsMeta4 = bedwarsItem4.getItemMeta();
         bedwarsMeta4.setDisplayName("Bedwars squads" + ChatColor.AQUA);
         bedwarsItem4.setItemMeta(bedwarsMeta4);
-        gui.setItem(0, bedwarsItem4);
+        gui.setItem(1, bedwarsItem4);
 
         player.openInventory(gui);
     }

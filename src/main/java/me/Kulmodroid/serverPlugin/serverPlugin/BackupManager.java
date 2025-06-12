@@ -62,8 +62,12 @@ public class BackupManager implements Listener {
                 String stamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date(now));
                 Path dest = base.resolve(stamp);
                 Files.createDirectories(dest);
+                plugin.getLogger().info("Creating backup in " + dest.toAbsolutePath());
                 for (World world : Bukkit.getServer().getWorlds()) {
-                    copyDirectory(world.getWorldFolder().toPath(), dest.resolve(world.getName()));
+                    Path src = world.getWorldFolder().toPath();
+                    Path dst = dest.resolve(world.getName());
+                    plugin.getLogger().info("Backing up world '" + world.getName() + "' from " + src + " to " + dst);
+                    copyDirectory(src, dst);
                 }
                 cleanupOldBackups(base);
             } catch (IOException e) {
