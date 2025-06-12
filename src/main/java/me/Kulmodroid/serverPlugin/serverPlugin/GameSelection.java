@@ -12,6 +12,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import me.Kulmodroid.serverPlugin.serverPlugin.game.BedwarsQueue;
+
 /**
  * Displays the game selection GUI.
  */
@@ -28,9 +30,11 @@ public class GameSelection implements Listener {
     private static final InventoryHolder HOLDER = new GameSelectionHolder();
 
     private final DuelManager duelManager;
+    private final BedwarsQueue bedwarsQueue;
 
-    public GameSelection(DuelManager duelManager) {
+    public GameSelection(DuelManager duelManager, BedwarsQueue bedwarsQueue) {
         this.duelManager = duelManager;
+        this.bedwarsQueue = bedwarsQueue;
     }
 
     /** Opens the GUI for the given player. */
@@ -66,7 +70,7 @@ public class GameSelection implements Listener {
         }
         if (event.getSlot() == 1 && event.getWhoClicked() instanceof Player player) {
             player.closeInventory();
-            // BedwarsManager.queuePlayer(player);
+            bedwarsQueue.add(player);
         }
     }
 }

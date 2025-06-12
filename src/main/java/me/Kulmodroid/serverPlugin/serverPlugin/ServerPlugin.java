@@ -1,10 +1,12 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldBorder;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.BreezeRod;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.LightningStaff;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.PigBow;
+import me.Kulmodroid.serverPlugin.serverPlugin.items.GameCompass;
+import me.Kulmodroid.serverPlugin.serverPlugin.items.EditCompass;
+import me.Kulmodroid.serverPlugin.serverPlugin.game.BedwarsQueue;
+import me.Kulmodroid.serverPlugin.serverPlugin.MapEditSelection;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
 import me.Kulmodroid.serverPlugin.serverPlugin.BackupManager;
 
@@ -33,13 +39,23 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private ZoneLimiter zoneLimiter;
     private BlockProtection blockProtection;
     private BackupManager backupManager;
+    private GameCompass gameCompass;
+    private EditCompass editCompass;
+    private BedwarsQueue bedwarsQueue;
+    private MapEditSelection mapEditSelection;
+    private World lobbyWorld;
+    private String lobbyName;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         player.getInventory().clear();
         player.sendMessage("Welcome to our server, " + player.getName() + ", your current ping is: " + player.getPing());
-        player.getInventory().addItem(new ItemStack(Material.COMPASS));
+        player.teleport(lobbyWorld.getSpawnLocation());
+        player.getInventory().addItem(gameCompass.getItem());
+        if (player.isOp() || player.hasPermission("serverPlugin.admin")) {
+            player.getInventory().addItem(editCompass.getItem());
+        }
         player.getInventory().addItem(lightningStaff.getItem());
         player.getInventory().addItem(pigBow.getItem());
         player.getInventory().addItem(breezeRod.getItem());
@@ -49,24 +65,40 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (event.getItem() == null || event.getItem().getType() != Material.COMPASS) {
+        ItemStack stack = event.getItem();
+        if (stack == null) {
             return;
         }
         Action action = event.getAction();
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
-        event.setCancelled(true);
-        gameSelection.open(event.getPlayer());
+
+        if (gameCompass.isCompass(stack)) {
+            event.setCancelled(true);
+            gameSelection.open(event.getPlayer());
+        } else if (editCompass.isCompass(stack)) {
+            if (event.getPlayer().isOp() || event.getPlayer().hasPermission("serverPlugin.admin")) {
+                event.setCancelled(true);
+                mapEditSelection.open(event.getPlayer());
+            }
+        }
     }
 
 
     @Override
     public void onEnable() {
-        World defaultWorld = getServer().getWorlds().get(0);
+        saveDefaultConfig();
+        lobbyName = getConfig().getString("maps.lobby", "world");
+        lobbyWorld = Bukkit.createWorld(new WorldCreator(lobbyName));
+        World defaultWorld = lobbyWorld;
 
         duelManager = new DuelManager(this);
-        gameSelection = new GameSelection(duelManager);
+        bedwarsQueue = new BedwarsQueue(this);
+        gameSelection = new GameSelection(duelManager, bedwarsQueue);
+        mapEditSelection = new MapEditSelection(this);
+        gameCompass = new GameCompass();
+        editCompass = new EditCompass();
         bedwarsShop = new WitchShop(this);
         lightningStaff = new LightningStaff(this);
         pigBow = new PigBow(this);
@@ -103,6 +135,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(zoneLimiter, this);
         getServer().getPluginManager().registerEvents(blockProtection, this);
         getServer().getPluginManager().registerEvents(backupManager, this);
+        getServer().getPluginManager().registerEvents(mapEditSelection, this);
 
         getCommand("gameselection").setExecutor(new GameSelectionCommand(gameSelection));
         getCommand("ping").setExecutor(new PingCommand());
