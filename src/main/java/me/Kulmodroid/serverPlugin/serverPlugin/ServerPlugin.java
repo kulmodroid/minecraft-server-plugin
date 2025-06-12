@@ -44,7 +44,6 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private BedwarsQueue bedwarsQueue;
     private MapEditSelection mapEditSelection;
     private World lobbyWorld;
-    private String lobbyName;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -88,9 +87,26 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
-        lobbyName = getConfig().getString("maps.lobby", "world");
-        lobbyWorld = Bukkit.createWorld(new WorldCreator(lobbyName));
+        saveResource("config.yml", true);
+        getLogger().warning(getConfig().saveToString());
+        String lobbyMap = getConfig().getString("lobby", null);
+        if (lobbyMap == null) {
+            throw new IllegalArgumentException("lobbyMap must not be empty");
+        }
+        getLogger().warning("lobbyMap: " + lobbyMap);
+        var section = getConfig().getConfigurationSection("maps");
+        String lobbyPath = null;
+        if (section != null) {
+            var sec = section.getConfigurationSection(lobbyMap);
+            if (sec != null) {
+                lobbyPath = sec.getString("path", lobbyMap);
+            }
+        }
+        if (lobbyPath == null) {
+            throw new IllegalArgumentException("lobbyPath must not be empty");
+        }
+        getLogger().warning("lobbyPath: " + lobbyPath);
+        lobbyWorld = Bukkit.createWorld(new WorldCreator(lobbyPath));
         World defaultWorld = lobbyWorld;
 
         duelManager = new DuelManager(this);

@@ -1,13 +1,20 @@
 maps:
-  lobby: world
-  bedwars: bedwars
-  list:
-    - lobby
-    - bedwars
+  lobbyworld:
+    path: Raven Reach
+  bedwars1:
+    path: bedwarsMap2
+    players: 2
+    spawnpoints:
+      - {x: 0, y: 65, z: 0}
+      - {x: 10, y: 65, z: 0}
+  edit-maps:
+    - lobbyworld
+    - bedwars1
+lobby: lobbyworld
 bedwars:
+  maps:
+    - bedwars1
+    - bedwars2
   players: 4
   timeout-minutes: 3
   timeout-min-players: 2
-  spawnpoints:
-    - {x: 0, y: 65, z: 0}
-    - {x: 10, y: 65, z: 0}

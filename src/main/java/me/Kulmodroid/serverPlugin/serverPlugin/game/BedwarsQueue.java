@@ -50,10 +50,20 @@ public class BedwarsQueue {
     }
 
     private void startGame() {
-        List<Player> players = new ArrayList<>(queue);
-        queue.clear();
-        String baseName = plugin.getConfig().getString("maps.bedwars", "bedwars");
-        String worldName = baseName + "_game_" + System.currentTimeMillis();
+        List<String> mapNames = plugin.getConfig().getStringList("bedwars.maps");
+        if (mapNames.isEmpty()) {
+            plugin.getLogger().warning("No Bedwars maps configured");
+            return;
+        }
+        String mapName = mapNames.get((int) (Math.random() * mapNames.size()));
+        var mapSec = plugin.getConfig().getConfigurationSection("maps." + mapName);
+        if (mapSec == null) {
+            plugin.getLogger().warning("Map config missing for " + mapName);
+            return;
+        }
+        String baseName = mapSec.getString("path", mapName);
+        int capacity = mapSec.getInt("players", plugin.getConfig().getInt("bedwars.players", 4));
+        String worldName = mapName + "_game_" + System.currentTimeMillis();
         Path worldFolder = plugin.getServer().getWorldContainer().toPath().resolve(worldName);
         try {
             copyWorld(plugin.getServer().getWorldContainer().toPath().resolve(baseName), worldFolder);
@@ -63,12 +73,21 @@ public class BedwarsQueue {
         }
         World world = Bukkit.createWorld(new WorldCreator(worldName));
         List<Location> spawns = new ArrayList<>();
-        for (var map : plugin.getConfig().getMapList("bedwars.spawnpoints")) {
+        for (var map : mapSec.getMapList("spawnpoints")) {
             double x = ((Number) map.get("x")).doubleValue();
             double y = ((Number) map.get("y")).doubleValue();
             double z = ((Number) map.get("z")).doubleValue();
             spawns.add(new Location(world, x, y, z));
         }
+        if (spawns.size() != capacity) {
+            plugin.getLogger().warning("Spawn count " + spawns.size() + " does not match players " + capacity + " for map " + mapName);
+        }
+
+        List<Player> players = new ArrayList<>();
+        while (!queue.isEmpty() && players.size() < capacity) {
+            players.add(queue.remove(0));
+        }
+
         BedwarsGame game = new BedwarsGame(plugin, world, worldFolder, spawns);
         for (int i = 0; i < players.size(); i++) {
             game.addPlayer(players.get(i), i);

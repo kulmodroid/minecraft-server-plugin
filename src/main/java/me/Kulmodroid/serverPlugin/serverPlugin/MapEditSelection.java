@@ -35,7 +35,8 @@ public class MapEditSelection implements Listener {
     }
 
     public void open(Player player) {
-        List<String> maps = plugin.getConfig().getStringList("maps.list");
+        plugin.getLogger().warning(plugin.getConfig().saveToString());
+        List<String> maps = plugin.getConfig().getStringList("maps.edit-maps");
         Inventory gui = Bukkit.createInventory(HOLDER, 9, ChatColor.GOLD + "Edit Map");
         for (int i = 0; i < maps.size() && i < 9; i++) {
             ItemStack item = new ItemStack(Material.MAP);
@@ -61,12 +62,25 @@ public class MapEditSelection implements Listener {
             return;
         }
         String mapName = stack.getItemMeta().getDisplayName();
-        player.closeInventory();
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            if (Bukkit.getWorld(mapName) == null) {
-                Bukkit.createWorld(new org.bukkit.WorldCreator(mapName));
+        String path = null;
+        var maps = plugin.getConfig().getConfigurationSection("maps");
+        if (maps != null) {
+            var sec = maps.getConfigurationSection(mapName);
+            if (sec != null) {
+                path = sec.getString("path");
             }
-            player.teleport(Bukkit.getWorld(mapName).getSpawnLocation());
+        }
+        if (path == null) {
+            player.sendMessage(ChatColor.RED + "Map configuration not found for " + mapName);
+            return;
+        }
+        player.closeInventory();
+        String finalPath = path;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (Bukkit.getWorld(finalPath) == null) {
+                Bukkit.createWorld(new org.bukkit.WorldCreator(finalPath));
+            }
+            player.teleport(Bukkit.getWorld(finalPath).getSpawnLocation());
             player.sendMessage(ChatColor.GREEN + "Editing map " + mapName);
         });
     }
