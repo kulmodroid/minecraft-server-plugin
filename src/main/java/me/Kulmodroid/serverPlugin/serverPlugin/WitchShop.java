@@ -63,9 +63,12 @@ public class WitchShop implements Listener {
 
     private void spawnWitch(World world) {
         Location loc = new Location(world, -50, 11, 25);
+        if (!loc.getChunk().isLoaded()) {
+            loc.getChunk().load();
+        }
 
         // If a witch with our custom name already exists, reuse it.
-        for (Entity entity : world.getEntities()) {
+        for (Entity entity : loc.getChunk().getEntities()) {
             if (entity instanceof Witch existing
                     && (ChatColor.DARK_PURPLE + "Shopkeeper").equals(existing.getCustomName())) {
                 witchIds.add(existing.getUniqueId());
@@ -166,9 +169,13 @@ public class WitchShop implements Listener {
      */
     private void checkWitches() {
         for (World world : Bukkit.getServer().getWorlds()) {
+            Location loc = new Location(world, -50, 11, 25);
+            if (!loc.getChunk().isLoaded()) {
+                loc.getChunk().load();
+            }
             boolean found = false;
             loop: for (UUID id : new HashSet<>(witchIds)) {
-                for (Entity e : world.getEntities()) {
+                for (Entity e : loc.getChunk().getEntities()) {
                     if (e instanceof Witch && e.getUniqueId().equals(id)) {
                         found = true;
                         break loop;
@@ -176,6 +183,7 @@ public class WitchShop implements Listener {
                 }
             }
             if (!found) {
+                plugin.getLogger().warning("???");
                 spawnWitch(world);
             }
         }
