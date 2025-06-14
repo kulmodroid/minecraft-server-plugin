@@ -43,10 +43,35 @@ public class WitchShop implements Listener {
 
     private final JavaPlugin plugin;
     private final Set<UUID> witchIds = new HashSet<>();
+
+    private void logSpawn(World world, Location loc) {
+        int count = world.getEntitiesByClass(Witch.class).size();
+        plugin.getLogger().info(
+                "Spawning witch in world '" + world.getName() + "' at " +
+                loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() +
+                " (total witches: " + count + ")");
+    }
+
+    private void cleanupOldWitches() {
+        for (World world : Bukkit.getServer().getWorlds()) {
+            int removed = 0;
+            for (Entity e : world.getEntities()) {
+                if (e instanceof Witch w && (ChatColor.DARK_PURPLE + "Shopkeeper").equals(w.getCustomName())) {
+                    w.remove();
+                    removed++;
+                }
+            }
+            if (removed > 0) {
+                plugin.getLogger().info("Removed " + removed + " old witches in world '" + world.getName() + "'");
+            }
+        }
+        witchIds.clear();
+    }
     private Inventory shopInv;
 
     public WitchShop(JavaPlugin plugin) {
         this.plugin = plugin;
+        cleanupOldWitches();
         spawnWitches();
         setupInventory();
 
@@ -63,15 +88,13 @@ public class WitchShop implements Listener {
 
     private void spawnWitch(World world) {
         Location loc = new Location(world, -50, 11, 25);
-        if (!loc.getChunk().isLoaded()) {
-            loc.getChunk().load();
-        }
 
         // If a witch with our custom name already exists, reuse it.
-        for (Entity entity : loc.getChunk().getEntities()) {
+        for (Entity entity : world.getEntities()) {
             if (entity instanceof Witch existing
                     && (ChatColor.DARK_PURPLE + "Shopkeeper").equals(existing.getCustomName())) {
                 witchIds.add(existing.getUniqueId());
+                logSpawn(world, existing.getLocation());
                 return;
             }
         }
@@ -88,6 +111,7 @@ public class WitchShop implements Listener {
             // method not available on older API versions
         }
         witchIds.add(witch.getUniqueId());
+        logSpawn(world, loc);
     }
 
     private void setupInventory() {
@@ -114,7 +138,6 @@ public class WitchShop implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "Buy or Die");
         player.openInventory(shopInv);
     }
 
@@ -169,22 +192,29 @@ public class WitchShop implements Listener {
      */
     private void checkWitches() {
         for (World world : Bukkit.getServer().getWorlds()) {
-            Location loc = new Location(world, -50, 11, 25);
-            if (!loc.getChunk().isLoaded()) {
-                loc.getChunk().load();
-            }
-            boolean found = false;
-            loop: for (UUID id : new HashSet<>(witchIds)) {
-                for (Entity e : loc.getChunk().getEntities()) {
-                    if (e instanceof Witch && e.getUniqueId().equals(id)) {
-                        found = true;
-                        break loop;
-                    }
+            java.util.List<Witch> shops = new java.util.ArrayList<>();
+            for (Entity e : world.getEntities()) {
+                if (e instanceof Witch w &&
+                        (ChatColor.DARK_PURPLE + "Shopkeeper").equals(w.getCustomName())) {
+                    shops.add(w);
                 }
             }
-            if (!found) {
-                plugin.getLogger().warning("???");
+
+            if (shops.isEmpty()) {
                 spawnWitch(world);
+                continue;
+            }
+
+            Witch keeper = shops.get(0);
+            witchIds.add(keeper.getUniqueId());
+            int removed = 0;
+            for (int i = 1; i < shops.size(); i++) {
+                shops.get(i).remove();
+                removed++;
+            }
+            if (removed > 0) {
+                plugin.getLogger().info(
+                        "Removed " + removed + " extra witches in world '" + world.getName() + "'");
             }
         }
     }
