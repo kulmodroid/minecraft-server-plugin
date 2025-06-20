@@ -19,7 +19,9 @@ import me.Kulmodroid.serverPlugin.serverPlugin.game.BedwarsQueue;
  */
 public class GameSelection implements Listener {
 
-    /* Marker holder used to identify the custom inventory. */
+    public boolean isInBedwarsSquadsQueue;
+    public boolean isInDuelQueue;
+        /* Marker holder used to identify the custom inventory. */
     private static class GameSelectionHolder implements InventoryHolder {
         @Override
         public Inventory getInventory() {
@@ -49,7 +51,7 @@ public class GameSelection implements Listener {
 
         ItemStack bedwarsItem4 = new ItemStack(Material.RED_BED);
         ItemMeta bedwarsMeta4 = bedwarsItem4.getItemMeta();
-        bedwarsMeta4.setDisplayName("Bedwars squads" + ChatColor.AQUA);
+        bedwarsMeta4.setDisplayName("Bedwars 4 teams of 1" + ChatColor.AQUA);
         bedwarsItem4.setItemMeta(bedwarsMeta4);
         gui.setItem(1, bedwarsItem4);
 
