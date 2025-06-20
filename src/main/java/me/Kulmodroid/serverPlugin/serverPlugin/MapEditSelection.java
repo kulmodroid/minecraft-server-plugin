@@ -35,7 +35,7 @@ public class MapEditSelection implements Listener {
     }
 
     public void open(Player player) {
-        plugin.getLogger().warning(plugin.getConfig().saveToString());
+//        plugin.getLogger().warning(plugin.getConfig().saveToString());
         List<String> maps = plugin.getConfig().getStringList("maps.edit-maps");
         Inventory gui = Bukkit.createInventory(HOLDER, 9, ChatColor.GOLD + "Edit Map");
         for (int i = 0; i < maps.size() && i < 9; i++) {

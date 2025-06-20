@@ -1,12 +1,9 @@
 package me.Kulmodroid.serverPlugin.serverPlugin;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.WorldBorder;
-import org.bukkit.GameRule;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import me.Kulmodroid.serverPlugin.serverPlugin.commands.GameSelectionCommand;
+import me.Kulmodroid.serverPlugin.serverPlugin.commands.PingCommand;
+import me.Kulmodroid.serverPlugin.serverPlugin.commands.getPosCommand;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,15 +19,13 @@ import me.Kulmodroid.serverPlugin.serverPlugin.items.PigBow;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.GameCompass;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.EditCompass;
 import me.Kulmodroid.serverPlugin.serverPlugin.game.BedwarsQueue;
-import me.Kulmodroid.serverPlugin.serverPlugin.MapEditSelection;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
-import me.Kulmodroid.serverPlugin.serverPlugin.BackupManager;
 
 public final class ServerPlugin extends JavaPlugin implements Listener {
 
     private DuelManager duelManager;
     private GameSelection gameSelection;
-    private WitchShop bedwarsShop;
+    // private WitchShop bedwarsShop;
 
     private LightningStaff lightningStaff;
     private PigBow pigBow;
@@ -49,10 +44,12 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         player.getInventory().clear();
-        player.sendMessage("Welcome to our server, " + player.getName() + ", your current ping is: " + player.getPing());
+        Bukkit.getServer().broadcastMessage(player.getName() + " joined to the server");
         player.teleport(lobbyWorld.getSpawnLocation());
         player.getInventory().addItem(gameCompass.getItem());
+        player.setGameMode(GameMode.ADVENTURE);
         if (player.isOp() || player.hasPermission("serverPlugin.admin")) {
+            player.setGameMode(GameMode.CREATIVE);
             player.getInventory().addItem(editCompass.getItem());
         }
         player.getInventory().addItem(lightningStaff.getItem());
@@ -115,7 +112,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         mapEditSelection = new MapEditSelection(this);
         gameCompass = new GameCompass();
         editCompass = new EditCompass();
-        bedwarsShop = new WitchShop(this);
+        // bedwarsShop = new WitchShop(this);
         lightningStaff = new LightningStaff(this);
         pigBow = new PigBow(this);
         breezeRod = new BreezeRod(this);
@@ -136,25 +133,21 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
             border.setWarningTime(0);
         }
 
-        zoneLimiter = new ZoneLimiter(this, defaultWorld,
-                -80, -60, -80, 80, 256, 80,
-                15, bedwarsManager);
-
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(gameSelection, this);
         getServer().getPluginManager().registerEvents(duelManager, this);
-        getServer().getPluginManager().registerEvents(bedwarsShop, this);
+        // getServer().getPluginManager().registerEvents(bedwarsShop, this);
         getServer().getPluginManager().registerEvents(lightningStaff, this);
         getServer().getPluginManager().registerEvents(pigBow, this);
         getServer().getPluginManager().registerEvents(breezeRod, this);
         getServer().getPluginManager().registerEvents(jumpBow, this);
-        getServer().getPluginManager().registerEvents(zoneLimiter, this);
         getServer().getPluginManager().registerEvents(blockProtection, this);
         getServer().getPluginManager().registerEvents(backupManager, this);
         getServer().getPluginManager().registerEvents(mapEditSelection, this);
 
         getCommand("gameselection").setExecutor(new GameSelectionCommand(gameSelection));
         getCommand("ping").setExecutor(new PingCommand());
+        getCommand("getPos").setExecutor(new getPosCommand());
     }
 
     @Override

@@ -3,6 +3,8 @@ version: '1.0-SNAPSHOT'
 main: me.Kulmodroid.serverPlugin.serverPlugin.ServerPlugin
 api-version: '1.21'
 commands:
+  getPos:
+  mapedit:
   gameselection:
   ping:
 

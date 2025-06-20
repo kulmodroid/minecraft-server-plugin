@@ -1,5 +1,6 @@
-package me.Kulmodroid.serverPlugin.serverPlugin;
+package me.Kulmodroid.serverPlugin.serverPlugin.commands;
 
+import me.Kulmodroid.serverPlugin.serverPlugin.GameSelection;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
