@@ -51,7 +51,7 @@ public class GameSelection implements Listener {
 
         ItemStack bedwarsItem4 = new ItemStack(Material.RED_BED);
         ItemMeta bedwarsMeta4 = bedwarsItem4.getItemMeta();
-        bedwarsMeta4.setDisplayName("Bedwars 4 teams of 1" + ChatColor.AQUA);
+        bedwarsMeta4.setDisplayName("Bedwars 4 teams of 1" + ChatColor.RED);
         bedwarsItem4.setItemMeta(bedwarsMeta4);
         gui.setItem(1, bedwarsItem4);
 

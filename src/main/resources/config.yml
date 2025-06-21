@@ -103,7 +103,7 @@ maps:
           green:
             - { x: -4, y: 30, z: 72}
       diamond:
-        island:
+        mid:
           - { x: 72, y: 31, z: 70 }
           - { x: 70, y: 31, z: -72 }
           - { x: -72, y: 31, z: 70 }

@@ -3,6 +3,8 @@ package me.Kulmodroid.serverPlugin.serverPlugin.game;
 import me.Kulmodroid.serverPlugin.serverPlugin.GameManager;
 import me.Kulmodroid.serverPlugin.serverPlugin.GameSelection;
 import org.bukkit.*;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -211,10 +213,123 @@ public class BedwarsQueue {
         Location waitPos = new Location(world, waitx, waity, waitz);
 
 
+        List<Location> emeraldGens = new ArrayList<>();
+        for (Object obj : plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald").getList("mid")) {
+            ConfigurationSection con = (ConfigurationSection) obj;
+            emeraldGens.add(new Location(world,
+                    ((Number) con.get("x")).doubleValue(),
+                    ((Number) con.get("y")).doubleValue(),
+                    ((Number) con.get("z")).doubleValue()));
+        }
+
+        List<Location> diamondGens = new ArrayList<>();
+        for (Object obj : plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond").getList("mid")) {
+            ConfigurationSection con = (ConfigurationSection) obj;
+            emeraldGens.add(new Location(world,
+                    ((Number) con.get("x")).doubleValue(),
+                    ((Number) con.get("y")).doubleValue(),
+                    ((Number) con.get("z")).doubleValue()));
+        }
+
+        List<Location> goldGens = new ArrayList<>();
+        for (Object obj : plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold").getList("mid")) {
+            ConfigurationSection con = (ConfigurationSection) obj;
+            emeraldGens.add(new Location(world,
+                    ((Number) con.get("x")).doubleValue(),
+                    ((Number) con.get("y")).doubleValue(),
+                    ((Number) con.get("z")).doubleValue()));
+        }
+
+
+        Location reg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.red").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.red").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.red").get("z")).doubleValue());
+
+        Location rdg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.red").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.red").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.red").get("z")).doubleValue());
+
+        Location rgg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.red").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.red").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.red").get("z")).doubleValue());
+
+        Location rig = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.red").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.red").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.red").get("z")).doubleValue());
+
+
+        Location beg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.blue").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.blue").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.blue").get("z")).doubleValue());
+
+        Location bdg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.blue").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.blue").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.blue").get("z")).doubleValue());
+
+        Location bgg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.blue").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.blue").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.blue").get("z")).doubleValue());
+
+        Location big = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.blue").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.blue").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.blue").get("z")).doubleValue());
+
+
+        Location yeg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.yellow").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.yellow").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.yellow").get("z")).doubleValue());
+
+        Location ydg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.yellow").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.yellow").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.yellow").get("z")).doubleValue());
+
+        Location ygg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.yellow").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.yellow").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.yellow").get("z")).doubleValue());
+
+        Location yig = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.yellow").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.yellow").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.yellow").get("z")).doubleValue());
+
+
+        Location geg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.green").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.green").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.green").get("z")).doubleValue());
+
+        Location gdg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.green").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.green").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.green").get("z")).doubleValue());
+
+        Location ggg = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.green").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.green").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.green").get("z")).doubleValue());
+
+        Location gig = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.green").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.green").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.green").get("z")).doubleValue());
+
+
         redPlayer2.setDisplayName(Color.RED + redPlayer2.getName());
         bluePlayer2.setDisplayName(Color.BLUE + bluePlayer2.getName());
         yellowPlayer2.setDisplayName(Color.YELLOW + yellowPlayer2.getName());
         greenPlayer2.setDisplayName(Color.GREEN + greenPlayer2.getName());
+
 
         BedwarsGame game = new BedwarsGame(
                 plugin,
@@ -243,6 +358,25 @@ public class BedwarsQueue {
                 yellowPlayer2,
                 greenPlayer2,
                 spawns,
+                emeraldGens,
+                diamondGens,
+                goldGens,
+                reg,
+                rdg,
+                rgg,
+                rig,
+                beg,
+                bdg,
+                bgg,
+                big,
+                yeg,
+                ydg,
+                ygg,
+                yig,
+                geg,
+                gdg,
+                ggg,
+                gig,
                 gameManager,
                 new ItemStack(Material.RECOVERY_COMPASS));
 

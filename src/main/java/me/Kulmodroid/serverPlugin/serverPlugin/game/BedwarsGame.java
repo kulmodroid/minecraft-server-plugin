@@ -2,7 +2,7 @@ package me.Kulmodroid.serverPlugin.serverPlugin.game;
 
 import me.Kulmodroid.serverPlugin.serverPlugin.GameManager;
 import org.bukkit.*;
-import org.bukkit.entity.Item;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,7 +21,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.io.IOException;
-import java.io.WriteAbortedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
@@ -37,6 +36,25 @@ public class BedwarsGame implements Listener {
     private final World world;
     private final Set<Player> players = new HashSet<>();
     private final List<Location> spawns;
+    private final List<Location> midEmeraldGenerators;
+    private final List<Location> midDiamondGenerators;
+    private final List<Location> midGoldGenerators;
+    private final Location redEmeraldGenerator;
+    private final Location redDiamondGenerator;
+    private final Location redGoldGenerator;
+    private final Location redIronGenerator;
+    private final Location blueEmeraldGenerator;
+    private final Location blueDiamondGenerator;
+    private final Location blueGoldGenerator;
+    private final Location blueIronGenerator;
+    private final Location yellowEmeraldGenerator;
+    private final Location yellowDiamondGenerator;
+    private final Location yellowGoldGenerator;
+    private final Location yellowIronGenerator;
+    private final Location greenEmeraldGenerator;
+    private final Location greenDiamondGenerator;
+    private final Location greenGoldGenerator;
+    private final Location greenIronGenerator;
     private final Set<Location> placedBlocks = new HashSet<>();
     private final Map<Player, Location> lastValid = new HashMap<>();
     private final Path worldFolder;
@@ -90,6 +108,25 @@ public class BedwarsGame implements Listener {
                        Player yellowPlayer,
                        Player greenPlayer,
                        List<Location> spawns,
+                       List<Location> midEmeraldGenerators,
+                       List<Location> midDiamondGenerators,
+                       List<Location> midGoldGenerators,
+                       Location redEmeraldGenerator,
+                       Location redDiamondGenerator,
+                       Location redGoldGenerator,
+                       Location redIronGenerator,
+                       Location blueEmeraldGenerator,
+                       Location blueDiamondGenerator,
+                       Location blueGoldGenerator,
+                       Location blueIronGenerator,
+                       Location yellowEmeraldGenerator,
+                       Location yellowDiamondGenerator,
+                       Location yellowGoldGenerator,
+                       Location yellowIronGenerator,
+                       Location greenEmeraldGenerator,
+                       Location greenDiamondGenerator,
+                       Location greenGoldGenerator,
+                       Location greenIronGenerator,
                        GameManager gameManger,
                        ItemStack ITEM
                        ) {
@@ -120,6 +157,25 @@ public class BedwarsGame implements Listener {
         this.yellowPlayer = yellowPlayer;
         this.greenPlayer = greenPlayer;
         this.spawns = spawns;
+        this.midEmeraldGenerators = midEmeraldGenerators;
+        this.midDiamondGenerators = midDiamondGenerators;
+        this.midGoldGenerators = midGoldGenerators;
+        this.redEmeraldGenerator = redEmeraldGenerator;
+        this.redDiamondGenerator = redDiamondGenerator;
+        this.redGoldGenerator = redGoldGenerator;
+        this.redIronGenerator = redIronGenerator;
+        this.blueEmeraldGenerator = blueEmeraldGenerator;
+        this.blueDiamondGenerator = blueDiamondGenerator;
+        this.blueGoldGenerator = blueGoldGenerator;
+        this.blueIronGenerator = blueIronGenerator;
+        this.yellowEmeraldGenerator = yellowEmeraldGenerator;
+        this.yellowDiamondGenerator = yellowDiamondGenerator;
+        this.yellowGoldGenerator = yellowGoldGenerator;
+        this.yellowIronGenerator = yellowIronGenerator;
+        this.greenEmeraldGenerator = greenEmeraldGenerator;
+        this.greenDiamondGenerator = greenDiamondGenerator;
+        this.greenGoldGenerator = greenGoldGenerator;
+        this.greenIronGenerator = greenIronGenerator;
         this.gameManager = gameManger;
         this.ITEM = ITEM;
     }
@@ -139,6 +195,10 @@ public class BedwarsGame implements Listener {
         ItemMeta meta = ITEM.getItemMeta();
         meta.setDisplayName(ChatColor.DARK_PURPLE + "Return to lobby");
         ITEM.setItemMeta(meta);
+    }
+
+    private void summonMaterial(ItemStack material, Location loc) {
+        world.dropItem(loc, material);
     }
 
     public ItemStack getItem() {
@@ -325,7 +385,7 @@ public class BedwarsGame implements Listener {
                     @Override
                     public void run() {
                         if (secondsLeft <= 0) {
-                            greenPlayer.teleport(greenPlayer);
+                            greenPlayer.teleport(greenSpawn);
                             greenPlayer.sendTitle("", "§e You respawned! §f");
                             greenPlayer.setGameMode(GameMode.SURVIVAL);
                             cancel();
