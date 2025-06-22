@@ -28,6 +28,8 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import static org.bukkit.ChatColor.*;
+
 /**
  * Represents a running Bedwars game world.
  */
@@ -185,6 +187,12 @@ public class BedwarsGame implements Listener {
     public boolean canYellowRespawn;
     public boolean canGreenRespawn;
 
+    public boolean isRedEliminated;
+    public boolean isBlueEliminated;
+    public boolean isYellowEliminated;
+    public boolean isGreenEliminated;
+
+
     public void addPlayer(Player player, int i) {
         players.add(player);
 
@@ -193,7 +201,7 @@ public class BedwarsGame implements Listener {
     static {
         ITEM = new ItemStack(Material.RECOVERY_COMPASS);
         ItemMeta meta = ITEM.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_PURPLE + "Return to lobby");
+        meta.setDisplayName(DARK_PURPLE + "Return to lobby");
         ITEM.setItemMeta(meta);
     }
 
@@ -237,9 +245,39 @@ public class BedwarsGame implements Listener {
         player.getInventory().addItem(ITEM);
     }
 
+    public void onWin(Player player) {
+        player.setGameMode(GameMode.SPECTATOR);
+        new BukkitRunnable() {
+            int secondsLeft = 10;
+            boolean toggle = true;
+            @Override
+            public void run() {
+                if (secondsLeft <= 0) {
+                    // send player to lobby
+                    cancel();
+                    return;
+                }
+                player.setDisplayName("Good boy");
+                if (toggle) {
+                    player.sendTitle("", ChatColor.RED + "You won!");
+                    toggle = false;
+                } else {
+                    player.sendTitle("", ChatColor.BLUE + "You won!");
+                    toggle = true;
+                }
+                player.getWorld().spawnEntity(new Location(world,
+                        player.getLocation().getX(),
+                        player.getLocation().getY() + 1, player.getLocation().getZ()),
+                        EntityType.FIREWORK_ROCKET);
+                secondsLeft--;
+            }
+        }.runTaskTimer(plugin, 0L, 20L);
+        return;
+    }
+
     private boolean nearSpawn(Location loc) {
         for (Location spawn : spawns) {
-            if (spawn.getWorld().equals(loc.getWorld()) && spawn.distanceSquared(loc) <= 4.0) {
+            if (spawn.getWorld().equals(loc.getWorld()) && spawn.distanceSquared(loc) <= 2.0) {
                 return true;
             }
         }
@@ -301,6 +339,142 @@ public class BedwarsGame implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        if (player == redPlayer) {
+            if (canRedRespawn) {
+                player.setRespawnLocation(waitPos);
+                player.setGameMode(GameMode.SPECTATOR);
+                new BukkitRunnable() {
+                    int secondsLeft = 3;
+                    @Override
+                    public void run() {
+                        if (secondsLeft <= 0) {
+                            redPlayer.teleport(redSpawn);
+                            redPlayer.sendTitle("", "§e You respawned! §f");
+                            redPlayer.setGameMode(GameMode.SURVIVAL);
+                            cancel();
+                            return;
+                        }
+                        player.sendTitle("", "You'll respawn in §e" + secondsLeft + "§f ",
+                                0, 20, 0);
+                        secondsLeft--;
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+                return;
+            } else {
+                eliminatePlayer(redPlayer);
+                isRedEliminated = true;
+                if (isBlueEliminated && isYellowEliminated) {
+                    onWin(greenPlayer);
+                } else if (isBlueEliminated && isGreenEliminated) {
+                    onWin(yellowPlayer);
+                } else if (isGreenEliminated && isYellowEliminated) {
+                    onWin(bluePlayer);
+                }
+                return;
+            }
+        } else if (player == bluePlayer) {
+            if (canBlueRespawn) {
+                player.setRespawnLocation(waitPos);
+                player.setGameMode(GameMode.SPECTATOR);
+                new BukkitRunnable() {
+                    int secondsLeft = 3;
+                    @Override
+                    public void run() {
+                        if (secondsLeft <= 0) {
+                            bluePlayer.teleport(blueSpawn);
+                            bluePlayer.sendTitle("", "§e You respawned! §f");
+                            bluePlayer.setGameMode(GameMode.SURVIVAL);
+                            cancel();
+                            return;
+                        }
+                        player.sendTitle("", "You'll respawn in §e" + secondsLeft + "§f ",
+                                0, 20, 0);
+                        secondsLeft--;
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+                return;
+            } else {
+                eliminatePlayer(bluePlayer);
+                isBlueEliminated = true;
+                if (isRedEliminated && isYellowEliminated) {
+                    onWin(greenPlayer);
+                } else if (isRedEliminated && isGreenEliminated) {
+                    onWin(yellowPlayer);
+                } else if (isGreenEliminated && isYellowEliminated) {
+                    onWin(redPlayer);
+                }
+                return;
+            }
+        } else if (player == yellowPlayer) {
+            if (canYellowRespawn) {
+                player.setRespawnLocation(waitPos);
+                player.setGameMode(GameMode.SPECTATOR);
+                new BukkitRunnable() {
+                    int secondsLeft = 3;
+                    @Override
+                    public void run() {
+                        if (secondsLeft <= 0) {
+                            yellowPlayer.teleport(yellowSpawn);
+                            yellowPlayer.sendTitle("", "§e You respawned! §f");
+                            yellowPlayer.setGameMode(GameMode.SURVIVAL);
+                            cancel();
+                            return;
+                        }
+                        player.sendTitle("", "You'll respawn in §e" + secondsLeft + "§f ",
+                                0, 20, 0);
+                        secondsLeft--;
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+                return;
+            } else {
+                eliminatePlayer(yellowPlayer);
+                isYellowEliminated = true;
+                if (isRedEliminated && isBlueEliminated) {
+                    onWin(greenPlayer);
+                } else if (isRedEliminated && isGreenEliminated) {
+                    onWin(bluePlayer);
+                } else if (isGreenEliminated && isBlueEliminated) {
+                    onWin(redPlayer);
+                }
+                return;
+            }
+        } else if (player == greenPlayer) {
+            if (canGreenRespawn) {
+                player.setRespawnLocation(waitPos);
+                player.setGameMode(GameMode.SPECTATOR);
+                new BukkitRunnable() {
+                    int secondsLeft = 3;
+                    @Override
+                    public void run() {
+                        if (secondsLeft <= 0) {
+                            greenPlayer.teleport(greenSpawn);
+                            greenPlayer.sendTitle("", "§e You respawned! §f");
+                            greenPlayer.setGameMode(GameMode.SURVIVAL);
+                            cancel();
+                            return;
+                        }
+                        player.sendTitle("", "You'll respawn in §e" + secondsLeft + "§f ",
+                                0, 20, 0);
+                        secondsLeft--;
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+                return;
+            } else {
+                eliminatePlayer(greenPlayer);
+                isGreenEliminated = true;
+                if (isRedEliminated && isBlueEliminated) {
+                    onWin(yellowPlayer);
+                } else if (isRedEliminated && isYellowEliminated) {
+                    onWin(bluePlayer);
+                } else if (isYellowEliminated && isBlueEliminated) {
+                    onWin(redPlayer);
+                }
+                return;
+            }
+        }
+    }
+
+    public void onPlayerFell(Player player) {
         if (player == redPlayer) {
             if (canRedRespawn) {
                 player.setRespawnLocation(waitPos);
@@ -404,110 +578,6 @@ public class BedwarsGame implements Listener {
         }
     }
 
-    public void onPlayerFell(Player player) {
-        if (player == redPlayer) {
-            if (canRedRespawn) {
-                player.setRespawnLocation(waitPos);
-                player.setGameMode(GameMode.SPECTATOR);
-                new BukkitRunnable() {
-                    int secondsLeft = 3;
-                    @Override
-                    public void run() {
-                        if (secondsLeft <= 0) {
-                            redPlayer.teleport(redSpawn);
-                            redPlayer.sendTitle("", "§e You respawned! §f");
-                            redPlayer.setGameMode(GameMode.SURVIVAL);
-                            cancel();
-                            return;
-                        }
-                        player.sendTitle("", "You'll respawn in §e" + secondsLeft + "§f ",
-                                0, 20, 0);
-                        secondsLeft--;
-                    }
-                }.runTaskTimer(plugin, 0L, 20L);
-                return;
-            } else {
-                eliminatePlayer(redPlayer);
-                return;
-            }
-        } else if (player == bluePlayer) {
-            if (canBlueRespawn) {
-                player.setRespawnLocation(waitPos);
-                player.setGameMode(GameMode.SPECTATOR);
-                new BukkitRunnable() {
-                    int secondsLeft = 3;
-                    @Override
-                    public void run() {
-                        if (secondsLeft <= 0) {
-                            bluePlayer.teleport(blueSpawn);
-                            bluePlayer.sendTitle("", "§e You respawned! §f");
-                            bluePlayer.setGameMode(GameMode.SURVIVAL);
-                            cancel();
-                            return;
-                        }
-                        player.sendTitle("", "You'll respawn in §e" + secondsLeft + "§f ",
-                                0, 20, 0);
-                        secondsLeft--;
-                    }
-                }.runTaskTimer(plugin, 0L, 20L);
-                return;
-            } else {
-                eliminatePlayer(bluePlayer);
-                return;
-            }
-        } else if (player == yellowPlayer) {
-            if (canYellowRespawn) {
-                player.setRespawnLocation(waitPos);
-                player.setGameMode(GameMode.SPECTATOR);
-                new BukkitRunnable() {
-                    int secondsLeft = 3;
-                    @Override
-                    public void run() {
-                        if (secondsLeft <= 0) {
-                            yellowPlayer.teleport(yellowSpawn);
-                            yellowPlayer.sendTitle("", "§e You respawned! §f");
-                            yellowPlayer.setGameMode(GameMode.SURVIVAL);
-                            cancel();
-                            return;
-                        }
-                        player.sendTitle("", "You'll respawn in §e" + secondsLeft + "§f ",
-                                0, 20, 0);
-                        secondsLeft--;
-                    }
-                }.runTaskTimer(plugin, 0L, 20L);
-                return;
-            } else {
-                eliminatePlayer(yellowPlayer);
-                return;
-            }
-        } else if (player == greenPlayer) {
-            if (canGreenRespawn) {
-                player.setRespawnLocation(waitPos);
-                player.setGameMode(GameMode.SPECTATOR);
-                new BukkitRunnable() {
-                    int secondsLeft = 3;
-                    @Override
-                    public void run() {
-                        if (secondsLeft <= 0) {
-                            greenPlayer.teleport(greenPlayer);
-                            greenPlayer.sendTitle("", "§e You respawned! §f");
-                            greenPlayer.setGameMode(GameMode.SURVIVAL);
-                            cancel();
-                            return;
-                        }
-                        player.sendTitle("", "You'll respawn in §e" + secondsLeft + "§f ",
-                                0, 20, 0);
-                        secondsLeft--;
-                    }
-                }.runTaskTimer(plugin, 0L, 20L);
-                return;
-            } else {
-                eliminatePlayer(greenPlayer);
-                return;
-            }
-        }
-    }
-
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
@@ -582,7 +652,7 @@ public class BedwarsGame implements Listener {
         if (to.getY() < fellY) {
             event.setCancelled(true);
             if (player != redPlayer && player != bluePlayer && player != yellowPlayer && player != greenPlayer) {
-                player.kickPlayer(ChatColor.RED + "You're not supposed to join this game!");
+                player.kickPlayer(RED + "You're not supposed to join this game!");
             }
             onPlayerFell(player);
             return;

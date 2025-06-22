@@ -1,9 +1,7 @@
 package me.Kulmodroid.serverPlugin.serverPlugin.game;
 
 import me.Kulmodroid.serverPlugin.serverPlugin.GameManager;
-import me.Kulmodroid.serverPlugin.serverPlugin.GameSelection;
 import org.bukkit.*;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,9 +15,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.FileVisitResult;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Handles queueing of players and starting Bedwars games.
@@ -384,6 +380,11 @@ public class BedwarsQueue {
         game.canBlueRespawn = true;
         game.canYellowRespawn = true;
         game.canGreenRespawn = true;
+
+        game.isRedEliminated = false;
+        game.isBlueEliminated = false;
+        game.isYellowEliminated = false;
+        game.isGreenEliminated = false;
 
         for (int i = 0; i < players.size(); i++) {
             game.addPlayer(players.get(i), i);
