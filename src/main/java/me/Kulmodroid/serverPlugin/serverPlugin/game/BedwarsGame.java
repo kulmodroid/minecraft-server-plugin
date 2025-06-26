@@ -1,25 +1,32 @@
 package me.Kulmodroid.serverPlugin.serverPlugin.game;
 
 import me.Kulmodroid.serverPlugin.serverPlugin.GameManager;
+import me.Kulmodroid.serverPlugin.serverPlugin.WitchShop;
 import org.bukkit.*;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockType;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,8 +34,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.FileVisitResult;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-
-import static org.bukkit.ChatColor.*;
 
 /**
  * Represents a running Bedwars game world.
@@ -78,12 +83,22 @@ public class BedwarsGame implements Listener {
     private final Location yellowBed2;
     private final Location greenBed1;
     private final Location greenBed2;
+    private final Location redItemShopPos;
+    private final Location redUpgradeShopPos;
+    private final Location blueItemShopPos;
+    private final Location blueUpgradeShopPos;
+    private final Location yellowItemShopPos;
+    private final Location yellowUpgradeShopPos;
+    private final Location greenItemShopPos;
+    private final Location greenUpgradeShopPos;
     private final Player redPlayer;
     private final Player bluePlayer;
     private final Player yellowPlayer;
     private final Player greenPlayer;
     private final GameManager gameManager;
     private static ItemStack ITEM;
+    private static final InventoryHolder HOLDER = new BedwarsGame.ShopHolder();
+    private final Set<UUID> shopIds = new HashSet<>();
 
     public BedwarsGame(JavaPlugin plugin,
                        World world,
@@ -129,6 +144,14 @@ public class BedwarsGame implements Listener {
                        Location greenDiamondGenerator,
                        Location greenGoldGenerator,
                        Location greenIronGenerator,
+                       Location redItemShopPos,
+                       Location redUpgradeShopPos,
+                       Location blueItemShopPos,
+                       Location blueUpgradeShopPos,
+                       Location yellowItemShopPos,
+                       Location yellowUpgradeShopPos,
+                       Location greenItemShopPos,
+                       Location greenUpgradeShopPos,
                        GameManager gameManger,
                        ItemStack ITEM
                        ) {
@@ -178,9 +201,22 @@ public class BedwarsGame implements Listener {
         this.greenDiamondGenerator = greenDiamondGenerator;
         this.greenGoldGenerator = greenGoldGenerator;
         this.greenIronGenerator = greenIronGenerator;
+        this.redItemShopPos = redItemShopPos;
+        this.redUpgradeShopPos = redUpgradeShopPos;
+        this.blueItemShopPos = blueItemShopPos;
+        this.blueUpgradeShopPos = blueUpgradeShopPos;
+        this.yellowItemShopPos = yellowItemShopPos;
+        this.yellowUpgradeShopPos = yellowUpgradeShopPos;
+        this.greenItemShopPos = greenItemShopPos;
+        this.greenUpgradeShopPos = greenUpgradeShopPos;
         this.gameManager = gameManger;
         this.ITEM = ITEM;
+        cleanupOldShops();
     }
+    EntityType redIV = EntityType.VILLAGER;
+    EntityType blueIV = EntityType.VILLAGER;
+    EntityType yellowIV = EntityType.VILLAGER;
+    EntityType greenIV = EntityType.VILLAGER;
 
     public boolean canRedRespawn;
     public boolean canBlueRespawn;
@@ -192,6 +228,718 @@ public class BedwarsGame implements Listener {
     public boolean isYellowEliminated;
     public boolean isGreenEliminated;
 
+    public boolean redUnlockedGen1;
+    public boolean blueUnlockedGen1;
+    public boolean yellowUnlockedGen1;
+    public boolean greenUnlockedGen1;
+
+    public boolean redUnlockedGen2;
+    public boolean blueUnlockedGen2;
+    public boolean yellowUnlockedGen2;
+    public boolean greenUnlockedGen2;
+
+    public boolean isRedInBlockSec;
+    public boolean isRedInCombatSec;
+    public boolean isRedInToolsSec;
+    public boolean isRedInUtilitiesSec;
+    public boolean isRedInPotionsSec;
+
+    int goldCooldown;
+    int diamondCooldown;
+    int emeraldCooldown;
+
+    int redGoldCooldown;
+    int redDiamondCooldown;
+    int redEmeraldCooldown;
+
+    int blueGoldCooldown;
+    int blueDiamondCooldown;
+    int blueEmeraldCooldown;
+
+    int yellowGoldCooldown;
+    int yellowDiamondCooldown;
+    int yellowEmeraldCooldown;
+
+    int greenGoldCooldown;
+    int greenDiamondCooldown;
+    int greenEmeraldCooldown;
+
+    int ironMax = 20;
+    int goldMax = 10;
+    int diamonMax = 6;
+    int emeraldMax = 4;
+
+    public int redIronCount;
+    public int redGoldCount;
+    public int redDiamondCount;
+    public int redEmeraldCount;
+    public int blueIronCount;
+    public int blueGoldCount;
+    public int blueDiamondCount;
+    public int blueEmeraldCount;
+    public int yellowIronCount;
+    public int yellowGoldCount;
+    public int yellowDiamondCount;
+    public int yellowEmeraldCount;
+    public int greenIronCount;
+    public int greenGoldCount;
+    public int greenDiamondCount;
+    public int greenEmeraldCount;
+
+    public int goldCount;
+    public int diamondCount;
+    public int emeraldCount;
+
+    private List<Entity> redGolems;
+    private List<Entity> blueGolems;
+    private List<Entity> yellowGolems;
+    private List<Entity> greenGolems;
+
+    public int alivePlayers;
+
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent e) {
+        if (e.getItemDrop().getItemStack() == new ItemStack(Material.SHEARS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.WOODEN_SWORD) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.WOODEN_PICKAXE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.WOODEN_AXE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.STONE_SWORD) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.STONE_PICKAXE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.STONE_AXE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_SWORD) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_PICKAXE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_AXE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_SWORD) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_PICKAXE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_AXE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.LEATHER_BOOTS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.LEATHER_LEGGINGS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.LEATHER_CHESTPLATE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.LEATHER_HELMET) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.CHAINMAIL_BOOTS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.CHAINMAIL_LEGGINGS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.CHAINMAIL_CHESTPLATE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.CHAINMAIL_HELMET) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_BOOTS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_LEGGINGS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_CHESTPLATE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_HELMET) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_BOOTS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_LEGGINGS) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_CHESTPLATE) |
+                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_HELMET)) {
+            e.setCancelled(true);
+        }
+    }
+
+    private static class ShopHolder implements InventoryHolder {
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
+
+    Inventory redI;
+    Inventory blueI;
+    Inventory yellowI;
+    Inventory greenI;
+
+    private void setupBlueInventory() {
+        blueI = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
+
+        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", blueI, ChatColor.BLACK);
+        addItem(1, new ItemStack(Material.BLUE_WOOL), false, "Blocks", blueI, ChatColor.BLUE);
+        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Combat", blueI, ChatColor.GRAY);
+        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", blueI, ChatColor.GRAY);
+        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", blueI, ChatColor.BLACK);
+        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", blueI, ChatColor.GRAY);
+        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", blueI, ChatColor.BLACK);
+        addItem(9, new ItemStack(Material.POTION), false, "Potions", blueI, ChatColor.GRAY);
+        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), true, "", blueI, ChatColor.BLACK);
+        addItem(12, new ItemStack(Material.BLUE_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
+        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", blueI, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", blueI, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+    }
+
+    private void setupYellowInventory() {
+        yellowI = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
+
+        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
+        addItem(1, new ItemStack(Material.GREEN_WOOL), false, "Blocks", yellowI, ChatColor.YELLOW);
+        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
+        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", yellowI, ChatColor.GRAY);
+        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
+        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", yellowI, ChatColor.GRAY);
+        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
+        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", yellowI, ChatColor.GRAY);
+        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
+        addItem(9, new ItemStack(Material.POTION), false, "Potions", yellowI, ChatColor.GRAY);
+        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
+        addItem(12, new ItemStack(Material.YELLOW_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
+        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", blueI, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", blueI, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+    }
+
+    private void setupGreenInventory() {
+        greenI = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
+
+        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
+        addItem(1, new ItemStack(Material.YELLOW_WOOL), false, "Blocks", greenI, ChatColor.GREEN);
+        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
+        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", greenI, ChatColor.GRAY);
+        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
+        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", greenI, ChatColor.GRAY);
+        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
+        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", greenI, ChatColor.GRAY);
+        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
+        addItem(9, new ItemStack(Material.POTION), false, "Potions", greenI, ChatColor.GRAY);
+        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
+        addItem(12, new ItemStack(Material.GREEN_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
+        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", blueI, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", blueI, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+    }
+
+    private void setupRedInventory() {
+        redI = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
+
+        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
+        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(12, new ItemStack(Material.RED_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
+        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", blueI, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", blueI, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        Player player = plugin.getServer().getPlayer(event.getWhoClicked().getName());
+        Inventory playerInventory = player.getInventory();
+        if (event.getInventory() != redI | event.getInventory() != blueI | event.getInventory() != yellowI | event.getInventory() != greenI) {
+            return;
+        }
+        short swordType = -1;
+        short armorType = -1;
+        short pickaxeType = -1;
+        short axeType = -1;
+        int redGoldAmount = 0;
+        for (ItemStack i : playerInventory) {
+            if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                redGoldAmount ++;
+            } else if (i.equals(new ItemStack(Material.WOODEN_SWORD))) {
+                swordType = 0;
+            } else if (i.equals(new ItemStack(Material.STONE_SWORD))) {
+                swordType = 1;
+            } else if (i.equals(new ItemStack(Material.IRON_SWORD))) {
+                swordType = 2;
+            } else if (i.equals(new ItemStack(Material.DIAMOND_SWORD))) {
+                swordType = 3;
+            }
+            if (i.equals(new ItemStack(Material.LEATHER_BOOTS))) {
+                armorType = 0;
+            } else if (i.equals(new ItemStack(Material.CHAINMAIL_BOOTS))) {
+                armorType = 1;
+            } else if (i.equals(new ItemStack(Material.IRON_BOOTS))) {
+                armorType = 2;
+            } else if (i.equals(new ItemStack(Material.DIAMOND_BOOTS))) {
+                armorType = 3;
+            }
+            if (i.equals(new ItemStack(Material.WOODEN_PICKAXE))) {
+                pickaxeType = 0;
+            } else if (i.equals(new ItemStack(Material.STONE_PICKAXE))) {
+                pickaxeType = 1;
+            } else if (i.equals(new ItemStack(Material.IRON_PICKAXE))) {
+                pickaxeType = 2;
+            } else if (i.equals(new ItemStack(Material.DIAMOND_PICKAXE))) {
+                pickaxeType = 3;
+            }
+            if (i.equals(new ItemStack(Material.WOODEN_AXE))) {
+                axeType = 0;
+            } else if (i.equals(new ItemStack(Material.STONE_AXE))) {
+                axeType = 1;
+            } else if (i.equals(new ItemStack(Material.IRON_AXE))) {
+                axeType = 2;
+            } else if (i.equals(new ItemStack(Material.DIAMOND_AXE))) {
+                axeType = 3;
+            }
+        }
+        if (event.getSlot() == 1 && event.getInventory().equals(redI)) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(24, new ItemStack(Material.RED_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
+            addItem(26, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron", blueI, ChatColor.GRAY);
+            addItem(28, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold", blueI, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+            isRedInBlockSec = true;
+            isRedInCombatSec = false;
+            isRedInToolsSec = false;
+            isRedInUtilitiesSec = false;
+            isRedInPotionsSec = false;
+            return;
+        } else if (event.getSlot() == 3 && event.getInventory().equals(redI)) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", redI, ChatColor.RED);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            if (swordType == 0) {
+                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", redI, ChatColor.GRAY);
+            } else if (swordType == 1) {
+                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", redI, ChatColor.GRAY);
+            } else if (swordType == 2) {
+                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", redI, ChatColor.GRAY);
+            } else if (swordType == 3) {
+                addItem(24, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade sword anymore!", redI, ChatColor.GRAY);
+            }
+            if (armorType == 0) {
+                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", redI, ChatColor.GRAY);
+            } else if (armorType == 1) {
+                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", redI, ChatColor.GRAY);
+            } else if (armorType == 2) {
+                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", redI, ChatColor.GRAY);
+            } else if (armorType == 3) {
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", redI, ChatColor.GRAY);
+            }
+            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", redI, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", redI, ChatColor.GRAY);
+            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", redI, ChatColor.GRAY);
+            isRedInBlockSec = false;
+            isRedInCombatSec = true;
+            isRedInToolsSec = false;
+            isRedInUtilitiesSec = false;
+            isRedInPotionsSec = false;
+            return;
+        } else if (event.getSlot() == 5 && event.getInventory().equals(redI)) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.RED);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            if (pickaxeType == 0) {
+                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", redI, ChatColor.GRAY);
+            } else if (pickaxeType == 1) {
+                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", redI, ChatColor.GRAY);
+            } else if (pickaxeType == 2) {
+                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", redI, ChatColor.GRAY);
+            } else if (pickaxeType == 3) {
+                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
+            }
+            short dm = 1;
+            if (axeType == 0) {
+                addItem(26, new ItemStack(Material.STONE_PICKAXE, 1, dm), true, " costs 10 iron", redI, ChatColor.GRAY);
+            } else if (axeType == 1) {
+                addItem(26, new ItemStack(Material.IRON_PICKAXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
+            } else if (axeType == 2) {
+                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
+            } else if (axeType == 3) {
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
+            }
+            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
+            isRedInBlockSec = false;
+            isRedInCombatSec = false;
+            isRedInToolsSec = true;
+            isRedInUtilitiesSec = false;
+            isRedInPotionsSec = false;
+            return;
+        } else if (event.getSlot() == 7 && event.getInventory().equals(redI)) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
+            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
+            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
+            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
+            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
+            isRedInBlockSec = false;
+            isRedInCombatSec = false;
+            isRedInToolsSec = false;
+            isRedInUtilitiesSec = true;
+            isRedInPotionsSec = false;
+            return;
+        } else if (event.getSlot() == 9 && event.getInventory().equals(redI)) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION, 1, (byte)2), false, "Potions", redI, ChatColor.RED);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), true, " costs 1000 emerald", redI, ChatColor.GRAY);
+            isRedInBlockSec = false;
+            isRedInCombatSec = false;
+            isRedInToolsSec = false;
+            isRedInUtilitiesSec = false;
+            isRedInPotionsSec = true;
+            return;
+        }
+        else if (event.getSlot() == 12 && event.getInventory().equals(redI) && isRedInBlockSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            if (redGoldAmount >= 8) {
+                int neededAmount = 8;
+                playerInventory.addItem(new ItemStack(Material.RED_WOOL, 16));
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                        if(i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount --;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            neededAmount = 0;
+                        }
+                    }
+                }
+            } else {
+                return;
+            }
+        } else if (event.getSlot() == 9 && event.getInventory().equals(redI) && isRedInBlockSec == true) {
+        event.getInventory().clear();
+        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+        addItem(9, new ItemStack(Material.POTION, 1, (byte)2), false, "Potions", redI, ChatColor.RED);
+        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+
+        return;
+    }
+
+
+    }
+
+    private void cleanupOldShops() {
+        for (World world : Bukkit.getServer().getWorlds()) {
+            int removed = 0;
+            for (Entity e : world.getEntities()) {
+                if (e instanceof Villager w && (ChatColor.DARK_PURPLE + "Shopkeeper").equals(w.getCustomName())) {
+                    w.remove();
+                    removed++;
+                }
+            }
+            if (removed > 0) {
+                plugin.getLogger().info("Removed " + removed + " old witches in world '" + world.getName() + "'");
+            }
+        }
+        shopIds.clear();
+    }
+
+    private void addItem(int slot, ItemStack item, boolean haveCosting, String str, Inventory inv, ChatColor color) {
+        ItemMeta meta = item.getItemMeta();
+        if (haveCosting) {
+            meta.setDisplayName(item.getType().name().toLowerCase() + "costs " + str);
+        } else {
+            meta.setDisplayName(color + str);
+            item.setItemMeta(meta);
+            inv.setItem(slot, item);
+        }
+    }
+
+    public synchronized void gameLoop() {
+        redGolems = null;
+        blueGolems = null;
+        yellowGolems = null;
+        greenGolems = null;
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (alivePlayers <= 1) {
+                    cancel();
+                    return;
+                }
+                if (redUnlockedGen1) {
+                    if (redIronCount - 10 < ironMax) {
+                        world.dropItem(redIronGenerator, new ItemStack(Material.IRON_INGOT, 2));
+                        redIronCount += 2;
+                    }
+                    if (redGoldCount - 5 < goldMax && redGoldCooldown <= 0) {
+                        world.dropItem(redGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1));
+                        redGoldCount ++;
+                    }
+                    redGoldCooldown --;
+                } else if (redUnlockedGen2) {
+                    if (redIronCount - 20 < ironMax) {
+                        world.dropItem(redIronGenerator, new ItemStack(Material.IRON_INGOT, 2));
+                        redIronCount += 2;
+                    }
+                    if (redGoldCount - 5 < goldMax && redGoldCooldown <= 0) {
+                        world.dropItem(redGoldGenerator, new ItemStack(Material.GOLD_INGOT, 2));
+                        redGoldCount += 2;
+                    }
+                    if (redDiamondCount < diamonMax && redDiamondCooldown <= 0) {
+                        world.dropItem(redDiamondGenerator, new ItemStack(Material.DIAMOND, 1));
+                        redDiamondCount ++;
+                    }
+                    if (redEmeraldCount < emeraldMax && redEmeraldCooldown <= 0) {
+                        world.dropItem(redEmeraldGenerator, new ItemStack(Material.EMERALD, 1));
+                        redEmeraldCount ++;
+                    }
+                    redGoldCooldown -= 2;
+                    redDiamondCooldown -= 1;
+                    redEmeraldCooldown -= 1;
+                } else {
+                    if (redIronCount < ironMax) {
+                        world.dropItem(redIronGenerator, new ItemStack(Material.IRON_INGOT, 1));
+                        redIronCount ++;
+                    }
+                    if (redGoldCount < goldMax) {
+                        world.dropItem(redGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1));
+                        redGoldCount ++;
+                    }
+                    redGoldCooldown --;
+                }
+                if (blueUnlockedGen1) {
+                    if (blueIronCount - 10 < ironMax) {
+                        world.dropItem(blueIronGenerator, new ItemStack(Material.IRON_INGOT, 2));
+                        blueIronCount += 2;
+                    }
+                    if (blueGoldCount - 5 < goldMax && blueGoldCooldown <= 0) {
+                        world.dropItem(blueGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1));
+                        blueGoldCount ++;
+                    }
+                    blueGoldCooldown --;
+                } else if (blueUnlockedGen2) {
+                    if (blueIronCount + 20 < ironMax) {
+                        world.dropItem(blueIronGenerator, new ItemStack(Material.IRON_INGOT, 2));
+                        blueIronCount += 2;
+                    }
+                    if (blueGoldCount - 5 < goldMax && blueGoldCooldown <= 0) {
+                        world.dropItem(blueGoldGenerator, new ItemStack(Material.GOLD_INGOT, 2));
+                        blueGoldCount += 2;
+                    }
+                    if (blueDiamondCount < diamonMax && blueDiamondCooldown <= 0) {
+                        world.dropItem(blueDiamondGenerator, new ItemStack(Material.DIAMOND, 1));
+                        blueDiamondCount ++;
+                    }
+                    if (blueEmeraldCount < emeraldMax && blueEmeraldCooldown <= 0) {
+                        world.dropItem(blueEmeraldGenerator, new ItemStack(Material.EMERALD, 1));
+                        blueEmeraldCount ++;
+                    }
+                    blueGoldCooldown -= 2;
+                    blueDiamondCooldown -= 1;
+                    blueEmeraldCooldown -= 1;
+                } else {
+                    if (blueIronCount < ironMax) {
+                        world.dropItem(blueIronGenerator, new ItemStack(Material.IRON_INGOT, 1));
+                        blueIronCount ++;
+                    }
+                    if (blueGoldCount < goldMax) {
+                        world.dropItem(blueGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1));
+                        blueGoldCount ++;
+                    }
+                    blueGoldCooldown --;
+                }
+                if (greenUnlockedGen1) {
+                    if (greenIronCount - 10 < ironMax) {
+                        world.dropItem(greenIronGenerator, new ItemStack(Material.IRON_INGOT, 2));
+                        greenIronCount += 2;
+                    }
+                    if (greenGoldCount - 5 < goldMax && greenGoldCooldown <= 0) {
+                        world.dropItem(greenGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1));
+                        greenGoldCount ++;
+                    }
+                    greenGoldCooldown --;
+                } else if (greenUnlockedGen2) {
+                    if (greenIronCount + 20 < ironMax) {
+                        world.dropItem(greenIronGenerator, new ItemStack(Material.IRON_INGOT, 2));
+                        greenIronCount += 2;
+                    }
+                    if (greenGoldCount - 5 < goldMax && greenGoldCooldown <= 0) {
+                        world.dropItem(greenGoldGenerator, new ItemStack(Material.GOLD_INGOT, 2));
+                        greenGoldCount += 2;
+                    }
+                    if (greenDiamondCount < diamonMax && greenDiamondCooldown <= 0) {
+                        world.dropItem(greenDiamondGenerator, new ItemStack(Material.DIAMOND, 1));
+                        greenDiamondCount ++;
+                    }
+                    if (greenEmeraldCount < emeraldMax && greenEmeraldCooldown <= 0) {
+                        world.dropItem(greenEmeraldGenerator, new ItemStack(Material.EMERALD, 1));
+                        greenEmeraldCount ++;
+                    }
+                    greenGoldCooldown -= 2;
+                    greenDiamondCooldown -= 1;
+                    greenEmeraldCooldown -= 1;
+                } else {
+                    if (greenIronCount < ironMax) {
+                        world.dropItem(greenIronGenerator, new ItemStack(Material.IRON_INGOT, 1));
+                        greenIronCount ++;
+                    }
+                    if (greenGoldCount < goldMax) {
+                        world.dropItem(greenGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1));
+                        greenGoldCount ++;
+                    }
+                    greenGoldCooldown --;
+                }
+                if (yellowUnlockedGen1) {
+                    if (yellowIronCount - 10 < ironMax) {
+                        world.dropItem(yellowIronGenerator, new ItemStack(Material.IRON_INGOT, 2));
+                        yellowIronCount += 2;
+                    }
+                    if (yellowGoldCount - 5 < goldMax && yellowGoldCooldown <= 0) {
+                        world.dropItem(yellowGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1));
+                        yellowGoldCount ++;
+                    }
+                    yellowGoldCooldown --;
+                } else if (yellowUnlockedGen2) {
+                    if (yellowIronCount + 20 < ironMax) {
+                        world.dropItem(yellowIronGenerator, new ItemStack(Material.IRON_INGOT, 2));
+                        yellowIronCount += 2;
+                    }
+                    if (yellowGoldCount - 5 < goldMax && blueGoldCooldown <= 0) {
+                        world.dropItem(yellowGoldGenerator, new ItemStack(Material.GOLD_INGOT, 2));
+                        yellowGoldCount += 2;
+                    }
+                    if (yellowDiamondCount < diamonMax && blueDiamondCooldown <= 0) {
+                        world.dropItem(yellowDiamondGenerator, new ItemStack(Material.DIAMOND, 1));
+                        yellowDiamondCount ++;
+                    }
+                    if (yellowEmeraldCount < emeraldMax && yellowEmeraldCooldown <= 0) {
+                        world.dropItem(yellowEmeraldGenerator, new ItemStack(Material.EMERALD, 1));
+                        yellowEmeraldCount ++;
+                    }
+                    yellowGoldCooldown -= 2;
+                    yellowDiamondCooldown -= 1;
+                    yellowEmeraldCooldown -= 1;
+                } else {
+                    if (yellowIronCount < ironMax) {
+                        world.dropItem(yellowIronGenerator, new ItemStack(Material.IRON_INGOT, 1));
+                        yellowIronCount ++;
+                    }
+                    if (yellowGoldCount < goldMax) {
+                        world.dropItem(yellowGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1));
+                        yellowGoldCount ++;
+                    }
+                    yellowGoldCooldown --;
+                }
+                if (goldCooldown <= 0) {
+                    for (Location loc : midGoldGenerators) {
+                        world.dropItem(loc, new ItemStack(Material.GOLD_INGOT));
+                        Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
+                        entity.setVisibleByDefault(false);
+                        entity.setCustomName(ChatColor.GOLD + "" + goldCooldown  + "seconds remaining");
+                        goldCooldown = 5;
+                    }
+                }
+                if (diamondCooldown <= 0) {
+                    for (Location loc : midDiamondGenerators) {
+                        world.dropItem(loc, new ItemStack(Material.DIAMOND));
+                        diamondCooldown = 15;
+                    }
+                }
+                if (emeraldCooldown <= 0) {
+                    for (Location loc : midDiamondGenerators) {
+                        world.dropItem(loc, new ItemStack(Material.EMERALD));
+                        diamondCooldown = 30;
+                    }
+                }
+                for (Location loc : midGoldGenerators) {
+                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
+                    entity.setVisibleByDefault(false);
+                    entity.setCustomName(ChatColor.GOLD + "" + goldCooldown  + "seconds remaining");
+                }
+                for (Location loc : midDiamondGenerators) {
+                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
+                    entity.setVisibleByDefault(false);
+                    entity.setCustomName(ChatColor.AQUA + "" + diamondCooldown  + "seconds remaining");
+                }
+                for (Location loc : midEmeraldGenerators) {
+                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
+                    entity.setVisibleByDefault(false);
+                    entity.setCustomName(ChatColor.GREEN + "" + emeraldCooldown  + "seconds remaining");
+                }
+                goldCooldown --;
+                diamondCooldown --;
+                emeraldCooldown--;
+            }
+        }.runTaskTimer(plugin, 0L, 20L);
+        return;
+    }
+
+    @EventHandler
+    public void onShopInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getType() == redIV) {
+            event.getPlayer().openInventory(redI);
+        }
+    }
+
+    @EventHandler
+    public void onEntityHit(EntityDamageEvent e) {
+        if (e.getEntity().getType() == EntityType.VILLAGER | e.getEntity().getType() == EntityType.ARMOR_STAND) {
+            e.setCancelled(true);
+        }
+    }
 
     public void addPlayer(Player player, int i) {
         players.add(player);
@@ -201,12 +949,8 @@ public class BedwarsGame implements Listener {
     static {
         ITEM = new ItemStack(Material.RECOVERY_COMPASS);
         ItemMeta meta = ITEM.getItemMeta();
-        meta.setDisplayName(DARK_PURPLE + "Return to lobby");
+        meta.setDisplayName(ChatColor.DARK_PURPLE + "Return to lobby");
         ITEM.setItemMeta(meta);
-    }
-
-    private void summonMaterial(ItemStack material, Location loc) {
-        world.dropItem(loc, material);
     }
 
     public ItemStack getItem() {
@@ -220,6 +964,105 @@ public class BedwarsGame implements Listener {
         ItemMeta meta = stack.getItemMeta();
         return meta != null && meta.hasDisplayName()
                 && meta.getDisplayName().equals(ITEM.getItemMeta().getDisplayName());
+    }
+
+    private boolean isGolemSpawnEgg(ItemStack stack) {
+        if (stack == null || stack.getType() != Material.IRON_GOLEM_SPAWN_EGG) {
+            return false;
+        }
+        ItemMeta meta = stack.getItemMeta();
+        return meta != null && meta.hasDisplayName()
+                && meta.getDisplayName().equals(ITEM.getItemMeta().getDisplayName());
+    }
+
+    @EventHandler
+    public void noForgiving(EntityTargetEvent e) {
+        for (Entity golem : redGolems) {
+            if(e.getEntity().getType() == golem.getType()){
+                for (Player p : world.getPlayers()) {
+                    if (p != redPlayer) {
+                        e.setTarget(p);
+                    }
+                }
+            }
+        }
+        for (Entity golem : blueGolems) {
+            if(e.getEntity().getType() == golem.getType()){
+                for (Player p : world.getPlayers()) {
+                    if (p != bluePlayer) {
+                        e.setTarget(p);
+                    }
+                }
+            }
+        }
+        for (Entity golem : yellowGolems) {
+            if(e.getEntity().getType() == golem.getType()){
+                for (Player p : world.getPlayers()) {
+                    if (p != yellowPlayer) {
+                        e.setTarget(p);
+                    }
+                }
+            }
+        }
+        for (Entity golem : greenGolems) {
+            if(e.getEntity().getType() == golem.getType()){
+                for (Player p : world.getPlayers()) {
+                    if (p != greenPlayer) {
+                        e.setTarget(p);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onGolemSpawnEggInteract(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        if (!isGolemSpawnEgg(e.getItem())) {
+            return;
+        }
+        Action action = e.getAction();
+        if (action != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+        e.setCancelled(true);
+        p.getInventory().removeItem(e.getItem());
+        int am = e.getItem().getAmount() - 1;
+        p.getInventory().addItem(new ItemStack(e.getItem().getType(), e.getItem().getAmount() - 1));
+        if (p == redPlayer) {
+            redGolems.add(world.spawnEntity(p.getLocation(), EntityType.IRON_GOLEM));
+        } else if (p == bluePlayer) {
+            blueGolems.add(world.spawnEntity(p.getLocation(), EntityType.IRON_GOLEM));
+        } else if (p == yellowPlayer) {
+            yellowGolems.add(world.spawnEntity(p.getLocation(), EntityType.IRON_GOLEM));
+        } else if (p == greenPlayer) {
+            greenGolems.add(world.spawnEntity(p.getLocation(), EntityType.IRON_GOLEM));
+        }
+
+    }
+
+    @EventHandler
+    public void onGolemAttack(EntityDamageByEntityEvent event) {
+        for (Entity golem : redGolems) {
+            if (event.getDamager() == golem && event.getEntity() == redPlayer) {
+                event.setCancelled(true);
+            }
+        }
+        for (Entity golem : blueGolems) {
+            if (event.getDamager() == golem && event.getEntity() == bluePlayer) {
+                event.setCancelled(true);
+            }
+        }
+        for (Entity golem : yellowGolems) {
+            if (event.getDamager() == golem && event.getEntity() == yellowPlayer) {
+                event.setCancelled(true);
+            }
+        }
+        for (Entity golem : greenGolems) {
+            if (event.getDamager() == golem && event.getEntity() == greenPlayer) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler
@@ -241,8 +1084,10 @@ public class BedwarsGame implements Listener {
     }
 
     public void eliminatePlayer(Player player) {
+        player.setDisplayName(ChatColor.GRAY + player.getName());
         player.setGameMode(GameMode.SPECTATOR);
         player.getInventory().addItem(ITEM);
+        alivePlayers -= 1;
     }
 
     public void onWin(Player player) {
@@ -257,7 +1102,9 @@ public class BedwarsGame implements Listener {
                     cancel();
                     return;
                 }
-                player.setDisplayName("Good boy");
+                if (!player.isOp()) {
+                    player.setDisplayName(ChatColor.GRAY + player.getName() + "is good dog");
+                }
                 if (toggle) {
                     player.sendTitle("", ChatColor.RED + "You won!");
                     toggle = false;
@@ -300,6 +1147,10 @@ public class BedwarsGame implements Listener {
         }
         if (event.getBlock().getY() >= heightBuildLimit) {
             event.setCancelled(true);
+        }
+        if (event.getBlock().getType().equals(BlockType.TNT)) {
+            event.setCancelled(true);
+            world.spawnEntity(event.getBlock().getLocation(), EntityType.TNT);
         }
     }
 
@@ -652,7 +1503,7 @@ public class BedwarsGame implements Listener {
         if (to.getY() < fellY) {
             event.setCancelled(true);
             if (player != redPlayer && player != bluePlayer && player != yellowPlayer && player != greenPlayer) {
-                player.kickPlayer(RED + "You're not supposed to join this game!");
+                player.kickPlayer(ChatColor.RED + "You're not supposed to join this game!");
             }
             onPlayerFell(player);
             return;

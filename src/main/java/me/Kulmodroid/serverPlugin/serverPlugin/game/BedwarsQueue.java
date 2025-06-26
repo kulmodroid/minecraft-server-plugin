@@ -321,6 +321,50 @@ public class BedwarsQueue {
                 ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.green").get("z")).doubleValue());
 
 
+        Location ri = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.red").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.red").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.red").get("z")).doubleValue());
+
+        Location ru = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.red").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.red").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.red").get("z")).doubleValue());
+
+
+        Location bi = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.blue").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.blue").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.blue").get("z")).doubleValue());
+
+        Location bu = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.blue").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.blue").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.blue").get("z")).doubleValue());
+
+
+        Location yi = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.yellow").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.yellow").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.yellow").get("z")).doubleValue());
+
+        Location yu = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.yellow").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.yellow").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.yellow").get("z")).doubleValue());
+
+
+        Location gi = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.green").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.green").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.green").get("z")).doubleValue());
+
+        Location gu = new Location(world,
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.green").get("x")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.green").get("y")).doubleValue(),
+                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.green").get("z")).doubleValue());
+
+
         redPlayer2.setDisplayName(Color.RED + redPlayer2.getName());
         bluePlayer2.setDisplayName(Color.BLUE + bluePlayer2.getName());
         yellowPlayer2.setDisplayName(Color.YELLOW + yellowPlayer2.getName());
@@ -373,6 +417,14 @@ public class BedwarsQueue {
                 gdg,
                 ggg,
                 gig,
+                ri,
+                ru,
+                bi,
+                bu,
+                yi,
+                yu,
+                gi,
+                gu,
                 gameManager,
                 new ItemStack(Material.RECOVERY_COMPASS));
 
@@ -385,6 +437,66 @@ public class BedwarsQueue {
         game.isBlueEliminated = false;
         game.isYellowEliminated = false;
         game.isGreenEliminated = false;
+
+        game.redUnlockedGen1 = false;
+        game.redUnlockedGen2 = false;
+
+        game.blueUnlockedGen1 = false;
+        game.blueUnlockedGen2 = false;
+
+        game.yellowUnlockedGen1 = false;
+        game.yellowUnlockedGen2 = false;
+
+        game.greenUnlockedGen1 = false;
+        game.greenUnlockedGen2 = false;
+
+        game.redIronCount = 0;
+        game.blueIronCount = 0;
+        game.yellowIronCount = 0;
+        game.greenIronCount = 0;
+
+        game.redGoldCount = 0;
+        game.blueGoldCount = 0;
+        game.yellowGoldCount = 0;
+        game.greenGoldCount = 0;
+
+        game.redDiamondCount = 0;
+        game.blueDiamondCount = 0;
+        game.yellowDiamondCount = 0;
+        game.greenDiamondCount = 0;
+
+        game.redEmeraldCount = 0;
+        game.blueEmeraldCount = 0;
+        game.yellowEmeraldCount = 0;
+        game.greenEmeraldCount = 0;
+
+        game.goldCooldown = 5;
+        game.diamondCooldown = 15;
+        game.emeraldCooldown = 30;
+
+        game.redGoldCooldown = 5;
+        game.redDiamondCooldown = 7;
+        game.redEmeraldCooldown = 15;
+
+        game.blueGoldCooldown = 5;
+        game.blueDiamondCooldown = 7;
+        game.blueEmeraldCooldown = 15;
+
+        game.yellowGoldCooldown = 5;
+        game.yellowDiamondCooldown = 7;
+        game.yellowEmeraldCooldown = 15;
+
+        game.greenGoldCooldown = 5;
+        game.greenDiamondCooldown = 7;
+        game.greenEmeraldCooldown = 15;
+
+        game.goldCount = 0;
+        game.diamondCount = 0;
+        game.emeraldCount = 0;
+
+        game.alivePlayers = 4;
+        game.gameLoop();
+
 
         for (int i = 0; i < players.size(); i++) {
             game.addPlayer(players.get(i), i);
