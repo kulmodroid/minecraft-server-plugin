@@ -376,84 +376,42 @@ public class BedwarsGame implements Listener {
     Inventory yellowI;
     Inventory greenI;
 
-    private void setupBlueInventory() {
-        blueI = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
+    private Inventory createShopInventory(Material buttonMaterial, Material costMaterial, ChatColor color) {
+        Inventory inv = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
 
-        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", blueI, ChatColor.BLACK);
-        addItem(1, new ItemStack(Material.BLUE_WOOL), false, "Blocks", blueI, ChatColor.BLUE);
-        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Combat", blueI, ChatColor.GRAY);
-        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", blueI, ChatColor.GRAY);
-        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", blueI, ChatColor.BLACK);
-        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", blueI, ChatColor.GRAY);
-        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", blueI, ChatColor.BLACK);
-        addItem(9, new ItemStack(Material.POTION), false, "Potions", blueI, ChatColor.GRAY);
-        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), true, "", blueI, ChatColor.BLACK);
-        addItem(12, new ItemStack(Material.BLUE_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", blueI, ChatColor.GRAY);
-        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", blueI, ChatColor.GRAY);
-        addItem(18, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        addItem(1, new ItemStack(buttonMaterial), false, "Blocks", inv, color);
+        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", inv, ChatColor.GRAY);
+        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", inv, ChatColor.GRAY);
+        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", inv, ChatColor.GRAY);
+        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        addItem(9, new ItemStack(Material.POTION), false, "Potions", inv, ChatColor.GRAY);
+        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        addItem(12, new ItemStack(costMaterial, 16), true, " costs 8 iron", inv, ChatColor.GRAY);
+        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", inv, ChatColor.GRAY);
+        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", inv, ChatColor.GRAY);
+        addItem(18, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", inv, ChatColor.GRAY);
+
+        return inv;
+    }
+
+    private void setupBlueInventory() {
+        blueI = createShopInventory(Material.BLUE_WOOL, Material.BLUE_WOOL, ChatColor.BLUE);
     }
 
     private void setupYellowInventory() {
-        yellowI = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
-
-        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
-        addItem(1, new ItemStack(Material.GREEN_WOOL), false, "Blocks", yellowI, ChatColor.YELLOW);
-        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
-        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", yellowI, ChatColor.GRAY);
-        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
-        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", yellowI, ChatColor.GRAY);
-        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
-        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", yellowI, ChatColor.GRAY);
-        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
-        addItem(9, new ItemStack(Material.POTION), false, "Potions", yellowI, ChatColor.GRAY);
-        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", yellowI, ChatColor.BLACK);
-        addItem(12, new ItemStack(Material.YELLOW_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", blueI, ChatColor.GRAY);
-        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", blueI, ChatColor.GRAY);
-        addItem(18, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+        yellowI = createShopInventory(Material.GREEN_WOOL, Material.YELLOW_WOOL, ChatColor.YELLOW);
     }
 
     private void setupGreenInventory() {
-        greenI = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
-
-        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
-        addItem(1, new ItemStack(Material.YELLOW_WOOL), false, "Blocks", greenI, ChatColor.GREEN);
-        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
-        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", greenI, ChatColor.GRAY);
-        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
-        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", greenI, ChatColor.GRAY);
-        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
-        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", greenI, ChatColor.GRAY);
-        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
-        addItem(9, new ItemStack(Material.POTION), false, "Potions", greenI, ChatColor.GRAY);
-        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", greenI, ChatColor.BLACK);
-        addItem(12, new ItemStack(Material.GREEN_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", blueI, ChatColor.GRAY);
-        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", blueI, ChatColor.GRAY);
-        addItem(18, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+        greenI = createShopInventory(Material.YELLOW_WOOL, Material.GREEN_WOOL, ChatColor.GREEN);
     }
 
     private void setupRedInventory() {
-        redI = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
-
-        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-        addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
-        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-        addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-        addItem(12, new ItemStack(Material.RED_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", blueI, ChatColor.GRAY);
-        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", blueI, ChatColor.GRAY);
-        addItem(18, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+        redI = createShopInventory(Material.RED_WOOL, Material.RED_WOOL, ChatColor.RED);
     }
 
     @EventHandler
