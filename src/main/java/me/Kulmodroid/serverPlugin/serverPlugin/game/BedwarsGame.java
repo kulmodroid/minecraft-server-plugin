@@ -1482,7 +1482,7 @@ public class BedwarsGame implements Listener {
             } else if (axeType == 2) {
                 addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
             } else if (axeType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
             }
             addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
             return;
@@ -1539,12 +1539,12 @@ public class BedwarsGame implements Listener {
                     return;
                 }
             } else if (axeType == 1) {
-                addItem(26, new ItemStack(Material.IRON_PICKAXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
+                addItem(26, new ItemStack(Material.IRON_AXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
                 if (goldAmount >= 5) {
                     for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.STONE_PICKAXE)) {
+                        if (i == new ItemStack(Material.STONE_AXE)) {
                             playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.IRON_PICKAXE));
+                            playerInventory.addItem(new ItemStack(Material.IRON_AXE));
                         }
                     }
                     int neededAmount = 5;
@@ -1569,8 +1569,150 @@ public class BedwarsGame implements Listener {
                 }
             } else if (axeType == 2) {
                 addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
+                if (goldAmount >= 10) {
+                    for (ItemStack i : playerInventory) {
+                        if (i == new ItemStack(Material.IRON_AXE)) {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(Material.DIAMOND_AXE));
+                        }
+                    }
+                    int neededAmount = 10;
+                    for (ItemStack i : playerInventory) {
+                        if (neededAmount <= 0) {
+                            return;
+                        }
+                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                            if (i.getAmount() <= neededAmount) {
+                                playerInventory.remove(i);
+                                neededAmount--;
+                            } else {
+                                playerInventory.remove(i);
+                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                                return;
+                            }
+                        }
+                    }
+                } else {
+                    player.sendMessage("You don't have gold enough");
+                    return;
+                }
             } else if (axeType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
+            }
+            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 26 && event.getInventory().equals(redI)) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.RED);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            if (pickaxeType == 0) {
+                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", redI, ChatColor.GRAY);
+            } else if (pickaxeType == 1) {
+                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", redI, ChatColor.GRAY);
+            } else if (pickaxeType == 2) {
+                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", redI, ChatColor.GRAY);
+            } else if (pickaxeType == 3) {
+                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
+            }
+            short dm = 1;
+            if (axeType == 0) {
+                addItem(26, new ItemStack(Material.STONE_AXE, 1, dm), true, " costs 10 iron", redI, ChatColor.GRAY);
+                if (ironAmount >= 10) {
+                    for (ItemStack i : playerInventory) {
+                        if (i == new ItemStack(Material.WOODEN_AXE)) {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(Material.STONE_AXE));
+                        }
+                    }
+                    int neededAmount = 10;
+                    for (ItemStack i : playerInventory) {
+                        if (neededAmount <= 0) {
+                            return;
+                        }
+                        if (i.equals(new ItemStack(Material.IRON_INGOT))) {
+                            if(i.getAmount() <= neededAmount) {
+                                playerInventory.remove(i);
+                                neededAmount --;
+                            } else {
+                                playerInventory.remove(i);
+                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                                return;
+                            }
+                        }
+                    }
+                } else {
+                    player.sendMessage("You don't have iron enough");
+                    return;
+                }
+            } else if (axeType == 1) {
+                addItem(26, new ItemStack(Material.IRON_AXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
+                if (goldAmount >= 5) {
+                    for (ItemStack i : playerInventory) {
+                        if (i == new ItemStack(Material.STONE_AXE)) {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(Material.IRON_AXE));
+                        }
+                    }
+                    int neededAmount = 5;
+                    for (ItemStack i : playerInventory) {
+                        if (neededAmount <= 0) {
+                            return;
+                        }
+                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                            if(i.getAmount() <= neededAmount) {
+                                playerInventory.remove(i);
+                                neededAmount --;
+                            } else {
+                                playerInventory.remove(i);
+                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                                return;
+                            }
+                        }
+                    }
+                } else {
+                    player.sendMessage("You don't have gold enough");
+                    return;
+                }
+            } else if (axeType == 2) {
+                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
+                if (goldAmount >= 10) {
+                    for (ItemStack i : playerInventory) {
+                        if (i == new ItemStack(Material.IRON_AXE)) {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(Material.DIAMOND_AXE));
+                        }
+                    }
+                    int neededAmount = 10;
+                    for (ItemStack i : playerInventory) {
+                        if (neededAmount <= 0) {
+                            return;
+                        }
+                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                            if (i.getAmount() <= neededAmount) {
+                                playerInventory.remove(i);
+                                neededAmount--;
+                            } else {
+                                playerInventory.remove(i);
+                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                                return;
+                            }
+                        }
+                    }
+                } else {
+                    player.sendMessage("You don't have gold enough");
+                    return;
+                }
+            } else if (axeType == 3) {
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
             }
             addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
             return;
