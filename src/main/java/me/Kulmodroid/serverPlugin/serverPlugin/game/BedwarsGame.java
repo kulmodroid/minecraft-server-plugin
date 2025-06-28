@@ -28,14 +28,12 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
-import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -107,6 +105,37 @@ public class BedwarsGame implements Listener {
     private final GameManager gameManager;
     private static ItemStack ITEM;
     private static final InventoryHolder HOLDER = new BedwarsGame.ShopHolder();
+    private static final Set<Material> NON_DROPPABLE_ITEMS = EnumSet.of(
+            Material.SHEARS,
+            Material.WOODEN_SWORD,
+            Material.WOODEN_PICKAXE,
+            Material.WOODEN_AXE,
+            Material.STONE_SWORD,
+            Material.STONE_PICKAXE,
+            Material.STONE_AXE,
+            Material.IRON_SWORD,
+            Material.IRON_PICKAXE,
+            Material.IRON_AXE,
+            Material.DIAMOND_SWORD,
+            Material.DIAMOND_PICKAXE,
+            Material.DIAMOND_AXE,
+            Material.LEATHER_BOOTS,
+            Material.LEATHER_LEGGINGS,
+            Material.LEATHER_CHESTPLATE,
+            Material.LEATHER_HELMET,
+            Material.CHAINMAIL_BOOTS,
+            Material.CHAINMAIL_LEGGINGS,
+            Material.CHAINMAIL_CHESTPLATE,
+            Material.CHAINMAIL_HELMET,
+            Material.IRON_BOOTS,
+            Material.IRON_LEGGINGS,
+            Material.IRON_CHESTPLATE,
+            Material.IRON_HELMET,
+            Material.DIAMOND_BOOTS,
+            Material.DIAMOND_LEGGINGS,
+            Material.DIAMOND_CHESTPLATE,
+            Material.DIAMOND_HELMET
+    );
     private final Set<UUID> shopIds = new HashSet<>();
 
     public BedwarsGame(JavaPlugin plugin,
@@ -328,35 +357,8 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e) {
-        if (e.getItemDrop().getItemStack() == new ItemStack(Material.SHEARS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.WOODEN_SWORD) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.WOODEN_PICKAXE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.WOODEN_AXE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.STONE_SWORD) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.STONE_PICKAXE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.STONE_AXE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_SWORD) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_PICKAXE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_AXE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_SWORD) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_PICKAXE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_AXE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.LEATHER_BOOTS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.LEATHER_LEGGINGS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.LEATHER_CHESTPLATE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.LEATHER_HELMET) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.CHAINMAIL_BOOTS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.CHAINMAIL_LEGGINGS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.CHAINMAIL_CHESTPLATE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.CHAINMAIL_HELMET) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_BOOTS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_LEGGINGS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_CHESTPLATE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.IRON_HELMET) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_BOOTS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_LEGGINGS) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_CHESTPLATE) |
-                e.getItemDrop().getItemStack() == new ItemStack(Material.DIAMOND_HELMET)) {
+        Material type = e.getItemDrop().getItemStack().getType();
+        if (NON_DROPPABLE_ITEMS.contains(type)) {
             e.setCancelled(true);
         }
     }
@@ -1484,7 +1486,7 @@ public class BedwarsGame implements Listener {
             }
             addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
             return;
-        } else if (event.getSlot() == 24 && event.getInventory().equals(redI)) {
+        } else if (event.getSlot() == 26 && event.getInventory().equals(redI)) {
             event.getInventory().clear();
             addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
             addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
@@ -1687,13 +1689,37 @@ public class BedwarsGame implements Listener {
     private void addItem(int slot, ItemStack item, boolean haveCosting, String str, Inventory inv, ChatColor color) {
         ItemMeta meta = item.getItemMeta();
         if (haveCosting) {
-            meta.setDisplayName(item.getType().name().toLowerCase() + "costs " + str);
+            meta.setDisplayName(item.getType().name().toLowerCase() + str);
         } else {
             meta.setDisplayName(color + str);
-            item.setItemMeta(meta);
-            inv.setItem(slot, item);
         }
+        item.setItemMeta(meta);
+        inv.setItem(slot, item);
     }
+
+    private ItemStack coloredArmor(Material type, Color color) {
+        ItemStack item = new ItemStack(type, 1);
+        LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+        meta.setColor(color);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack trimmedArmor(Material type, TrimMaterial material) {
+        ItemStack item = new ItemStack(type, 1);
+        ArmorMeta meta = (ArmorMeta) item.getItemMeta();
+        meta.setTrim(new ArmorTrim(material, TrimPattern.WILD));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private void equipTeamArmor(Player player, Color color) {
+        player.getInventory().setHelmet(coloredArmor(Material.LEATHER_HELMET, color));
+        player.getInventory().setChestplate(coloredArmor(Material.LEATHER_CHESTPLATE, color));
+        player.getInventory().setLeggings(coloredArmor(Material.LEATHER_LEGGINGS, color));
+        player.getInventory().setBoots(coloredArmor(Material.LEATHER_BOOTS, color));
+    }
+
 
     public synchronized void gameLoop() {
         redGolems = null;
@@ -1723,101 +1749,13 @@ public class BedwarsGame implements Listener {
 
         for (Player player : world.getPlayers()) {
             if (player.equals(redPlayer)) {
-                ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                helmetMeta.setColor(Color.RED);
-                helmet.setItemMeta(helmetMeta);
-                player.getInventory().setHelmet(helmet);
-
-                ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                chestplateMeta.setColor(Color.RED);
-                chestplate.setItemMeta(chestplateMeta);
-                player.getInventory().setChestplate(chestplate);
-
-                ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                leggingsMeta.setColor(Color.RED);
-                leggings.setItemMeta(leggingsMeta);
-                player.getInventory().setLeggings(leggings);
-
-                ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                bootsMeta.setColor(Color.RED);
-                boots.setItemMeta(bootsMeta);
-                player.getInventory().setBoots(boots);
+                equipTeamArmor(player, Color.RED);
             } else if (player.equals(bluePlayer)) {
-                ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                helmetMeta.setColor(Color.BLUE);
-                helmet.setItemMeta(helmetMeta);
-                player.getInventory().setHelmet(helmet);
-
-                ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                chestplateMeta.setColor(Color.BLUE);
-                chestplate.setItemMeta(chestplateMeta);
-                player.getInventory().setChestplate(chestplate);
-
-                ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                leggingsMeta.setColor(Color.BLUE);
-                leggings.setItemMeta(leggingsMeta);
-                player.getInventory().setLeggings(leggings);
-
-                ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                bootsMeta.setColor(Color.BLUE);
-                boots.setItemMeta(bootsMeta);
-                player.getInventory().setBoots(boots);
+                equipTeamArmor(player, Color.BLUE);
             } else if (player.equals(yellowPlayer)) {
-                ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                helmetMeta.setColor(Color.YELLOW);
-                helmet.setItemMeta(helmetMeta);
-                player.getInventory().setHelmet(helmet);
-
-                ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                chestplateMeta.setColor(Color.YELLOW);
-                chestplate.setItemMeta(chestplateMeta);
-                player.getInventory().setChestplate(chestplate);
-
-                ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                leggingsMeta.setColor(Color.YELLOW);
-                leggings.setItemMeta(leggingsMeta);
-                player.getInventory().setLeggings(leggings);
-
-                ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                bootsMeta.setColor(Color.YELLOW);
-                boots.setItemMeta(bootsMeta);
-                player.getInventory().setBoots(boots);
+                equipTeamArmor(player, Color.YELLOW);
             } else if (player.equals(greenPlayer)) {
-                ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                helmetMeta.setColor(Color.GREEN);
-                helmet.setItemMeta(helmetMeta);
-                player.getInventory().setHelmet(helmet);
-
-                ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                chestplateMeta.setColor(Color.GREEN);
-                chestplate.setItemMeta(chestplateMeta);
-                player.getInventory().setChestplate(chestplate);
-
-                ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                leggingsMeta.setColor(Color.GREEN);
-                leggings.setItemMeta(leggingsMeta);
-                player.getInventory().setLeggings(leggings);
-
-                ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                bootsMeta.setColor(Color.GREEN);
-                boots.setItemMeta(bootsMeta);
-                player.getInventory().setBoots(boots);
+                equipTeamArmor(player, Color.GREEN);
             }
         }
         new BukkitRunnable() {
@@ -2184,7 +2122,18 @@ public class BedwarsGame implements Listener {
             return;
         }
         event.setCancelled(true);
-        // teleport player to lobby
+        String lobbyName = plugin.getConfig().getString("lobby", "");
+        String lobbyPath = plugin.getConfig().getString("maps." + lobbyName + ".path", lobbyName);
+        World lobby = Bukkit.getWorld(lobbyPath);
+        if (lobby == null) {
+            lobby = Bukkit.getWorld(lobbyName);
+        }
+        if (lobby == null && !Bukkit.getWorlds().isEmpty()) {
+            lobby = Bukkit.getWorlds().get(0);
+        }
+        if (lobby != null) {
+            player.teleport(lobby.getSpawnLocation());
+        }
         player.setGameMode(GameMode.ADVENTURE);
         if (player.isOp()) {
             player.setGameMode(GameMode.CREATIVE);

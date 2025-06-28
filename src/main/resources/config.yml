@@ -5,38 +5,33 @@ maps:
     players: 4
     depthBuildLimit: 20
     heightBuildLimit: 50
-    bedPosistions:
+    bedPositions:
       blue:
       red:
       yellow:
       green:
     shopPos:
       - { x: , y: , z: }
-    fellY:
-      - { y: 15 }
+    fellY: 15
     zoneLimit:
-      min:
-        - { x: 90, y: 0, z: 90 }
-      max:
-        - { x: -90, y: 0, z: -90 }
-      itemShopPositions:
-        blue:
-          - { x: -68, y: 30, z: 7 }
-        red:
-          - { x: -68, y: 30, z: 7 }
-        yellow:
-          - { x: -68, y: 30, z: 7 }
-        green:
-          - { x: -68, y: 30, z: 7 }
-      upgradeShopPositions:
-        blue:
+      - { x: 90, y: 0, z: 90 }
+      - { x: -90, y: 0, z: -90 }
+    itemShopPositions:
+      blue:
+        - { x: -68, y: 30, z: 7 }
+      red:
+        - { x: -68, y: 30, z: 7 }
+      yellow:
+        - { x: -68, y: 30, z: 7 }
+      green:
+        - { x: -68, y: 30, z: 7 }
+    upgradeShopPositions:
+      blue:
 
-        red:
+      red:
 
-        yellow:
-
-        green:
-
+      yellow:
+      green:
     spawnpoints:
       blue:
         - { x: 0, y: 31, z: -71 }
@@ -135,7 +130,7 @@ maps:
             - { x: 2, y: 25, z: 71 }
     itemShopPositions:
       blue:
-        - { x 67, y: 30, z: -6 }
+        - { x: 67, y: 30, z: -6 }
       red:
         - { x: -67, y: 30, z: 6 }
       yellow:

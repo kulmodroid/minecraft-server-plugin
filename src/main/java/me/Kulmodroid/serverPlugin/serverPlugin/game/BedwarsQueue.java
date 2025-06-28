@@ -30,6 +30,40 @@ public class BedwarsQueue {
     private long firstJoin;
     private GameManager gameManager;
 
+    private Location getLocation(World world, String path) {
+        ConfigurationSection sec = plugin.getConfig().getConfigurationSection(path);
+        if (sec == null) {
+            throw new IllegalArgumentException("Missing config section " + path);
+        }
+        return new Location(world,
+                ((Number) sec.get("x")).doubleValue(),
+                ((Number) sec.get("y")).doubleValue(),
+                ((Number) sec.get("z")).doubleValue());
+    }
+
+    private List<Location> getMidGenerators(World world, String path) {
+        List<Location> result = new ArrayList<>();
+        for (Object obj : plugin.getConfig().getConfigurationSection(path).getList("mid")) {
+            ConfigurationSection sec = (ConfigurationSection) obj;
+            result.add(new Location(world,
+                    ((Number) sec.get("x")).doubleValue(),
+                    ((Number) sec.get("y")).doubleValue(),
+                    ((Number) sec.get("z")).doubleValue()));
+        }
+        return result;
+    }
+
+    private Vector getVector(String path) {
+        ConfigurationSection sec = plugin.getConfig().getConfigurationSection(path);
+        if (sec == null) {
+            throw new IllegalArgumentException("Missing config section " + path);
+        }
+        return new Vector(
+                ((Number) sec.get("x")).doubleValue(),
+                ((Number) sec.get("y")).doubleValue(),
+                ((Number) sec.get("z")).doubleValue());
+    }
+
     public BedwarsQueue(JavaPlugin plugin) {
         this.plugin = plugin;
     }
@@ -38,36 +72,36 @@ public class BedwarsQueue {
         if (queue.isEmpty()) {
             firstJoin = System.currentTimeMillis();
         }
-        if (!queue.contains(player)) {
-            if (redPlayer == null) {
-                player = redPlayer;
-            }
-            if (bluePlayer == null) {
-                player = bluePlayer;
-            }
-            if (yellowPlayer == null) {
-                player = yellowPlayer;
-            }
-            if (greenPlayer == null) {
-                player = greenPlayer;
-            }
-            queue.add(player);
-            player.sendMessage("Players in queue: " + queue.size());
-            checkStart(redPlayer, bluePlayer, yellowPlayer, greenPlayer);
+        if (queue.contains(player)) {
+            return;
         }
+
+        if (redPlayer == null) {
+            redPlayer = player;
+        } else if (bluePlayer == null) {
+            bluePlayer = player;
+        } else if (yellowPlayer == null) {
+            yellowPlayer = player;
+        } else if (greenPlayer == null) {
+            greenPlayer = player;
+        }
+
+        queue.add(player);
+        player.sendMessage("Players in queue: " + queue.size());
+        checkStart();
     }
 
-    private void checkStart(Player redPlayer1, Player bluePlayer1, Player yellowPlayer1, Player greenPlayer1) {
+    private void checkStart() {
         int required = plugin.getConfig().getInt("bedwars.players", 4);
         int minPlayers = plugin.getConfig().getInt("bedwars.timeout-min-players", 2);
         int timeoutMin = plugin.getConfig().getInt("bedwars.timeout-minutes", 3);
         long now = System.currentTimeMillis();
         if (queue.size() >= required || (queue.size() >= minPlayers && now - firstJoin > timeoutMin * 60_000L)) {
-            startGame(redPlayer1, bluePlayer1, yellowPlayer1, greenPlayer1);
+            startGame();
         }
     }
 
-    private void startGame(Player redPlayer2, Player bluePlayer2, Player yellowPlayer2, Player greenPlayer2) {
+    private void startGame() {
         List<String> mapNames = plugin.getConfig().getStringList("bedwars.maps");
         if (mapNames.isEmpty()) {
             plugin.getLogger().warning("No Bedwars maps configured");
@@ -100,106 +134,27 @@ public class BedwarsQueue {
             players.add(queue.remove(0));
         }
 
-        double xmin = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".zoneLimit.min") .get("x")).doubleValue();
-        double ymin = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".zoneLimit.min") .get("y")).doubleValue();
-        double zmin = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".zoneLimit.min") .get("z")).doubleValue();
+        Vector min = getVector("maps." + mapName + ".zoneLimit.min");
+        Vector max = getVector("maps." + mapName + ".zoneLimit.max");
 
-        Vector min = new Vector(xmin, ymin, zmin);
-
-        double xmax = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".zoneLimit.max").get("x")).doubleValue();
-        double ymax = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".zoneLimit.max").get("y")).doubleValue();
-        double zmax = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".zoneLimit.max").get("z")).doubleValue();
-
-        Vector max = new Vector(xmax, ymax, zmax);
-
-
-        double redx = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.red") .get("x")).doubleValue();
-        double redy = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.red") .get("y")).doubleValue();
-        double redz = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.red") .get("z")).doubleValue();
-
-        Location redSpawn = new Location(world, redx, redy, redz);
-
-
-        double bluex = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.blue") .get("x")).doubleValue();
-        double bluey = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.blue") .get("y")).doubleValue();
-        double bluez = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.blue") .get("z")).doubleValue();
-
-        Location blueSpawn = new Location(world, bluex, bluey, bluez);
-
-
-        double yellowx = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.yellow") .get("x")).doubleValue();
-        double yellowy = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.yellow") .get("y")).doubleValue();
-        double yellowz = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.yellow") .get("z")).doubleValue();
-
-        Location yellowSpawn = new Location(world, yellowx, yellowy, yellowz);
-
-
-        double greenx = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.green") .get("x")).doubleValue();
-        double greeny = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.green") .get("y")).doubleValue();
-        double greenz = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".spawnpoints.green") .get("z")).doubleValue();
-
-        Location greenSpawn = new Location(world, greenx, greeny, greenz);
-
+        Location redSpawn = getLocation(world, "maps." + mapName + ".spawnpoints.red");
+        Location blueSpawn = getLocation(world, "maps." + mapName + ".spawnpoints.blue");
+        Location yellowSpawn = getLocation(world, "maps." + mapName + ".spawnpoints.yellow");
+        Location greenSpawn = getLocation(world, "maps." + mapName + ".spawnpoints.green");
 
         spawns.add(redSpawn);
         spawns.add(blueSpawn);
         spawns.add(yellowSpawn);
         spawns.add(greenSpawn);
 
-        double blueBed1x = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.blue.1") .get("x")).doubleValue();
-        double blueBed1y = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.blue.1") .get("y")).doubleValue();
-        double blueBed1z = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.blue.1") .get("z")).doubleValue();
-
-        Location blueBed1 = new Location(world, blueBed1x, blueBed1y, blueBed1z);
-
-
-        double blueBed2x = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.blue.2") .get("x")).doubleValue();
-        double blueBed2y = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.blue.2") .get("y")).doubleValue();
-        double blueBed2z = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.blue.2") .get("z")).doubleValue();
-
-        Location blueBed2 = new Location(world, blueBed2x, blueBed2y, blueBed2z);
-
-
-        double redBed1x = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.red.1") .get("x")).doubleValue();
-        double redBed1y = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.red.1") .get("y")).doubleValue();
-        double redBed1z = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.red.1") .get("z")).doubleValue();
-
-        Location redBed1 = new Location(world, redBed1x, redBed1y, redBed1z);
-
-
-        double redBed2x = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.red.2") .get("x")).doubleValue();
-        double redBed2y = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.red.2") .get("y")).doubleValue();
-        double redBed2z = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.red.2") .get("z")).doubleValue();
-
-        Location redBed2 = new Location(world, redBed2x, redBed2y, redBed2z);
-
-
-        double yellowBed1x = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.yellow.1") .get("x")).doubleValue();
-        double yellowBed1y = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.yellow.1") .get("y")).doubleValue();
-        double yellowBed1z = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.yellow.1") .get("z")).doubleValue();
-
-        Location yellowBed1 = new Location(world, yellowBed1x, yellowBed1y, yellowBed1z);
-
-
-        double yellowBed2x = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.yellow.2") .get("x")).doubleValue();
-        double yellowBed2y = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.yellow.2") .get("y")).doubleValue();
-        double yellowBed2z = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.yellow.2") .get("z")).doubleValue();
-
-        Location yellowBed2 = new Location(world, yellowBed2x, yellowBed2y, yellowBed2z);
-
-
-        double greenBed1x = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.green.1") .get("x")).doubleValue();
-        double greenBed1y = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.green.1") .get("y")).doubleValue();
-        double greenBed1z = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.green.1") .get("z")).doubleValue();
-
-        Location greenBed1 = new Location(world, greenBed1x, greenBed1y, greenBed1z);
-
-
-        double greenBed2x = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.green.2") .get("x")).doubleValue();
-        double greenBed2y = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.green.2") .get("y")).doubleValue();
-        double greenBed2z = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".bedPositions.green.2") .get("z")).doubleValue();
-
-        Location greenBed2 = new Location(world, greenBed2x, greenBed2y, greenBed2z);
+        Location blueBed1 = getLocation(world, "maps." + mapName + ".bedPositions.blue.1");
+        Location blueBed2 = getLocation(world, "maps." + mapName + ".bedPositions.blue.2");
+        Location redBed1 = getLocation(world, "maps." + mapName + ".bedPositions.red.1");
+        Location redBed2 = getLocation(world, "maps." + mapName + ".bedPositions.red.2");
+        Location yellowBed1 = getLocation(world, "maps." + mapName + ".bedPositions.yellow.1");
+        Location yellowBed2 = getLocation(world, "maps." + mapName + ".bedPositions.yellow.2");
+        Location greenBed1 = getLocation(world, "maps." + mapName + ".bedPositions.green.1");
+        Location greenBed2 = getLocation(world, "maps." + mapName + ".bedPositions.green.2");
 
 
         double waitx = ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".waitingpoint") .get("x")).doubleValue();
@@ -209,166 +164,49 @@ public class BedwarsQueue {
         Location waitPos = new Location(world, waitx, waity, waitz);
 
 
-        List<Location> emeraldGens = new ArrayList<>();
-        for (Object obj : plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald").getList("mid")) {
-            ConfigurationSection con = (ConfigurationSection) obj;
-            emeraldGens.add(new Location(world,
-                    ((Number) con.get("x")).doubleValue(),
-                    ((Number) con.get("y")).doubleValue(),
-                    ((Number) con.get("z")).doubleValue()));
-        }
-
-        List<Location> diamondGens = new ArrayList<>();
-        for (Object obj : plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond").getList("mid")) {
-            ConfigurationSection con = (ConfigurationSection) obj;
-            emeraldGens.add(new Location(world,
-                    ((Number) con.get("x")).doubleValue(),
-                    ((Number) con.get("y")).doubleValue(),
-                    ((Number) con.get("z")).doubleValue()));
-        }
-
-        List<Location> goldGens = new ArrayList<>();
-        for (Object obj : plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold").getList("mid")) {
-            ConfigurationSection con = (ConfigurationSection) obj;
-            emeraldGens.add(new Location(world,
-                    ((Number) con.get("x")).doubleValue(),
-                    ((Number) con.get("y")).doubleValue(),
-                    ((Number) con.get("z")).doubleValue()));
-        }
+        List<Location> emeraldGens = getMidGenerators(world, "maps." + mapName + ".generators.emerald");
+        List<Location> diamondGens = getMidGenerators(world, "maps." + mapName + ".generators.diamond");
+        List<Location> goldGens = getMidGenerators(world, "maps." + mapName + ".generators.gold");
 
 
-        Location reg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.red").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.red").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.red").get("z")).doubleValue());
-
-        Location rdg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.red").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.red").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.red").get("z")).doubleValue());
-
-        Location rgg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.red").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.red").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.red").get("z")).doubleValue());
-
-        Location rig = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.red").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.red").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.red").get("z")).doubleValue());
+        Location reg = getLocation(world, "maps." + mapName + ".generators.emerald.base.red");
+        Location rdg = getLocation(world, "maps." + mapName + ".generators.diamond.base.red");
+        Location rgg = getLocation(world, "maps." + mapName + ".generators.gold.base.red");
+        Location rig = getLocation(world, "maps." + mapName + ".generators.iron.base.red");
 
 
-        Location beg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.blue").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.blue").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.blue").get("z")).doubleValue());
-
-        Location bdg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.blue").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.blue").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.blue").get("z")).doubleValue());
-
-        Location bgg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.blue").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.blue").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.blue").get("z")).doubleValue());
-
-        Location big = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.blue").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.blue").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.blue").get("z")).doubleValue());
+        Location beg = getLocation(world, "maps." + mapName + ".generators.emerald.base.blue");
+        Location bdg = getLocation(world, "maps." + mapName + ".generators.diamond.base.blue");
+        Location bgg = getLocation(world, "maps." + mapName + ".generators.gold.base.blue");
+        Location big = getLocation(world, "maps." + mapName + ".generators.iron.base.blue");
 
 
-        Location yeg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.yellow").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.yellow").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.yellow").get("z")).doubleValue());
-
-        Location ydg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.yellow").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.yellow").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.yellow").get("z")).doubleValue());
-
-        Location ygg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.yellow").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.yellow").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.yellow").get("z")).doubleValue());
-
-        Location yig = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.yellow").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.yellow").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.yellow").get("z")).doubleValue());
+        Location yeg = getLocation(world, "maps." + mapName + ".generators.emerald.base.yellow");
+        Location ydg = getLocation(world, "maps." + mapName + ".generators.diamond.base.yellow");
+        Location ygg = getLocation(world, "maps." + mapName + ".generators.gold.base.yellow");
+        Location yig = getLocation(world, "maps." + mapName + ".generators.iron.base.yellow");
 
 
-        Location geg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.green").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.green").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.emerald.base.green").get("z")).doubleValue());
-
-        Location gdg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.green").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.green").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.diamond.base.green").get("z")).doubleValue());
-
-        Location ggg = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.green").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.green").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.gold.base.green").get("z")).doubleValue());
-
-        Location gig = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.green").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.green").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".generators.iron.base.green").get("z")).doubleValue());
+        Location geg = getLocation(world, "maps." + mapName + ".generators.emerald.base.green");
+        Location gdg = getLocation(world, "maps." + mapName + ".generators.diamond.base.green");
+        Location ggg = getLocation(world, "maps." + mapName + ".generators.gold.base.green");
+        Location gig = getLocation(world, "maps." + mapName + ".generators.iron.base.green");
 
 
-        Location ri = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.red").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.red").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.red").get("z")).doubleValue());
-
-        Location ru = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.red").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.red").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.red").get("z")).doubleValue());
-
-
-        Location bi = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.blue").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.blue").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.blue").get("z")).doubleValue());
-
-        Location bu = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.blue").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.blue").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.blue").get("z")).doubleValue());
+        Location ri = getLocation(world, "maps." + mapName + ".itemShopPositions.red");
+        Location ru = getLocation(world, "maps." + mapName + ".upgradeShopPositions.red");
+        Location bi = getLocation(world, "maps." + mapName + ".itemShopPositions.blue");
+        Location bu = getLocation(world, "maps." + mapName + ".upgradeShopPositions.blue");
+        Location yi = getLocation(world, "maps." + mapName + ".itemShopPositions.yellow");
+        Location yu = getLocation(world, "maps." + mapName + ".upgradeShopPositions.yellow");
+        Location gi = getLocation(world, "maps." + mapName + ".itemShopPositions.green");
+        Location gu = getLocation(world, "maps." + mapName + ".upgradeShopPositions.green");
 
 
-        Location yi = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.yellow").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.yellow").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.yellow").get("z")).doubleValue());
-
-        Location yu = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.yellow").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.yellow").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.yellow").get("z")).doubleValue());
-
-
-        Location gi = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.green").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.green").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".itemShopPositions.green").get("z")).doubleValue());
-
-        Location gu = new Location(world,
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.green").get("x")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.green").get("y")).doubleValue(),
-                ((Number) plugin.getConfig().getConfigurationSection("maps." + mapName + ".upgradeShopPositions.green").get("z")).doubleValue());
-
-
-        redPlayer2.setDisplayName(Color.RED + redPlayer2.getName());
-        bluePlayer2.setDisplayName(Color.BLUE + bluePlayer2.getName());
-        yellowPlayer2.setDisplayName(Color.YELLOW + yellowPlayer2.getName());
-        greenPlayer2.setDisplayName(Color.GREEN + greenPlayer2.getName());
+        redPlayer.setDisplayName(Color.RED + redPlayer.getName());
+        bluePlayer.setDisplayName(Color.BLUE + bluePlayer.getName());
+        yellowPlayer.setDisplayName(Color.YELLOW + yellowPlayer.getName());
+        greenPlayer.setDisplayName(Color.GREEN + greenPlayer.getName());
 
 
         BedwarsGame game = new BedwarsGame(
@@ -393,10 +231,10 @@ public class BedwarsQueue {
                 yellowBed2,
                 greenBed1,
                 greenBed2,
-                redPlayer2,
-                bluePlayer2,
-                yellowPlayer2,
-                greenPlayer2,
+                redPlayer,
+                bluePlayer,
+                yellowPlayer,
+                greenPlayer,
                 spawns,
                 emeraldGens,
                 diamondGens,
