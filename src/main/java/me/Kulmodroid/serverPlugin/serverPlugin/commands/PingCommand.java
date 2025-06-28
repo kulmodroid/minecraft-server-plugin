@@ -12,20 +12,22 @@ public class PingCommand implements CommandExecutor {
         int ping = Bukkit.getPlayer(sender.getName()).getPing();
         if (ping < 30) {
             sender.sendMessage("ping: " + ChatColor.DARK_GREEN + ping);
-        } else if (30 < ping | ping < 60) {
+        } else if (30 < ping && ping < 60) {
             sender.sendMessage("ping: " + ChatColor.GREEN + ping);
-        } else if (60 < ping | ping < 100) {
+        } else if (60 < ping && ping < 100) {
             sender.sendMessage("ping: " + ChatColor.YELLOW + ping);
-        } else if (100 < ping | ping < 150) {
+        } else if (100 < ping && ping < 150) {
             sender.sendMessage("ping: " + ChatColor.GOLD + ping);
-        } else if (150 < ping | ping < 250) {
+        } else if (150 < ping && ping < 250) {
             sender.sendMessage("ping: " + ChatColor.RED + ping);
-        } else if (250 < ping | ping < 400) {
+        } else if (250 < ping && ping < 400) {
             sender.sendMessage("ping: " + ChatColor.DARK_RED + ping);
-        } else if (400 < ping | ping < 900) {
+        } else if (400 < ping && ping < 900) {
             sender.sendMessage("ping: " + ChatColor.LIGHT_PURPLE + ping);
-        } else if (900 < ping) {
+        } else if (900 < ping && ping < 1200) {
             sender.sendMessage("ping: " + ChatColor.DARK_PURPLE + ping);
+        } else if (ping > 1200) {
+            sender.sendMessage("ping: " + ChatColor.BLACK + ping);
         }
 
         return true;
