@@ -29,6 +29,7 @@ import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -457,7 +458,7 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onShopOpen(InventoryOpenEvent event) {
-        if (event.getInventory() != redI | event.getInventory() != blueI | event.getInventory() != yellowI | event.getInventory() != greenI) {
+        if (event.getInventory() != redI||event.getInventory() != blueI||event.getInventory() != yellowI||event.getInventory() != greenI) {
             return;
         }
         if (event.getPlayer().equals(redPlayer)) {
@@ -469,7 +470,7 @@ public class BedwarsGame implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = plugin.getServer().getPlayer(event.getWhoClicked().getName());
         Inventory playerInventory = player.getInventory();
-        if (event.getInventory() != redI | event.getInventory() != blueI | event.getInventory() != yellowI | event.getInventory() != greenI) {
+        if (event.getInventory() != redI||event.getInventory() != blueI||event.getInventory() != yellowI||event.getInventory() != greenI) {
             return;
         }
         isRedInBlockSec = true;
@@ -619,7 +620,7 @@ public class BedwarsGame implements Listener {
             } else if (axeType == 2) {
                 addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
             } else if (axeType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
             }
             addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
             isRedInBlockSec = false;
@@ -683,6 +684,19 @@ public class BedwarsGame implements Listener {
             invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
             invisibilityPotion.setItemMeta(invisibilityPotionMeta);
             addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack jumpPotion = new ItemStack(Material.POTION);
+            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+            jumpPotion.setItemMeta(jumpPotionMeta);
+            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack levitationPotion = new ItemStack(Material.POTION);
+            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+            levitationPotionMeta.setBasePotionType(PotionType.WATER);
+            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+            levitationPotion.setItemMeta(levitationPotionMeta);
+            addItem(30, new ItemStack(levitationPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
 
             isRedInBlockSec = false;
             isRedInCombatSec = false;
@@ -1371,7 +1385,7 @@ public class BedwarsGame implements Listener {
                 return;
             }
             return;
-        } else if (event.getSlot() == 24 && event.getInventory().equals(redI)) {
+        } else if (event.getSlot() == 24 && event.getInventory().equals(redI) && isRedInToolsSec) {
             event.getInventory().clear();
             addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
             addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
@@ -1486,7 +1500,7 @@ public class BedwarsGame implements Listener {
             }
             addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
             return;
-        } else if (event.getSlot() == 26 && event.getInventory().equals(redI)) {
+        } else if (event.getSlot() == 26 && event.getInventory().equals(redI) && isRedInToolsSec) {
             event.getInventory().clear();
             addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
             addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
@@ -1601,7 +1615,7 @@ public class BedwarsGame implements Listener {
             }
             addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
             return;
-        } else if (event.getSlot() == 26 && event.getInventory().equals(redI)) {
+        } else if (event.getSlot() == 28 && event.getInventory().equals(redI) && isRedInToolsSec) {
             event.getInventory().clear();
             addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
             addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
@@ -1626,97 +1640,296 @@ public class BedwarsGame implements Listener {
             short dm = 1;
             if (axeType == 0) {
                 addItem(26, new ItemStack(Material.STONE_AXE, 1, dm), true, " costs 10 iron", redI, ChatColor.GRAY);
-                if (ironAmount >= 10) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.WOODEN_AXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.STONE_AXE));
-                        }
-                    }
-                    int neededAmount = 10;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have iron enough");
-                    return;
-                }
             } else if (axeType == 1) {
                 addItem(26, new ItemStack(Material.IRON_AXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
-                if (goldAmount >= 5) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.STONE_AXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.IRON_AXE));
-                        }
-                    }
-                    int neededAmount = 5;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have gold enough");
-                    return;
-                }
             } else if (axeType == 2) {
                 addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
-                if (goldAmount >= 10) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.IRON_AXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.DIAMOND_AXE));
-                        }
-                    }
-                    int neededAmount = 10;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                            if (i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount--;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have gold enough");
-                    return;
-                }
             } else if (axeType == 3) {
                 addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
             }
             addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
+            if (ironAmount >= 17) {
+                playerInventory.addItem(new ItemStack(Material.SHEARS));
+                int neededAmount = 17;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have iron enough");
+                return;
+            }
             return;
-        } else if (event.getSlot() == 7 && event.getInventory().equals(redI)) {
+        } else if (event.getSlot() == 24 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
+            if (goldAmount >= 3) {
+                playerInventory.addItem(new ItemStack(Material.GOLDEN_APPLE));
+                int neededAmount = 3;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have gold enough");
+                return;
+            }
+            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
+            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
+            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
+            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 25 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
+            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
+            if (ironAmount >= 30) {
+                playerInventory.addItem(new ItemStack(Material.FIRE_CHARGE));
+                int neededAmount = 30;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have iron enough");
+                return;
+            }
+            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
+            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
+            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 26 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
+            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
+            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
+            if (ironAmount >= 25) {
+                playerInventory.addItem(new ItemStack(Material.WIND_CHARGE));
+                int neededAmount = 25;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have iron enough");
+                return;
+            }
+            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
+            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 27 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
+            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
+            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
+            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            if (emeraldAmount >= 2) {
+                playerInventory.addItem(new ItemStack(Material.ENDER_PEARL));
+                int neededAmount = 2;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.EMERALD))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return;
+            }
+            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
+            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 28 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
+            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
+            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
+            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
+            if (emeraldAmount >= 3) {
+                playerInventory.addItem(new ItemStack(Material.FISHING_ROD));
+                int neededAmount = 3;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.EMERALD))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return;
+            }
+            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 29 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
+            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
+            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
+            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
+            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
+            if (goldAmount >= 6) {
+                playerInventory.addItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG));
+                int neededAmount = 6;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have gold enough");
+                return;
+            }
+            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 29 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
             event.getInventory().clear();
             addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
             addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
@@ -1736,13 +1949,30 @@ public class BedwarsGame implements Listener {
             addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
             addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
             addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            isRedInBlockSec = false;
-            isRedInCombatSec = false;
-            isRedInToolsSec = false;
-            isRedInUtilitiesSec = true;
-            isRedInPotionsSec = false;
+            if (ironAmount >= 120) {
+                playerInventory.addItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG));
+                int neededAmount = 120;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have iron enough");
+                return;
+            }
             return;
-        } else if (event.getSlot() == 9 && event.getInventory().equals(redI)) {
+        } else if (event.getSlot() == 24 && event.getInventory().equals(redI) && isRedInPotionsSec) {
             event.getInventory().clear();
             addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
             addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
@@ -1753,14 +1983,253 @@ public class BedwarsGame implements Listener {
             addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
             addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
             addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION, 1, (byte)2), false, "Potions", redI, ChatColor.RED);
+            ItemStack potion = new ItemStack(Material.POTION);
+            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+            potionMeta.setBasePotionType(PotionType.LEAPING);
+            potion.setItemMeta(potionMeta);
+            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
             addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(26, new ItemStack(Material.POTION, 1, (byte)2), true, " costs 1000 emerald", redI, ChatColor.GRAY);
-            isRedInBlockSec = false;
-            isRedInCombatSec = false;
-            isRedInToolsSec = false;
-            isRedInUtilitiesSec = false;
-            isRedInPotionsSec = true;
+
+            ItemStack strenghtPotion = new ItemStack(Material.POTION);
+            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+            strenghtPotion.setItemMeta(strenghtPotionMeta);
+            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            if (emeraldAmount >= 2) {
+                playerInventory.addItem(strenghtPotion);
+                int neededAmount = 2;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.EMERALD))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return;
+            }
+            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack jumpPotion = new ItemStack(Material.POTION);
+            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+            jumpPotion.setItemMeta(jumpPotionMeta);
+            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack levitationPotion = new ItemStack(Material.POTION);
+            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+            levitationPotionMeta.setBasePotionType(PotionType.WATER);
+            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+            levitationPotion.setItemMeta(levitationPotionMeta);
+            addItem(30, new ItemStack(levitationPotion), false, "potion of levitation costs 2 emerald", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 26 && event.getInventory().equals(redI) && isRedInPotionsSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            ItemStack potion = new ItemStack(Material.POTION);
+            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+            potionMeta.setBasePotionType(PotionType.LEAPING);
+            potion.setItemMeta(potionMeta);
+            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+
+            ItemStack strenghtPotion = new ItemStack(Material.POTION);
+            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+            strenghtPotion.setItemMeta(strenghtPotionMeta);
+            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            if (emeraldAmount >= 2) {
+                playerInventory.addItem(invisibilityPotion);
+                int neededAmount = 2;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.EMERALD))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return;
+            }
+
+            ItemStack jumpPotion = new ItemStack(Material.POTION);
+            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+            jumpPotion.setItemMeta(jumpPotionMeta);
+            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack levitationPotion = new ItemStack(Material.POTION);
+            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+            levitationPotionMeta.setBasePotionType(PotionType.WATER);
+            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+            levitationPotion.setItemMeta(levitationPotionMeta);
+            addItem(30, new ItemStack(levitationPotion), false, "potion of levitation costs 2 emerald", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 28 && event.getInventory().equals(redI) && isRedInPotionsSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            ItemStack potion = new ItemStack(Material.POTION);
+            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+            potionMeta.setBasePotionType(PotionType.LEAPING);
+            potion.setItemMeta(potionMeta);
+            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+
+            ItemStack strenghtPotion = new ItemStack(Material.POTION);
+            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+            strenghtPotion.setItemMeta(strenghtPotionMeta);
+            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack jumpPotion = new ItemStack(Material.POTION);
+            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+            jumpPotion.setItemMeta(jumpPotionMeta);
+            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            if (emeraldAmount >= 2) {
+                playerInventory.addItem(jumpPotion);
+                int neededAmount = 2;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.EMERALD))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return;
+            }
+
+            ItemStack levitationPotion = new ItemStack(Material.POTION);
+            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+            levitationPotionMeta.setBasePotionType(PotionType.WATER);
+            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+            levitationPotion.setItemMeta(levitationPotionMeta);
+            addItem(30, new ItemStack(levitationPotion), false, "potion of levitation costs 2 emerald", redI, ChatColor.GRAY);
+            return;
+        } else if (event.getSlot() == 30 && event.getInventory().equals(redI) && isRedInPotionsSec) {
+            event.getInventory().clear();
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            ItemStack potion = new ItemStack(Material.POTION);
+            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+            potionMeta.setBasePotionType(PotionType.LEAPING);
+            potion.setItemMeta(potionMeta);
+            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+
+            ItemStack strenghtPotion = new ItemStack(Material.POTION);
+            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+            strenghtPotion.setItemMeta(strenghtPotionMeta);
+            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack jumpPotion = new ItemStack(Material.POTION);
+            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+            jumpPotion.setItemMeta(jumpPotionMeta);
+            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+
+            ItemStack levitationPotion = new ItemStack(Material.POTION);
+            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+            levitationPotionMeta.setBasePotionType(PotionType.WATER);
+            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+            levitationPotion.setItemMeta(levitationPotionMeta);
+            addItem(30, new ItemStack(levitationPotion), false, "potion of levitation costs 2 emerald", redI, ChatColor.GRAY);
+            if (emeraldAmount >= 2) {
+                playerInventory.addItem(levitationPotion);
+                int neededAmount = 2;
+                for (ItemStack i : playerInventory) {
+                    if (neededAmount <= 0) {
+                        return;
+                    }
+                    if (i.equals(new ItemStack(Material.EMERALD))) {
+                        if (i.getAmount() <= neededAmount) {
+                            playerInventory.remove(i);
+                            neededAmount--;
+                        } else {
+                            playerInventory.remove(i);
+                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
+                            return;
+                        }
+                    }
+                }
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return;
+            }
             return;
         }
     }
@@ -1768,20 +2237,7 @@ public class BedwarsGame implements Listener {
     @EventHandler
     public void onEnderChestAirClick(InventoryOpenEvent event) {
         if (event.getInventory().equals(event.getPlayer().getEnderChest())) {
-            if (!event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_SWORD)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_PICKAXE)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_AXE)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_SWORD)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_PICKAXE)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_AXE)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_SWORD)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_PICKAXE)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_AXE)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_SWORD)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_PICKAXE)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_AXE)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.SHEARS)) |
-                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.AIR))) {
+            if (!event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_SWORD))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_PICKAXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_AXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_SWORD))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_PICKAXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_AXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_SWORD))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_PICKAXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_AXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_SWORD))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_PICKAXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_AXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.SHEARS))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.AIR))) {
                 event.setCancelled(true);
             }
         }
@@ -1795,19 +2251,7 @@ public class BedwarsGame implements Listener {
         if (!event.getClickedBlock().equals(BlockType.ENDER_CHEST)) {
             return;
         }
-        if (!event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_SWORD)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_PICKAXE)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_AXE)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_SWORD)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_PICKAXE)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_AXE)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_SWORD)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_PICKAXE)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_AXE)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_SWORD)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_PICKAXE)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_AXE)) |
-                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.SHEARS))) {
+        if (!event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_SWORD))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_PICKAXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_AXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_SWORD))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_PICKAXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_AXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_SWORD))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_PICKAXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_AXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_SWORD))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_PICKAXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_AXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.SHEARS))) {
             event.getPlayer().getEnderChest().addItem(event.getPlayer().getInventory().getItemInMainHand());
         }
     }
@@ -1855,11 +2299,28 @@ public class BedwarsGame implements Listener {
         return item;
     }
 
-    private void equipTeamArmor(Player player, Color color) {
-        player.getInventory().setHelmet(coloredArmor(Material.LEATHER_HELMET, color));
-        player.getInventory().setChestplate(coloredArmor(Material.LEATHER_CHESTPLATE, color));
-        player.getInventory().setLeggings(coloredArmor(Material.LEATHER_LEGGINGS, color));
-        player.getInventory().setBoots(coloredArmor(Material.LEATHER_BOOTS, color));
+    private void equipTeamArmor(Player player, Color color, int armorType, TrimMaterial trimMaterial) {
+        if (armorType == 0) {
+            player.getInventory().setHelmet(coloredArmor(Material.LEATHER_HELMET, color));
+            player.getInventory().setChestplate(coloredArmor(Material.LEATHER_CHESTPLATE, color));
+            player.getInventory().setLeggings(coloredArmor(Material.LEATHER_LEGGINGS, color));
+            player.getInventory().setBoots(coloredArmor(Material.LEATHER_BOOTS, color));
+        } else if (armorType == 1) {
+            player.getInventory().setHelmet(coloredArmor(Material.LEATHER_HELMET, color));
+            player.getInventory().setChestplate(coloredArmor(Material.LEATHER_CHESTPLATE, color));
+            player.getInventory().setLeggings(trimmedArmor(Material.CHAINMAIL_LEGGINGS, trimMaterial));
+            player.getInventory().setBoots(trimmedArmor(Material.CHAINMAIL_BOOTS, trimMaterial));
+        } else if (armorType == 2) {
+            player.getInventory().setHelmet(coloredArmor(Material.LEATHER_HELMET, color));
+            player.getInventory().setChestplate(coloredArmor(Material.LEATHER_CHESTPLATE, color));
+            player.getInventory().setLeggings(trimmedArmor(Material.IRON_LEGGINGS, trimMaterial));
+            player.getInventory().setBoots(trimmedArmor(Material.IRON_BOOTS, trimMaterial));
+        } else if (armorType == 3) {
+            player.getInventory().setHelmet(coloredArmor(Material.LEATHER_HELMET, color));
+            player.getInventory().setChestplate(coloredArmor(Material.LEATHER_CHESTPLATE, color));
+            player.getInventory().setLeggings(trimmedArmor(Material.DIAMOND_LEGGINGS, trimMaterial));
+            player.getInventory().setBoots(trimmedArmor(Material.DIAMOND_BOOTS, trimMaterial));
+        }
     }
 
 
@@ -1891,13 +2352,13 @@ public class BedwarsGame implements Listener {
 
         for (Player player : world.getPlayers()) {
             if (player.equals(redPlayer)) {
-                equipTeamArmor(player, Color.RED);
+                equipTeamArmor(player, Color.RED, 0, TrimMaterial.REDSTONE);
             } else if (player.equals(bluePlayer)) {
-                equipTeamArmor(player, Color.BLUE);
+                equipTeamArmor(player, Color.BLUE, 0, TrimMaterial.LAPIS);
             } else if (player.equals(yellowPlayer)) {
-                equipTeamArmor(player, Color.YELLOW);
+                equipTeamArmor(player, Color.YELLOW, 0, TrimMaterial.GOLD);
             } else if (player.equals(greenPlayer)) {
-                equipTeamArmor(player, Color.GREEN);
+                equipTeamArmor(player, Color.GREEN, 0, TrimMaterial.EMERALD);
             }
         }
         new BukkitRunnable() {
@@ -2124,7 +2585,7 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onEntityHit(EntityDamageEvent e) {
-        if (e.getEntity().getType() == EntityType.VILLAGER | e.getEntity().getType() == EntityType.ARMOR_STAND) {
+        if (e.getEntity().getType() == EntityType.VILLAGER||e.getEntity().getType() == EntityType.ARMOR_STAND) {
             e.setCancelled(true);
         }
     }
@@ -2139,10 +2600,6 @@ public class BedwarsGame implements Listener {
         ItemMeta meta = ITEM.getItemMeta();
         meta.setDisplayName(ChatColor.DARK_PURPLE + "Return to lobby");
         ITEM.setItemMeta(meta);
-    }
-
-    public ItemStack getItem() {
-        return ITEM.clone();
     }
 
     private boolean isCompass(ItemStack stack) {
@@ -2350,6 +2807,7 @@ public class BedwarsGame implements Listener {
         }
         if (event.getBlock().getType().equals(BlockType.TNT)) {
             event.setCancelled(true);
+            world.getBlockAt(event.getBlockPlaced().getLocation()).breakNaturally();
             world.spawnEntity(event.getBlock().getLocation(), EntityType.TNT);
         }
     }
@@ -2358,16 +2816,16 @@ public class BedwarsGame implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (event.getBlock().getLocation() == redBed1 | event.getBlock().getLocation() == redBed2) {
+        if (event.getBlock().getLocation() == redBed1||event.getBlock().getLocation() == redBed2) {
             canRedRespawn = false;
             return;
-        }else if (event.getBlock().getLocation() == blueBed1 | event.getBlock().getLocation() == blueBed2) {
+        }else if (event.getBlock().getLocation() == blueBed1||event.getBlock().getLocation() == blueBed2) {
             canBlueRespawn = false;
             return;
-        }else if (event.getBlock().getLocation() == yellowBed1 | event.getBlock().getLocation() == yellowBed2) {
+        }else if (event.getBlock().getLocation() == yellowBed1||event.getBlock().getLocation() == yellowBed2) {
             canYellowRespawn = false;
             return;
-        } else if (event.getBlock().getLocation() == greenBed1 | event.getBlock().getLocation() == greenBed2) {
+        } else if (event.getBlock().getLocation() == greenBed1||event.getBlock().getLocation() == greenBed2) {
             canGreenRespawn = false;
             return;
         }
@@ -2384,6 +2842,24 @@ public class BedwarsGame implements Listener {
         } else {
             // Remove from set so the block can be placed again in future
             placedBlocks.remove(loc);
+        }
+    }
+
+    public void removeItems(ItemStack i, Player player, int amount) {
+        int v = amount;
+        for (ItemStack item : player.getInventory()) {
+            if (item == i) {
+                if (v == 0) {
+                    return;
+                }
+                if (item.getAmount() <= v) {
+                    player.getInventory().removeItem(item);
+                    v -= item.getAmount();
+                } else {
+                    player.getInventory().removeItem(item);
+                    player.getInventory().addItem(new ItemStack(item.getType(), item.getAmount() - amount));
+                }
+            }
         }
     }
 
@@ -2405,101 +2881,13 @@ public class BedwarsGame implements Listener {
                             for (Player player : world.getPlayers()) {
                                 if (player.equals(redPlayer)) {
                                     if (redArmor == 0) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.RED);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.RED);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                                        LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setColor(Color.RED);
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                                        LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setColor(Color.RED);
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.RED, 0, TrimMaterial.REDSTONE);
                                     } else if (redArmor == 1) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.RED);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.RED);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.RED, 1, TrimMaterial.REDSTONE);
                                     } else if (redArmor == 2) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.RED);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.RED);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.RED, 2, TrimMaterial.REDSTONE);
                                     } else if (redArmor == 3) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.RED);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.RED);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.RED, 3, TrimMaterial.REDSTONE);
                                     }
                                     if (redSword == 0) {
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
@@ -2575,101 +2963,13 @@ public class BedwarsGame implements Listener {
                             for (Player player : world.getPlayers()) {
                                  if (player == bluePlayer) {
                                     if (blueArmor == 0) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.BLUE);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.BLUE);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                                        LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setColor(Color.BLUE);
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                                        LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setColor(Color.BLUE);
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.BLUE, 0, TrimMaterial.LAPIS);
                                     } else if (blueArmor == 1) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.BLUE);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.BLUE);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.BLUE, 1, TrimMaterial.LAPIS);
                                     } else if (blueArmor == 2) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.BLUE);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.BLUE);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.BLUE, 2, TrimMaterial.LAPIS);
                                     } else if (blueArmor == 3) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.BLUE);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.BLUE);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.BLUE, 3, TrimMaterial.LAPIS);
                                     }
                                     if (blueSword == 0) {
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
@@ -2746,101 +3046,13 @@ public class BedwarsGame implements Listener {
                                 if (player.equals(yellowPlayer)) {
                                     if (player == yellowPlayer) {
                                         if (yellowArmor == 0) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.YELLOW);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.YELLOW);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                                            LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setColor(Color.YELLOW);
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                                            LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setColor(Color.YELLOW);
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.YELLOW, 0, TrimMaterial.GOLD);
                                         } else if (yellowArmor == 1) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.YELLOW);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.YELLOW);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.YELLOW, 1, TrimMaterial.GOLD);
                                         } else if (yellowArmor == 2) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.YELLOW);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.YELLOW);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.YELLOW, 2, TrimMaterial.GOLD);
                                         } else if (yellowArmor == 3) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.YELLOW);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.YELLOW);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.YELLOW, 3, TrimMaterial.GOLD);
                                         }
                                         if (yellowSword == 0) {
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
@@ -2918,101 +3130,13 @@ public class BedwarsGame implements Listener {
                                 if (player.equals(greenPlayer)) {
                                     if (player == yellowPlayer) {
                                         if (greenArmor == 0) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.GREEN);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.GREEN);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                                            LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setColor(Color.GREEN);
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                                            LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setColor(Color.GREEN);
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.GREEN, 0, TrimMaterial.EMERALD);
                                         } else if (greenArmor == 1) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.GREEN);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.GREEN);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.GREEN, 1, TrimMaterial.EMERALD);
                                         } else if (greenArmor == 2) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.GREEN);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.GREEN);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.GREEN, 2, TrimMaterial.EMERALD);
                                         } else if (greenArmor == 3) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.GREEN);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.GREEN);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.GREEN, 3, TrimMaterial.EMERALD);
                                         }
                                         if (greenSword == 0) {
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
@@ -3093,135 +3217,59 @@ public class BedwarsGame implements Listener {
                             for (Player player : world.getPlayers()) {
                                 if (player.equals(redPlayer)) {
                                     if (redArmor == 0) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.RED);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.RED);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                                        LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setColor(Color.RED);
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                                        LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setColor(Color.RED);
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.RED, 0, TrimMaterial.REDSTONE);
                                     } else if (redArmor == 1) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.RED);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.RED);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.RED, 1, TrimMaterial.REDSTONE);
                                     } else if (redArmor == 2) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.RED);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.RED);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.RED, 2, TrimMaterial.REDSTONE);
                                     } else if (redArmor == 3) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.RED);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.RED);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.RED, 3, TrimMaterial.REDSTONE);
                                     }
                                     if (redSword == 0) {
+                                        removeItems(new ItemStack(Material.WOODEN_SWORD), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                                     } else if (redSword == 1) {
+                                        removeItems(new ItemStack(Material.STONE_SWORD), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                                         redSword--;
                                     } else if (redSword == 2) {
+                                        removeItems(new ItemStack(Material.IRON_SWORD), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.STONE_SWORD));
                                         redSword--;
                                     } else if (redSword == 3) {
+                                        removeItems(new ItemStack(Material.DIAMOND_SWORD), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
                                         redSword--;
                                     }
                                     if (redPickaxe == 0) {
+                                        removeItems(new ItemStack(Material.WOODEN_PICKAXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
                                     } else if (redPickaxe == 1) {
+                                        removeItems(new ItemStack(Material.STONE_PICKAXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
                                         redPickaxe--;
                                     } else if (redPickaxe == 2) {
+                                        removeItems(new ItemStack(Material.IRON_PICKAXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.STONE_PICKAXE));
                                         redPickaxe--;
                                     } else if (redPickaxe == 3) {
+                                        removeItems(new ItemStack(Material.DIAMOND_PICKAXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.IRON_PICKAXE));
                                         redPickaxe--;
                                     }
                                     if (redAxe == 0) {
+                                        removeItems(new ItemStack(Material.WOODEN_AXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_AXE));
                                     } else if (redAxe == 1) {
+                                        removeItems(new ItemStack(Material.STONE_AXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_AXE));
                                         redAxe--;
                                     } else if (redAxe == 2) {
+                                        removeItems(new ItemStack(Material.IRON_AXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.STONE_AXE));
                                         redAxe--;
                                     } else if (redAxe == 3) {
+                                        removeItems(new ItemStack(Material.DIAMOND_AXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                         redAxe--;
                                     }
@@ -3263,135 +3311,59 @@ public class BedwarsGame implements Listener {
                             for (Player player : world.getPlayers()) {
                                 if (player == bluePlayer) {
                                     if (blueArmor == 0) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.BLUE);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.BLUE);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                                        LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setColor(Color.BLUE);
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                                        LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setColor(Color.BLUE);
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.BLUE, 0, TrimMaterial.LAPIS);
                                     } else if (blueArmor == 1) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.BLUE);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.BLUE);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.BLUE, 1, TrimMaterial.LAPIS);
                                     } else if (blueArmor == 2) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.BLUE);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.BLUE);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.BLUE, 2, TrimMaterial.LAPIS);
                                     } else if (blueArmor == 3) {
-                                        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                        helmetMeta.setColor(Color.BLUE);
-                                        helmet.setItemMeta(helmetMeta);
-                                        player.getInventory().setHelmet(helmet);
-
-                                        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                        chestplateMeta.setColor(Color.BLUE);
-                                        chestplate.setItemMeta(chestplateMeta);
-                                        player.getInventory().setChestplate(chestplate);
-
-                                        ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                                        ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                        leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        leggings.setItemMeta(leggingsMeta);
-                                        player.getInventory().setLeggings(leggings);
-
-                                        ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                                        ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                        bootsMeta.setTrim(new ArmorTrim(TrimMaterial.LAPIS, TrimPattern.WILD));
-                                        boots.setItemMeta(bootsMeta);
-                                        player.getInventory().setBoots(boots);
+                                        equipTeamArmor(player, Color.BLUE, 3, TrimMaterial.LAPIS);
                                     }
                                     if (blueSword == 0) {
+                                        removeItems(new ItemStack(Material.WOODEN_SWORD), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                                     } else if (blueSword == 1) {
+                                        removeItems(new ItemStack(Material.STONE_SWORD), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                                         blueSword--;
                                     } else if (blueSword == 2) {
+                                        removeItems(new ItemStack(Material.IRON_SWORD), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.STONE_SWORD));
                                         blueSword--;
                                     } else if (blueSword == 3) {
+                                        removeItems(new ItemStack(Material.DIAMOND_SWORD), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
                                         blueSword--;
                                     }
                                     if (bluePickaxe == 0) {
+                                        removeItems(new ItemStack(Material.WOODEN_PICKAXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
                                     } else if (bluePickaxe == 1) {
+                                        removeItems(new ItemStack(Material.STONE_PICKAXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
                                         bluePickaxe--;
                                     } else if (bluePickaxe == 2) {
+                                        removeItems(new ItemStack(Material.IRON_PICKAXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.STONE_PICKAXE));
                                         bluePickaxe--;
                                     } else if (bluePickaxe == 3) {
+                                        removeItems(new ItemStack(Material.DIAMOND_PICKAXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.IRON_PICKAXE));
                                         bluePickaxe--;
                                     }
                                     if (blueAxe == 0) {
+                                        removeItems(new ItemStack(Material.WOODEN_AXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_AXE));
                                     } else if (blueAxe == 1) {
+                                        removeItems(new ItemStack(Material.STONE_AXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.WOODEN_AXE));
                                         blueAxe--;
                                     } else if (blueAxe == 2) {
+                                        removeItems(new ItemStack(Material.IRON_AXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.STONE_AXE));
                                         blueAxe--;
                                     } else if (blueAxe == 3) {
+                                        removeItems(new ItemStack(Material.DIAMOND_AXE), player, 1);
                                         player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                         blueAxe--;
                                     }
@@ -3434,135 +3406,59 @@ public class BedwarsGame implements Listener {
                                 if (player.equals(yellowPlayer)) {
                                     if (player == yellowPlayer) {
                                         if (yellowArmor == 0) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.YELLOW);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.YELLOW);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                                            LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setColor(Color.YELLOW);
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                                            LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setColor(Color.YELLOW);
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.YELLOW, 0, TrimMaterial.GOLD);
                                         } else if (yellowArmor == 1) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.YELLOW);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.YELLOW);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.YELLOW, 1, TrimMaterial.GOLD);
                                         } else if (yellowArmor == 2) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.YELLOW);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.YELLOW);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.YELLOW, 2, TrimMaterial.GOLD);
                                         } else if (yellowArmor == 3) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.YELLOW);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.YELLOW);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.GOLD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.YELLOW, 3, TrimMaterial.GOLD);
                                         }
                                         if (yellowSword == 0) {
+                                            removeItems(new ItemStack(Material.WOODEN_SWORD), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                                         } else if (yellowSword == 1) {
+                                            removeItems(new ItemStack(Material.STONE_SWORD), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                                             yellowSword--;
                                         } else if (yellowSword == 2) {
+                                            removeItems(new ItemStack(Material.IRON_SWORD), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.STONE_SWORD));
                                             yellowSword--;
                                         } else if (yellowSword == 3) {
+                                            removeItems(new ItemStack(Material.DIAMOND_SWORD), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
                                             yellowSword--;
                                         }
                                         if (yellowPickaxe == 0) {
+                                            removeItems(new ItemStack(Material.WOODEN_PICKAXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
                                         } else if (yellowPickaxe == 1) {
+                                            removeItems(new ItemStack(Material.STONE_PICKAXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
                                             yellowPickaxe--;
                                         } else if (yellowPickaxe == 2) {
+                                            removeItems(new ItemStack(Material.IRON_PICKAXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.STONE_PICKAXE));
                                             yellowPickaxe--;
                                         } else if (yellowPickaxe == 3) {
+                                            removeItems(new ItemStack(Material.DIAMOND_PICKAXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.IRON_PICKAXE));
                                             yellowPickaxe--;
                                         }
                                         if (yellowAxe == 0) {
+                                            removeItems(new ItemStack(Material.WOODEN_AXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_AXE));
                                         } else if (yellowAxe == 1) {
+                                            removeItems(new ItemStack(Material.STONE_AXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_AXE));
                                             yellowAxe--;
                                         } else if (yellowAxe == 2) {
+                                            removeItems(new ItemStack(Material.IRON_AXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.STONE_AXE));
                                             yellowAxe--;
                                         } else if (yellowAxe == 3) {
+                                            removeItems(new ItemStack(Material.DIAMOND_AXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                             yellowAxe--;
                                         }
@@ -3606,135 +3502,59 @@ public class BedwarsGame implements Listener {
                                 if (player.equals(greenPlayer)) {
                                     if (player == yellowPlayer) {
                                         if (greenArmor == 0) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.GREEN);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.GREEN);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-                                            LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setColor(Color.GREEN);
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-                                            LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setColor(Color.GREEN);
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.GREEN, 0, TrimMaterial.EMERALD);
                                         } else if (greenArmor == 1) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.GREEN);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.GREEN);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.GREEN, 1, TrimMaterial.EMERALD);
                                         } else if (greenArmor == 2) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.GREEN);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.GREEN);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.GREEN, 2, TrimMaterial.EMERALD);
                                         } else if (greenArmor == 3) {
-                                            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                                            LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                                            helmetMeta.setColor(Color.GREEN);
-                                            helmet.setItemMeta(helmetMeta);
-                                            player.getInventory().setHelmet(helmet);
-
-                                            ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                                            LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                                            chestplateMeta.setColor(Color.GREEN);
-                                            chestplate.setItemMeta(chestplateMeta);
-                                            player.getInventory().setChestplate(chestplate);
-
-                                            ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                                            ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                                            leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            leggings.setItemMeta(leggingsMeta);
-                                            player.getInventory().setLeggings(leggings);
-
-                                            ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                                            ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                                            bootsMeta.setTrim(new ArmorTrim(TrimMaterial.EMERALD, TrimPattern.WILD));
-                                            boots.setItemMeta(bootsMeta);
-                                            player.getInventory().setBoots(boots);
+                                            equipTeamArmor(player, Color.GREEN, 3, TrimMaterial.EMERALD);
                                         }
                                         if (greenSword == 0) {
+                                            removeItems(new ItemStack(Material.WOODEN_SWORD), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                                         } else if (greenSword == 1) {
+                                            removeItems(new ItemStack(Material.STONE_SWORD), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                                             greenSword--;
                                         } else if (greenSword == 2) {
+                                            removeItems(new ItemStack(Material.IRON_SWORD), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.STONE_SWORD));
                                             greenSword--;
                                         } else if (greenSword == 3) {
+                                            removeItems(new ItemStack(Material.DIAMOND_SWORD), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
                                             greenSword--;
                                         }
                                         if (greenPickaxe == 0) {
+                                            removeItems(new ItemStack(Material.WOODEN_PICKAXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
                                         } else if (greenPickaxe == 1) {
+                                            removeItems(new ItemStack(Material.STONE_PICKAXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_PICKAXE));
                                             greenPickaxe--;
                                         } else if (greenPickaxe == 2) {
+                                            removeItems(new ItemStack(Material.IRON_PICKAXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.STONE_PICKAXE));
                                             greenPickaxe--;
                                         } else if (greenPickaxe == 3) {
+                                            removeItems(new ItemStack(Material.DIAMOND_PICKAXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.IRON_PICKAXE));
                                             greenPickaxe--;
                                         }
                                         if (greenAxe == 0) {
+                                            removeItems(new ItemStack(Material.WOODEN_AXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_AXE));
                                         } else if (greenAxe == 1) {
+                                            removeItems(new ItemStack(Material.STONE_AXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.WOODEN_AXE));
                                             greenAxe--;
                                         } else if (greenAxe == 2) {
+                                            removeItems(new ItemStack(Material.IRON_AXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.STONE_AXE));
                                             greenAxe--;
                                         } else if (greenAxe == 3) {
+                                            removeItems(new ItemStack(Material.DIAMOND_AXE), player, 1);
                                             player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                             greenAxe--;
                                         }
