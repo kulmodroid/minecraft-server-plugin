@@ -210,3 +210,4 @@ bedwars:
   players: 4
   timeout-minutes: 3
   timeout-min-players: 2
+  test-mode: true

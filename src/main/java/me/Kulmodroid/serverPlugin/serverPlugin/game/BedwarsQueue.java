@@ -4,6 +4,7 @@ import me.Kulmodroid.serverPlugin.serverPlugin.GameManager;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
@@ -43,12 +44,15 @@ public class BedwarsQueue {
 
     private List<Location> getMidGenerators(World world, String path) {
         List<Location> result = new ArrayList<>();
-        for (Object obj : plugin.getConfig().getConfigurationSection(path).getList("mid")) {
-            ConfigurationSection sec = (ConfigurationSection) obj;
+        ConfigurationSection sec = plugin.getConfig().getConfigurationSection(path);
+        if (sec == null) {
+            return result;
+        }
+        for (var map : sec.getMapList("mid")) {
             result.add(new Location(world,
-                    ((Number) sec.get("x")).doubleValue(),
-                    ((Number) sec.get("y")).doubleValue(),
-                    ((Number) sec.get("z")).doubleValue()));
+                    ((Number) map.get("x")).doubleValue(),
+                    ((Number) map.get("y")).doubleValue(),
+                    ((Number) map.get("z")).doubleValue()));
         }
         return result;
     }
@@ -93,10 +97,12 @@ public class BedwarsQueue {
 
     private void checkStart() {
         int required = plugin.getConfig().getInt("bedwars.players", 4);
+        boolean testMode = plugin.getConfig().getBoolean("bedwars.test-mode", false);
         int minPlayers = plugin.getConfig().getInt("bedwars.timeout-min-players", 2);
         int timeoutMin = plugin.getConfig().getInt("bedwars.timeout-minutes", 3);
         long now = System.currentTimeMillis();
-        if (queue.size() >= required || (queue.size() >= minPlayers && now - firstJoin > timeoutMin * 60_000L)) {
+        if (queue.size() >= required || (testMode && queue.size() >= 1)
+                || (queue.size() >= minPlayers && now - firstJoin > timeoutMin * 60_000L)) {
             startGame();
         }
     }
@@ -125,14 +131,19 @@ public class BedwarsQueue {
         }
         World world = Bukkit.createWorld(new WorldCreator(worldName));
         List<Location> spawns = new ArrayList<>();
-        if (spawns.size() != capacity) {
-            plugin.getLogger().warning("Spawn count " + spawns.size() + " does not match players " + capacity + " for map " + mapName);
-        }
+//        if (spawns.size() != capacity) {
+//            plugin.getLogger().warning("Spawn count " + spawns.size() + " does not match players " + capacity + " for map " + mapName);
+//        }
 
         List<Player> players = new ArrayList<>();
         while (!queue.isEmpty() && players.size() < capacity) {
             players.add(queue.remove(0));
         }
+
+        Player redPlayer = players.size() > 0 ? players.get(0) : null;
+        Player bluePlayer = players.size() > 1 ? players.get(1) : null;
+        Player yellowPlayer = players.size() > 2 ? players.get(2) : null;
+        Player greenPlayer = players.size() > 3 ? players.get(3) : null;
 
         Vector min = getVector("maps." + mapName + ".zoneLimit.min");
         Vector max = getVector("maps." + mapName + ".zoneLimit.max");
@@ -203,10 +214,18 @@ public class BedwarsQueue {
         Location gu = getLocation(world, "maps." + mapName + ".upgradeShopPositions.green");
 
 
-        redPlayer.setDisplayName(Color.RED + redPlayer.getName());
-        bluePlayer.setDisplayName(Color.BLUE + bluePlayer.getName());
-        yellowPlayer.setDisplayName(Color.YELLOW + yellowPlayer.getName());
-        greenPlayer.setDisplayName(Color.GREEN + greenPlayer.getName());
+        if (redPlayer != null) {
+            redPlayer.setDisplayName(Color.RED + redPlayer.getName());
+        }
+        if (bluePlayer != null) {
+            bluePlayer.setDisplayName(Color.BLUE + bluePlayer.getName());
+        }
+        if (yellowPlayer != null) {
+            yellowPlayer.setDisplayName(Color.YELLOW + yellowPlayer.getName());
+        }
+        if (greenPlayer != null) {
+            greenPlayer.setDisplayName(Color.GREEN + greenPlayer.getName());
+        }
 
 
         BedwarsGame game = new BedwarsGame(
@@ -335,10 +354,27 @@ public class BedwarsQueue {
         game.alivePlayers = 4;
         game.gameLoop();
 
+        if (plugin.getConfig().getBoolean("bedwars.test-mode", false)) {
+            if (bluePlayer == null) {
+                world.spawnEntity(blueSpawn, EntityType.WARDEN);
+            }
+            if (yellowPlayer == null) {
+                world.spawnEntity(yellowSpawn, EntityType.WARDEN);
+            }
+            if (greenPlayer == null) {
+                world.spawnEntity(greenSpawn, EntityType.WARDEN);
+            }
+        }
+
 
         for (int i = 0; i < players.size(); i++) {
             game.addPlayer(players.get(i), i);
         }
+
+        this.redPlayer = null;
+        this.bluePlayer = null;
+        this.yellowPlayer = null;
+        this.greenPlayer = null;
     }
 
     private void copyWorld(Path src, Path dst) throws IOException {
