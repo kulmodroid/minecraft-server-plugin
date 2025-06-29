@@ -14,35 +14,27 @@ maps:
       - { x: , y: , z: }
     fellY: 15
     zoneLimit:
-      - { x: 90, y: 0, z: 90 }
-      - { x: -90, y: 0, z: -90 }
+      max: { x: 90, y: 0, z: 90 }
+      min: { x: -90, y: 0, z: -90 }
     itemShopPositions:
-      blue:
-        - { x: -68, y: 30, z: 7 }
-      red:
-        - { x: -68, y: 30, z: 7 }
-      yellow:
-        - { x: -68, y: 30, z: 7 }
-      green:
-        - { x: -68, y: 30, z: 7 }
+      blue: { x: -68, y: 30, z: 7 }
+      red: { x: -68, y: 30, z: 7 }
+      yellow: { x: -68, y: 30, z: 7 }
+      green: { x: -68, y: 30, z: 7 }
     upgradeShopPositions:
-      blue:
-
-      red:
-
-      yellow:
-      green:
+      blue: {}
+      red: {}
+      yellow: {}
+      green: {}
     spawnpoints:
-      blue:
-        - { x: 0, y: 31, z: -71 }
-      red:
-        - { x: 71, y: 31, z: 0 }
-      yellow:
-        - {x: -71, y: 31,  z: 0 }
-      green:
-        - {x: 0, y: 31, z: 71}
+      blue: { x: 0, y: 31, z: -71 }
+      red: { x: 71, y: 31, z: 0 }
+      yellow: { x: -71, y: 31, z: 0 }
+      green: { x: 0, y: 31, z: 71 }
     waitingpoint:
-      - {x: 0, y: 46, z: 0}
+      x: 0
+      y: 46
+      z: 0
   bedwars_Spruce:
     path: bedwars_map_spruce
     teams: 4
@@ -51,52 +43,36 @@ maps:
     heightBuildLimit: 50
     bedPositions:
       blue:
-        1:
-          - { x: 65, y: 30, z: 0 }
-        2:
-          - { x: 66, y: 30, z: 0 }
+        1: { x: 65, y: 30, z: 0 }
+        2: { x: 66, y: 30, z: 0 }
       red:
-        1:
-          - { x: -65, y: 30, z: 0 }
-        2:
-          - { x: -66, y: 30, z: 0 }
+        1: { x: -65, y: 30, z: 0 }
+        2: { x: -66, y: 30, z: 0 }
       yellow:
-        1:
-          - { x: 0, y: 30, z: -65 }
-        2:
-          - { x: 0, y: 30, z: -66 }
+        1: { x: 0, y: 30, z: -65 }
+        2: { x: 0, y: 30, z: -66 }
       green:
-        1:
-          - { x: 0, y: 30, z: 65 }
-        2:
-          - { x: 0, y: 30, z: 66 }
+        1: { x: 0, y: 30, z: 65 }
+        2: { x: 0, y: 30, z: 66 }
     fellY: 15
     zoneLimit:
-      - { x: 90, y: 60, z: 90 }
-      - { x: -90, y: -10, z: -90 }
+      max: { x: 90, y: 60, z: 90 }
+      min: { x: -90, y: -10, z: -90 }
     generators:
       iron:
         base:
-          blue:
-            - { x: 67, y: 30, z: 3}
-          red:
-            - { x: -67, y: 30, z: -3}
-          yellow:
-            - { x: -3, y: 30, z: 67}
-          green:
-            - { x: 3, y: 30, z: -67}
+          blue: { x: 67, y: 30, z: 3 }
+          red: { x: -67, y: 30, z: -3 }
+          yellow: { x: -3, y: 30, z: 67 }
+          green: { x: 3, y: 30, z: -67 }
       gold:
         mid:
           - { x: 0, y: 36, z: 0 }
         base:
-          blue:
-            - { x: 72, y: 30, z: 4}
-          red:
-            - { x: -72, y: 30, z: -4}
-          yellow:
-            - { x: 4, y: 30, z: -72}
-          green:
-            - { x: -4, y: 30, z: 72}
+          blue: { x: 72, y: 30, z: 4 }
+          red: { x: -72, y: 30, z: -4 }
+          yellow: { x: 4, y: 30, z: -72 }
+          green: { x: -4, y: 30, z: 72 }
       diamond:
         mid:
           - { x: 72, y: 31, z: 70 }
@@ -104,14 +80,10 @@ maps:
           - { x: -72, y: 31, z: 70 }
           - { x: -70, y: 31, z: 72 }
         base:
-          blue:
-            - { x: 67, y: 25, z: 2 }
-          red:
-            - { x: -67, y: 25, z: -2 }
-          yellow:
-            - { x: 2, y: 25, z: -67 }
-          green:
-            - { x: -2, y: 25, z: 67 }
+          blue: { x: 67, y: 25, z: 2 }
+          red: { x: -67, y: 25, z: -2 }
+          yellow: { x: 2, y: 25, z: -67 }
+          green: { x: -2, y: 25, z: 67 }
       emerald:
         mid:
           - { x: -14, y: 31, z: 0 }
@@ -120,43 +92,29 @@ maps:
           - { x: 0, y: 31, z: 14 }
           - { x: 0, y: 31, z: -14 }
         base:
-          blue:
-            - { x: 71, y: 25, z: -2 }
-          red:
-            - { x: -71, y: 25, z: 2 }
-          yellow:
-           - { x: -2, y: 25, z: -71 }
-          green:
-            - { x: 2, y: 25, z: 71 }
+          blue: { x: 71, y: 25, z: -2 }
+          red: { x: -71, y: 25, z: 2 }
+          yellow: { x: -2, y: 25, z: -71 }
+          green: { x: 2, y: 25, z: 71 }
     itemShopPositions:
-      blue:
-        - { x: 67, y: 30, z: -6 }
-      red:
-        - { x: -67, y: 30, z: 6 }
-      yellow:
-        - { x: -6, y: 30, z: -67 }
-      green:
-        - { x: 6, y: 30, z: 67 }
+      blue: { x: 67, y: 30, z: -6 }
+      red: { x: -67, y: 30, z: 6 }
+      yellow: { x: -6, y: 30, z: -67 }
+      green: { x: 6, y: 30, z: 67 }
     upgradeShopPositions:
-      blue:
-        - { x: 67,  y: 30, z: 6 }
-      red:
-        - { x: -67, y: 30, z: -6 }
-      yellow:
-        - { x: 6,  y: 30, z: -67 }
-      green:
-        - { x: -6, y: 30, z: 67 }
+      blue: { x: 67, y: 30, z: 6 }
+      red: { x: -67, y: 30, z: -6 }
+      yellow: { x: 6, y: 30, z: -67 }
+      green: { x: -6, y: 30, z: 67 }
     spawnpoints:
-      blue:
-        - {x: 71, y: 30, z: 0}
-      red:
-        - {x: -71, y: 30, z: 0}
-      yellow:
-        - {x: 0, y: 30,  z: -71}
-      green:
-        - {x: 0, y: 30, z: 71}
+      blue: { x: 71, y: 30, z: 0 }
+      red: { x: -71, y: 30, z: 0 }
+      yellow: { x: 0, y: 30, z: -71 }
+      green: { x: 0, y: 30, z: 71 }
     waitingpoint:
-      - { x: 0, y: 43, z: 0 }
+      x: 0
+      y: 43
+      z: 0
   bedwars_MarsianStation:
     path: bedwarsMap2
     teams: 4
@@ -165,53 +123,36 @@ maps:
     heightBuildLimit: 50
     bedPositions:
       blue:
-        1:
-          - { x: 0, y: 31, z: -65 }
-        2:
-          - { x: 0, y: 31, z: -66 }
+        1: { x: 0, y: 31, z: -65 }
+        2: { x: 0, y: 31, z: -66 }
       red:
-        1:
-          - { x: 65, y: 31, z: 0 }
-        2:
-          - { x: 66, y: 31, z: 0 }
+        1: { x: 65, y: 31, z: 0 }
+        2: { x: 66, y: 31, z: 0 }
       yellow:
-        1:
-          - { x: -65, y: 31, z: 0 }
-        2:
-          - { x: -66, y: 31, z: 0 }
+        1: { x: -65, y: 31, z: 0 }
+        2: { x: -66, y: 31, z: 0 }
       green:
-        1:
-          - { x: 0, y: 31, z: 65 }
-        2:
-          - { x: 0, y: 31, z: 66 }
-    fellY:
-      - { y: 15 }
+        1: { x: 0, y: 31, z: 65 }
+        2: { x: 0, y: 31, z: 66 }
+    fellY: 15
     zoneLimit:
-      - { x: 95, y: 60, z: 95 }
-      - { x: -95, y: -10, z: -95 }
+      max: { x: 95, y: 60, z: 95 }
+      min: { x: -95, y: -10, z: -95 }
     generators:
       iron:
         base:
-          blue:
-            - { x: 2, y: 31, z: -77 }
-          red:
-            - { x: 77, y: 31, z: 2 }
-          yellow:
-            - { x: -77, y: 31, z: -2 }
-          green:
-            - { x: -2, y: 31, z: 77 }
+          blue: { x: 2, y: 31, z: -77 }
+          red: { x: 77, y: 31, z: 2 }
+          yellow: { x: -77, y: 31, z: -2 }
+          green: { x: -2, y: 31, z: 77 }
       gold:
         mid:
           - { x: -4, y: 31, z: -3 }
         base:
-          blue:
-            - { x: -1, y: 31, z: -76 }
-          red:
-            - { x: 76, y: 31, z: -1 }
-          yellow:
-            - { x: -76, y: 31, z: 1 }
-          green:
-            - { x: 1, y: 31, z: 76 }
+          blue: { x: -1, y: 31, z: -76 }
+          red: { x: 76, y: 31, z: -1 }
+          yellow: { x: -76, y: 31, z: 1 }
+          green: { x: 1, y: 31, z: 76 }
       diamond:
         island:
           - { x: 45, y: 29, z: 45 }
@@ -219,14 +160,10 @@ maps:
           - { x: 45, y: 29, z: -45 }
           - { x: -45, y: 29, z: 45 }
         base:
-          blue:
-            - { x: -13, y: 30, z: -65 }
-          red:
-            - { x: 65, y: 30, z: -13 }
-          yellow:
-            - { x: -65, y: 30, z: 13 }
-          green:
-            - { x: 13, y: 30, z: 65 }
+          blue: { x: -13, y: 30, z: -65 }
+          red: { x: 65, y: 30, z: -13 }
+          yellow: { x: -65, y: 30, z: 13 }
+          green: { x: 13, y: 30, z: 65 }
       emerald:
         mid:
           - { x: -2, y: 31, z: 1 }
@@ -234,43 +171,29 @@ maps:
           - { x: 5, y: 37, z: -4 }
           - { x: -7, y: 37, z: 4 }
         base:
-          blue:
-            - { x: 14, y: 30, z: -67 }
-          red:
-            - { x: 67, y: 30, z: 14 }
-          yellow:
-            - { x: -67, y: 30, z: -14 }
-          green:
-            - { x: -14, y: 30, z: 67 }
+          blue: { x: 14, y: 30, z: -67 }
+          red: { x: 67, y: 30, z: 14 }
+          yellow: { x: -67, y: 30, z: -14 }
+          green: { x: -14, y: 30, z: 67 }
     itemShopPositions:
-      blue:
-        - { x 5, y: 31, z: -72 }
-      red:
-        - { x: 72, y: 31, z: 5 }
-      yellow:
-        - { x: -72, y: 31, z: -5 }
-      green:
-        - { x: -5, y: 31, z: 72 }
+      blue: { x: 5, y: 31, z: -72 }
+      red: { x: 72, y: 31, z: 5 }
+      yellow: { x: -72, y: 31, z: -5 }
+      green: { x: -5, y: 31, z: 72 }
     upgradeShopPositions:
-      blue:
-        - { x: -4, y: 31, z: -72 }
-      red:
-        - { x: 72, y: 31, z: -4 }
-      yellow:
-        - { x: -72, y: 31, z: 4 }
-      green:
-        - { x: 4, y: 31, z: 72 }
+      blue: { x: -4, y: 31, z: -72 }
+      red: { x: 72, y: 31, z: -4 }
+      yellow: { x: -72, y: 31, z: 4 }
+      green: { x: 4, y: 31, z: 72 }
     spawnpoints:
-      blue:
-        - {x: 0, y: 31, z: -71}
-      red:
-        - {x: 73, y: 31, z: 0}
-      yellow:
-        - {x: -73, y: 31,  z: 0 }
-      green:
-        - {x: 0, y: 31, z: 71}
+      blue: { x: 0, y: 31, z: -71 }
+      red: { x: 73, y: 31, z: 0 }
+      yellow: { x: -73, y: 31, z: 0 }
+      green: { x: 0, y: 31, z: 71 }
     waitingpoint:
-      - {x: 0, y: 46, z: 0}
+      x: 0
+      y: 46
+      z: 0
   lobbyworld:
     path: Raven Reach
   edit-maps:
