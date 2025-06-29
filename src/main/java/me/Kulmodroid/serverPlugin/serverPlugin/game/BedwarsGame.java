@@ -1,5 +1,6 @@
 package me.Kulmodroid.serverPlugin.serverPlugin.game;
 
+import com.google.common.collect.Lists;
 import me.Kulmodroid.serverPlugin.serverPlugin.GameManager;
 import org.bukkit.*;
 import org.bukkit.block.BlockType;
@@ -1852,7 +1853,7 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onFireballInteract(PlayerInteractEvent event) {
-        if (!event.getItem().equals(new ItemStack(Material.FIRE_CHARGE))) {
+        if (event.getItem() == null || !event.getItem().equals(new ItemStack(Material.FIRE_CHARGE))) {
             return;
         }
         Player player = event.getPlayer();
@@ -1891,10 +1892,11 @@ public class BedwarsGame implements Listener {
     }
 
     public synchronized void gameLoop() {
-        redGolems = null;
-        blueGolems = null;
-        yellowGolems = null;
-        greenGolems = null;
+        redGolems = Lists.newArrayList();
+        blueGolems = Lists.newArrayList();
+        yellowGolems = Lists.newArrayList();
+        greenGolems = Lists.newArrayList();
+        greenGolems = Lists.newArrayList();
 
         redArmor = 0;
         redSword = 0;
@@ -1930,10 +1932,15 @@ public class BedwarsGame implements Listener {
             }
         }
 
-        world.spawnEntity(redItemShopPos, redIV);
-        world.spawnEntity(blueItemShopPos, blueIV);
-        world.spawnEntity(yellowItemShopPos, yellowIV);
-        world.spawnEntity(greenItemShopPos, greenIV);
+        LivingEntity redShop = (LivingEntity) world.spawnEntity(redItemShopPos, redIV);
+        LivingEntity blueShop = (LivingEntity) world.spawnEntity(blueItemShopPos, blueIV);
+        LivingEntity yellowShop = (LivingEntity) world.spawnEntity(yellowItemShopPos, yellowIV);
+        LivingEntity greenShop = (LivingEntity)  world.spawnEntity(greenItemShopPos, greenIV);
+
+        redShop.setAI(false);
+        blueShop.setAI(false);
+        yellowShop.setAI(false);
+        greenShop.setAI(false);
 
         new BukkitRunnable() {
             @Override
@@ -2122,26 +2129,26 @@ public class BedwarsGame implements Listener {
                     }
                 }
                 if (emeraldCooldown <= 0) {
-                    for (Location loc : midDiamondGenerators) {
+                    for (Location loc : midEmeraldGenerators) {
                         world.dropItem(loc, new ItemStack(Material.EMERALD));
-                        diamondCooldown = 30;
+                        emeraldCooldown = 30;
                     }
                 }
-                for (Location loc : midGoldGenerators) {
-                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
-                    entity.setVisibleByDefault(false);
-                    entity.setCustomName(ChatColor.GOLD + "" + goldCooldown  + "seconds remaining");
-                }
-                for (Location loc : midDiamondGenerators) {
-                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
-                    entity.setVisibleByDefault(false);
-                    entity.setCustomName(ChatColor.AQUA + "" + diamondCooldown  + "seconds remaining");
-                }
-                for (Location loc : midEmeraldGenerators) {
-                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
-                    entity.setVisibleByDefault(false);
-                    entity.setCustomName(ChatColor.GREEN + "" + emeraldCooldown  + "seconds remaining");
-                }
+//                for (Location loc : midGoldGenerators) {
+//                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
+//                    entity.setVisibleByDefault(false);
+//                    entity.setCustomName(ChatColor.GOLD + "" + goldCooldown  + "seconds remaining");
+//                }
+//                for (Location loc : midDiamondGenerators) {
+//                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
+//                    entity.setVisibleByDefault(false);
+//                    entity.setCustomName(ChatColor.AQUA + "" + diamondCooldown  + "seconds remaining");
+//                }
+//                for (Location loc : midEmeraldGenerators) {
+//                    Entity entity = world.spawnEntity(loc, EntityType.ARMOR_STAND);
+//                    entity.setVisibleByDefault(false);
+//                    entity.setCustomName(ChatColor.GREEN + "" + emeraldCooldown  + "seconds remaining");
+//                }
                 goldCooldown --;
                 diamondCooldown --;
                 emeraldCooldown--;
@@ -2172,8 +2179,20 @@ public class BedwarsGame implements Listener {
 
     public void addPlayer(Player player, int i) {
         players.add(player);
-        player.teleport(waitPos);
-        player.setRespawnLocation(waitPos);
+        switch (i) {
+            case 0 -> player.teleport(redSpawn);
+            case 1 -> player.teleport(blueSpawn);
+            case 2 -> player.teleport(yellowSpawn);
+            case 3 -> player.teleport(greenSpawn);
+            default -> {
+                if (i < spawns.size()) {
+                    player.teleport(spawns.get(i));
+                } else {
+                    player.teleport(waitPos);
+                }
+            }
+        }
+        player.setRespawnLocation(player.getLocation());
         player.setGameMode(GameMode.SURVIVAL);
     }
 
@@ -2387,10 +2406,14 @@ public class BedwarsGame implements Listener {
         if (event.getBlock().getY() >= heightBuildLimit) {
             event.setCancelled(true);
         }
-        if (event.getBlock().getType().equals(BlockType.TNT)) {
+        if (event.getBlock().getType().equals(Material.TNT)) {
             event.setCancelled(true);
             world.getBlockAt(event.getBlockPlaced().getLocation()).breakNaturally();
             world.spawnEntity(event.getBlock().getLocation(), EntityType.TNT);
+            return;
+        }
+        if (!event.isCancelled()) {
+            placedBlocks.add(event.getBlock().getLocation());
         }
     }
 
@@ -2428,19 +2451,23 @@ public class BedwarsGame implements Listener {
     }
 
     public void removeItems(ItemStack i, Player player, int amount) {
-        int v = amount;
-        for (ItemStack item : player.getInventory()) {
-            if (item == i) {
-                if (v == 0) {
-                    return;
-                }
-                if (item.getAmount() <= v) {
-                    player.getInventory().removeItem(item);
-                    v -= item.getAmount();
-                } else {
-                    player.getInventory().removeItem(item);
-                    player.getInventory().addItem(new ItemStack(item.getType(), item.getAmount() - amount));
-                }
+        ItemStack remove = new ItemStack(i.getType(), amount);
+        player.getInventory().removeItem(remove);
+    }
+
+    private void dropResources(Player player, Player killer) {
+        if (killer == null) {
+            return;
+        }
+        for (ItemStack stack : player.getInventory().getContents()) {
+            if (stack == null) {
+                continue;
+            }
+            Material type = stack.getType();
+            if (type == Material.IRON_INGOT || type == Material.GOLD_INGOT
+                    || type == Material.DIAMOND || type == Material.EMERALD) {
+                killer.getInventory().addItem(stack.clone());
+                player.getInventory().removeItem(stack);
             }
         }
     }
@@ -2507,14 +2534,7 @@ public class BedwarsGame implements Listener {
                                         player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                         redAxe--;
                                     }
-                                    for (ItemStack i : player.getInventory()) {
-                                        if (i.equals(new ItemStack(Material.IRON_INGOT)) ||
-                                                i.equals(new ItemStack(Material.GOLD_INGOT)) ||
-                                                i.equals(new ItemStack(Material.DIAMOND)) ||
-                                                i.equals(new ItemStack(Material.EMERALD))) {
-                                            player.getKiller().getInventory().addItem(i);
-                                        }
-                                    }
+                                    dropResources(player, player.getKiller());
                                 }
                             }
                             cancel();
@@ -2597,15 +2617,8 @@ public class BedwarsGame implements Listener {
                                         player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                         blueAxe--;
                                     }
-                                     for (ItemStack i : player.getInventory()) {
-                                         if (i.equals(new ItemStack(Material.IRON_INGOT)) ||
-                                                 i.equals(new ItemStack(Material.GOLD_INGOT)) ||
-                                                 i.equals(new ItemStack(Material.DIAMOND)) ||
-                                                 i.equals(new ItemStack(Material.EMERALD))) {
-                                             player.getKiller().getInventory().addItem(i);
-                                         }
-                                     }
-                                 }
+                                    dropResources(player, player.getKiller());
+                                }
                             }
                             cancel();
                             return;
@@ -2688,14 +2701,7 @@ public class BedwarsGame implements Listener {
                                             player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                             yellowAxe--;
                                         }
-                                        for (ItemStack i : player.getInventory()) {
-                                            if (i.equals(new ItemStack(Material.IRON_INGOT)) ||
-                                                    i.equals(new ItemStack(Material.GOLD_INGOT)) ||
-                                                    i.equals(new ItemStack(Material.DIAMOND)) ||
-                                                    i.equals(new ItemStack(Material.EMERALD))) {
-                                                player.getKiller().getInventory().addItem(i);
-                                            }
-                                        }
+                                        dropResources(player, player.getKiller());
                                     }
                                 }
                             }
@@ -2780,14 +2786,7 @@ public class BedwarsGame implements Listener {
                                             player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                             greenAxe--;
                                         }
-                                        for (ItemStack i : player.getInventory()) {
-                                            if (i.equals(new ItemStack(Material.IRON_INGOT)) ||
-                                                    i.equals(new ItemStack(Material.GOLD_INGOT)) ||
-                                                    i.equals(new ItemStack(Material.DIAMOND)) ||
-                                                    i.equals(new ItemStack(Material.EMERALD))) {
-                                                player.getKiller().getInventory().addItem(i);
-                                            }
-                                        }
+                                        dropResources(player, player.getKiller());
                                     }
                                 }
                             }
