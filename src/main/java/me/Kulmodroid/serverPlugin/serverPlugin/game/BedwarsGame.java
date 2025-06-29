@@ -1,9 +1,7 @@
 package me.Kulmodroid.serverPlugin.serverPlugin.game;
 
 import me.Kulmodroid.serverPlugin.serverPlugin.GameManager;
-import me.Kulmodroid.serverPlugin.serverPlugin.WitchShop;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockType;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;

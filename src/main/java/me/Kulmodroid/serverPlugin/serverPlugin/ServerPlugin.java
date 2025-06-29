@@ -70,7 +70,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onFireballInteract(PlayerInteractEvent event) {
-        if (!event.getItem().equals(new ItemStack(Material.FIRE_CHARGE))) {
+        if (event.getItem() == null || !event.getItem().equals(new ItemStack(Material.FIRE_CHARGE))) {
             return;
         }
         Player player = event.getPlayer();
