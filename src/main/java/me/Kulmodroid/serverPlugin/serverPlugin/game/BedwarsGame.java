@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -253,6 +254,8 @@ public class BedwarsGame implements Listener {
     EntityType blueIV = EntityType.VILLAGER;
     EntityType yellowIV = EntityType.VILLAGER;
     EntityType greenIV = EntityType.VILLAGER;
+
+    public boolean fireballOnCooldown;
 
     public boolean canRedRespawn;
     public boolean canBlueRespawn;
@@ -1857,7 +1860,35 @@ public class BedwarsGame implements Listener {
         Player player = event.getPlayer();
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
         {
-            player.launchProjectile(Fireball.class).setVelocity(player.getLocation().getDirection().multiply(0.5));
+            if (!fireballOnCooldown) {
+                player.launchProjectile(Fireball.class).setVelocity(player.getLocation().getDirection().multiply(2.5));
+                fireballOnCooldown = true;
+                new BukkitRunnable() {
+                    int secondsLeft = 5;
+                    @Override
+                    public void run() {
+                        if (secondsLeft <= 0) {
+                            fireballOnCooldown = false;
+                            cancel();
+                        }
+                        secondsLeft --;
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+            } else {
+                player.sendMessage(ChatColor.RED + "Fireball is still on cooldown");
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (event.getEntity().getType() == EntityType.FIREBALL) {
+            event.blockList().removeIf(block -> placedBlocks.contains(block.getLocation()));
         }
     }
 
@@ -2143,7 +2174,6 @@ public class BedwarsGame implements Listener {
 
     public void addPlayer(Player player, int i) {
         players.add(player);
-
     }
 
     static {
@@ -3166,15 +3196,6 @@ public class BedwarsGame implements Listener {
                 return;
             }
         }
-    }
-
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        if (!players.contains(player)) {
-            return;
-        }
-        event.setRespawnLocation(player.getRespawnLocation());
     }
 
     @EventHandler

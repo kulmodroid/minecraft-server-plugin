@@ -4,10 +4,14 @@ import me.Kulmodroid.serverPlugin.serverPlugin.commands.GameSelectionCommand;
 import me.Kulmodroid.serverPlugin.serverPlugin.commands.PingCommand;
 import me.Kulmodroid.serverPlugin.serverPlugin.commands.getPosCommand;
 import org.bukkit.*;
+import org.bukkit.block.BlockType;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.Action;
@@ -53,6 +57,9 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
             player.setGameMode(GameMode.CREATIVE);
             player.getInventory().addItem(editCompass.getItem());
         }
+        if (!player.isOp()) {
+            return;
+        }
         player.getInventory().addItem(lightningStaff.getItem());
         player.getInventory().addItem(pigBow.getItem());
         player.getInventory().addItem(breezeRod.getItem());
@@ -69,8 +76,20 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
         {
-            player.launchProjectile(Fireball.class).setVelocity(player.getLocation().getDirection().multiply(0.5));
+            player.launchProjectile(Fireball.class).setVelocity(player.getLocation().getDirection().multiply(2.5));
         }
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (event.getEntity().getType() == EntityType.FIREBALL) {
+            event.blockList().removeIf(block -> !block.getType().equals(Material.OAK_PLANKS));
+        }
+    }
+
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent e) {
+        e.setCancelled(true);
     }
 
     @EventHandler
