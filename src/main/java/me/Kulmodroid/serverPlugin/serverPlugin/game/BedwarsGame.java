@@ -2172,6 +2172,9 @@ public class BedwarsGame implements Listener {
 
     public void addPlayer(Player player, int i) {
         players.add(player);
+        player.teleport(waitPos);
+        player.setRespawnLocation(waitPos);
+        player.setGameMode(GameMode.SURVIVAL);
     }
 
     static {

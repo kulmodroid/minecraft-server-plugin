@@ -352,6 +352,11 @@ public class BedwarsQueue {
         game.emeraldCount = 0;
 
         game.alivePlayers = 4;
+
+        for (int i = 0; i < players.size(); i++) {
+            game.addPlayer(players.get(i), i);
+        }
+
         game.gameLoop();
 
         if (plugin.getConfig().getBoolean("bedwars.test-mode", false)) {
@@ -364,11 +369,6 @@ public class BedwarsQueue {
             if (greenPlayer == null) {
                 world.spawnEntity(greenSpawn, EntityType.WARDEN);
             }
-        }
-
-
-        for (int i = 0; i < players.size(); i++) {
-            game.addPlayer(players.get(i), i);
         }
 
         this.redPlayer = null;
