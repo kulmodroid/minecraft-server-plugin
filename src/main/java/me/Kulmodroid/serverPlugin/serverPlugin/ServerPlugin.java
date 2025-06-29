@@ -4,6 +4,7 @@ import me.Kulmodroid.serverPlugin.serverPlugin.commands.GameSelectionCommand;
 import me.Kulmodroid.serverPlugin.serverPlugin.commands.PingCommand;
 import me.Kulmodroid.serverPlugin.serverPlugin.commands.getPosCommand;
 import org.bukkit.*;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -57,6 +58,19 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         player.getInventory().addItem(breezeRod.getItem());
         player.getInventory().addItem(jumpBow.getItem());
         player.getInventory().addItem(new ItemStack(Material.ARROW, 3));
+        player.getInventory().addItem(new ItemStack(Material.FIRE_CHARGE, 1));
+    }
+
+    @EventHandler
+    public void onFireballInteract(PlayerInteractEvent event) {
+        if (!event.getItem().equals(new ItemStack(Material.FIRE_CHARGE))) {
+            return;
+        }
+        Player player = event.getPlayer();
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        {
+            player.launchProjectile(Fireball.class).setVelocity(player.getLocation().getDirection().multiply(0.5));
+        }
     }
 
     @EventHandler

@@ -11,10 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
@@ -283,6 +280,24 @@ public class BedwarsGame implements Listener {
     public boolean isRedInUtilitiesSec;
     public boolean isRedInPotionsSec;
 
+    public boolean isBlueInBlockSec;
+    public boolean isBlueInCombatSec;
+    public boolean isBlueInToolsSec;
+    public boolean isBlueInUtilitiesSec;
+    public boolean isBlueInPotionsSec;
+
+    public boolean isYellowInBlockSec;
+    public boolean isYellowInCombatSec;
+    public boolean isYellowInToolsSec;
+    public boolean isYellowInUtilitiesSec;
+    public boolean isYellowInPotionsSec;
+
+    public boolean isGreenInBlockSec;
+    public boolean isGreenInCombatSec;
+    public boolean isGreenInToolsSec;
+    public boolean isGreenInUtilitiesSec;
+    public boolean isGreenInPotionsSec;
+
     int goldCooldown;
     int diamondCooldown;
     int emeraldCooldown;
@@ -376,77 +391,89 @@ public class BedwarsGame implements Listener {
     Inventory yellowI;
     Inventory greenI;
 
-    private Inventory createShopInventory(Material buttonMaterial, Material costMaterial, ChatColor color) {
+    Inventory redUI;
+    Inventory blueUI;
+    Inventory yellowUI;
+    Inventory greenUI;
+
+    private Inventory setupSectionItemShopInventory(Material woolMat, ChatColor color, int sectionIndex) {
         Inventory inv = Bukkit.createInventory(HOLDER, 11 * 4, ChatColor.DARK_GRAY + "Item shop");
 
-        addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
-        addItem(1, new ItemStack(buttonMaterial), false, "Blocks", inv, color);
-        addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
-        addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", inv, ChatColor.GRAY);
-        addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
-        addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", inv, ChatColor.GRAY);
-        addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
-        addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", inv, ChatColor.GRAY);
-        addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
-        addItem(9, new ItemStack(Material.POTION), false, "Potions", inv, ChatColor.GRAY);
-        addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
-        addItem(12, new ItemStack(costMaterial, 16), true, " costs 8 iron", inv, ChatColor.GRAY);
-        addItem(14, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron ingots", inv, ChatColor.GRAY);
-        addItem(16, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold ingots", inv, ChatColor.GRAY);
-        addItem(18, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", inv, ChatColor.GRAY);
+        if (sectionIndex == 1) {
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(1, new ItemStack(woolMat), false, "Blocks", inv, color);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", inv, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", inv, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", inv, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", inv, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        } else if (sectionIndex == 3) {
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", inv, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", inv, color);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", inv, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", inv, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", inv, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        } else if (sectionIndex == 5) {
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", inv, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", inv, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", inv, color);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", inv, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", inv, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        } else if(sectionIndex == 7) {
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", inv, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", inv, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", inv, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", inv, color);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(9, new ItemStack(Material.POTION), false, "Potions", inv, ChatColor.GRAY);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        } else if(sectionIndex == 9) {
+            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", inv, ChatColor.GRAY);
+            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", inv, ChatColor.GRAY);
+            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", inv, ChatColor.GRAY);
+            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", inv, ChatColor.GRAY);
+            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+            ItemStack potion = new ItemStack(Material.POTION);
+            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+            potionMeta.setBasePotionType(PotionType.LEAPING);
+            potion.setItemMeta(potionMeta);
+            addItem(9, new ItemStack(potion), false, "Potions", inv, color);
+            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", inv, ChatColor.BLACK);
+        }
 
         return inv;
     }
 
-    private void setupBlueInventory() {
-        blueI = createShopInventory(Material.BLUE_WOOL, Material.BLUE_WOOL, ChatColor.BLUE);
-    }
-
-    private void setupYellowInventory() {
-        yellowI = createShopInventory(Material.GREEN_WOOL, Material.YELLOW_WOOL, ChatColor.YELLOW);
-    }
-
-    private void setupGreenInventory() {
-        greenI = createShopInventory(Material.YELLOW_WOOL, Material.GREEN_WOOL, ChatColor.GREEN);
-    }
-
-    private void setupRedInventory() {
-        redI = createShopInventory(Material.RED_WOOL, Material.RED_WOOL, ChatColor.RED);
-    }
-
-    @EventHandler
-    public void onShopOpen(InventoryOpenEvent event) {
-        if (event.getInventory() != redI||event.getInventory() != blueI||event.getInventory() != yellowI||event.getInventory() != greenI) {
-            return;
-        }
-        if (event.getPlayer().equals(redPlayer)) {
-            isRedInBlockSec = true;
-        }
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        Player player = plugin.getServer().getPlayer(event.getWhoClicked().getName());
-        Inventory playerInventory = player.getInventory();
-        if (event.getInventory() != redI||event.getInventory() != blueI||event.getInventory() != yellowI||event.getInventory() != greenI) {
-            return;
-        }
-        isRedInBlockSec = true;
+    public Inventory setupTeamItemShop(Material woolmat, ChatColor color, int sectionIndex, Player player) {
         short swordType = -1;
         short armorType = -1;
         short pickaxeType = -1;
         short axeType = -1;
-        int ironAmount = 0;
-        int goldAmount = 0;
-        int emeraldAmount = 0;
-        for (ItemStack i : playerInventory) {
-            if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                ironAmount ++;
-            } else if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                goldAmount ++;
-            } else if (i.equals(new ItemStack(Material.EMERALD))) {
-                emeraldAmount ++;
-            }
+        for (ItemStack i : player.getInventory()) {
             if (i.equals(new ItemStack(Material.WOODEN_SWORD))) {
                 swordType = 0;
             } else if (i.equals(new ItemStack(Material.STONE_SWORD))) {
@@ -484,1719 +511,1260 @@ public class BedwarsGame implements Listener {
                 axeType = 3;
             }
         }
-        if (event.getSlot() == 1 && event.getInventory().equals(redI)) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.RED_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron", blueI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold", blueI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
+        if (sectionIndex == 1) {
+            Inventory inv = setupSectionItemShopInventory(woolmat, color, 1);
+            addItem(24, new ItemStack(woolmat, 16), true, " costs 8 iron", inv, ChatColor.GRAY);
+            addItem(26, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron", inv, ChatColor.GRAY);
+            addItem(28, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold", inv, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", inv, ChatColor.GRAY);
+            return inv;
+        } else if (sectionIndex == 3) {
+            Inventory inv = setupSectionItemShopInventory(woolmat, color, 3);
+            if (swordType == 0) {
+                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", inv, ChatColor.GRAY);
+            } else if (swordType == 1) {
+                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", inv, ChatColor.GRAY);
+            } else if (swordType == 2) {
+                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", inv, ChatColor.GRAY);
+            } else if (swordType == 3) {
+                addItem(24, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade sword anymore!", inv, ChatColor.GRAY);
+            }
+            if (armorType == 0) {
+                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", inv, ChatColor.GRAY);
+            } else if (armorType == 1) {
+                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", inv, ChatColor.GRAY);
+            } else if (armorType == 2) {
+                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", inv, ChatColor.GRAY);
+            } else if (armorType == 3) {
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", inv, ChatColor.GRAY);
+            }
+            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", inv, ChatColor.GRAY);
+            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", inv, ChatColor.GRAY);
+            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", inv, ChatColor.GRAY);
+            addItem(34, new ItemStack(Material.ARROW, 16), true, " costs 64 iron", inv, ChatColor.GRAY);
+            return inv;
+        } else if(sectionIndex == 5) {
+            Inventory inv = setupSectionItemShopInventory(woolmat, color, 5);
+            if (pickaxeType == 0) {
+                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", inv, ChatColor.GRAY);
+            } else if (pickaxeType == 1) {
+                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", inv, ChatColor.GRAY);
+            } else if (pickaxeType == 2) {
+                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", inv, ChatColor.GRAY);
+            } else if (pickaxeType == 3) {
+                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", inv, ChatColor.GRAY);
+            }
+            short dm = 1;
+            if (axeType == 0) {
+                addItem(26, new ItemStack(Material.STONE_PICKAXE, 1, dm), true, " costs 10 iron", inv, ChatColor.GRAY);
+            } else if (axeType == 1) {
+                addItem(26, new ItemStack(Material.IRON_PICKAXE, 1, dm), true, " costs 5 gold", inv, ChatColor.GRAY);
+            } else if (axeType == 2) {
+                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", inv, ChatColor.GRAY);
+            } else if (axeType == 3) {
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", inv, ChatColor.GRAY);
+            }
+            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", inv, ChatColor.GRAY);
+            return inv;
+        } else if(sectionIndex == 7) {
+            Inventory inv = setupSectionItemShopInventory(woolmat, color, 5);
+            if (pickaxeType == 0) {
+                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", inv, ChatColor.GRAY);
+            } else if (pickaxeType == 1) {
+                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", inv, ChatColor.GRAY);
+            } else if (pickaxeType == 2) {
+                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", inv, ChatColor.GRAY);
+            } else if (pickaxeType == 3) {
+                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", inv, ChatColor.GRAY);
+            }
+            short dm = 1;
+            if (axeType == 0) {
+                addItem(26, new ItemStack(Material.STONE_PICKAXE, 1, dm), true, " costs 10 iron", inv, ChatColor.GRAY);
+            } else if (axeType == 1) {
+                addItem(26, new ItemStack(Material.IRON_PICKAXE, 1, dm), true, " costs 5 gold", inv, ChatColor.GRAY);
+            } else if (axeType == 2) {
+                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", inv, ChatColor.GRAY);
+            } else if (axeType == 3) {
+                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", inv, ChatColor.GRAY);
+            }
+            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", inv, ChatColor.GRAY);
+            return inv;
+        } else if (sectionIndex == 9) {
+            Inventory inv = setupSectionItemShopInventory(woolmat, color, 9);
+
+            ItemStack strenghtPotion = new ItemStack(Material.POTION);
+            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+            strenghtPotion.setItemMeta(strenghtPotionMeta);
+            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", inv, ChatColor.GRAY);
+
+            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", inv, ChatColor.GRAY);
+
+            ItemStack jumpPotion = new ItemStack(Material.POTION);
+            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+            jumpPotion.setItemMeta(jumpPotionMeta);
+            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", inv, ChatColor.GRAY);
+
+            ItemStack levitationPotion = new ItemStack(Material.POTION);
+            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+            levitationPotionMeta.setBasePotionType(PotionType.WATER);
+            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+            levitationPotion.setItemMeta(levitationPotionMeta);
+            addItem(30, new ItemStack(levitationPotion), false, "potion of costs 2 emerald", inv, ChatColor.GRAY);
+
+            return inv;
+        }
+        return null;
+    }
+
+    public boolean buyAndReplaceItem(ItemStack removeItem,ItemStack getItem, int costing, Material matType, Player player) {
+        int ironAmount = 0;
+        int goldAmount = 0;
+        int emeraldAmount = 0;
+        for (ItemStack i : player.getInventory()) {
+            if (i.equals(new ItemStack(Material.IRON_INGOT))) {
+                ironAmount ++;
+            } else if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                goldAmount ++;
+            } else if (i.equals(new ItemStack(Material.EMERALD))) {
+                goldAmount ++;
+            }
+        }
+        if (matType.equals(Material.IRON_INGOT)) {
+            if (ironAmount >= costing) {
+                player.getInventory().removeItem(removeItem);
+                player.getInventory().addItem(getItem);
+                removeItems(new ItemStack(Material.IRON_INGOT), player, costing);
+                return true;
+            } else {
+                player.sendMessage("You don't have iron enough");
+                return false;
+            }
+        } else if (matType.equals(Material.GOLD_INGOT)) {
+            if (goldAmount >= costing) {
+                player.getInventory().removeItem(removeItem);
+                player.getInventory().addItem(getItem);
+                removeItems(new ItemStack(Material.GOLD_INGOT), player, costing);
+                return true;
+            } else {
+                player.sendMessage("You don't have gold enough");
+                return false;
+            }
+        } else if (matType.equals(Material.EMERALD)) {
+            if (emeraldAmount >= costing) {
+                player.getInventory().removeItem(removeItem);
+                player.getInventory().addItem(getItem);
+                removeItems(new ItemStack(Material.EMERALD), player, costing);
+                return true;
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean buyAndReplaceArmor(short armorType, int costing, Material matType, Player player, Color color, TrimMaterial trimMaterial) {
+        int ironAmount = 0;
+        int goldAmount = 0;
+        int emeraldAmount = 0;
+        for (ItemStack i : player.getInventory()) {
+            if (i.equals(new ItemStack(Material.IRON_INGOT))) {
+                ironAmount ++;
+            } else if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                goldAmount ++;
+            } else if (i.equals(new ItemStack(Material.EMERALD))) {
+                goldAmount ++;
+            }
+        }
+        if (matType.equals(Material.IRON_INGOT)) {
+            if (ironAmount >= costing) {
+                equipTeamArmor(player, color, armorType, trimMaterial);
+                removeItems(new ItemStack(Material.IRON_INGOT), player, costing);
+                return true;
+            } else {
+                player.sendMessage("You don't have iron enough");
+                return false;
+            }
+        } else if (matType.equals(Material.GOLD_INGOT)) {
+            if (goldAmount >= costing) {
+                equipTeamArmor(player, color, armorType, trimMaterial);
+                removeItems(new ItemStack(Material.GOLD_INGOT), player, costing);
+                return true;
+            } else {
+                player.sendMessage("You don't have gold enough");
+                return false;
+            }
+        } else if (matType.equals(Material.EMERALD)) {
+            if (emeraldAmount >= costing) {
+                equipTeamArmor(player, color, armorType, trimMaterial);
+                removeItems(new ItemStack(Material.EMERALD), player, costing);
+                return true;
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public void buyItem(ItemStack item, int costing, Material matType, Player player) {
+        int ironAmount = 0;
+        int goldAmount = 0;
+        int emeraldAmount = 0;
+        for (ItemStack i : player.getInventory()) {
+            if (i.equals(new ItemStack(Material.IRON_INGOT))) {
+                ironAmount ++;
+            } else if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
+                goldAmount ++;
+            } else if (i.equals(new ItemStack(Material.EMERALD))) {
+                goldAmount ++;
+            }
+        }
+        if (matType.equals(Material.IRON_INGOT)) {
+            if (ironAmount >= costing) {
+                player.getInventory().addItem(item);
+                removeItems(new ItemStack(Material.IRON_INGOT), player, costing);
+            } else {
+                player.sendMessage("You don't have iron enough");
+                return;
+            }
+        } else if (matType.equals(Material.GOLD_INGOT)) {
+            if (goldAmount >= costing) {
+                player.getInventory().addItem(item);
+                removeItems(new ItemStack(Material.GOLD_INGOT), player, costing);
+            } else {
+                player.sendMessage("You don't have gold enough");
+                return;
+            }
+        } else if (matType.equals(Material.EMERALD)) {
+            if (emeraldAmount >= costing) {
+                player.getInventory().addItem(item);
+                removeItems(new ItemStack(Material.EMERALD), player, costing);
+            } else {
+                player.sendMessage("You don't have emerald enough");
+                return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onShopOpen(InventoryOpenEvent event) {
+        if (event.getInventory() != redI||event.getInventory() != blueI||event.getInventory() != yellowI||event.getInventory() != greenI) {
+            return;
+        }
+        if (event.getPlayer().equals(redPlayer)) {
             isRedInBlockSec = true;
-            isRedInCombatSec = false;
-            isRedInToolsSec = false;
-            isRedInUtilitiesSec = false;
-            isRedInPotionsSec = false;
+        } else if (event.getPlayer().equals(bluePlayer)) {
+            isBlueInBlockSec = true;
+        } else if (event.getPlayer().equals(yellowPlayer)) {
+            isYellowInBlockSec = true;
+        } else if (event.getPlayer().equals(greenPlayer)) {
+            isGreenInBlockSec = true;
+        }
+    }
+
+    @EventHandler
+    public void onShopClick(PlayerInteractEntityEvent event) {
+        if (!event.getRightClicked().equals(EntityType.VILLAGER)) {
             return;
-        } else if (event.getSlot() == 3 && event.getInventory().equals(redI)) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", redI, ChatColor.RED);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (swordType == 0) {
-                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", redI, ChatColor.GRAY);
-            } else if (swordType == 1) {
-                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", redI, ChatColor.GRAY);
-            } else if (swordType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", redI, ChatColor.GRAY);
-            } else if (swordType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade sword anymore!", redI, ChatColor.GRAY);
-            }
-            if (armorType == 0) {
-                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 1) {
-                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", redI, ChatColor.GRAY);
-            } else if (armorType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", redI, ChatColor.GRAY);
-            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", redI, ChatColor.GRAY);
-            addItem(34, new ItemStack(Material.ARROW, 16), true, " costs 64 iron", redI, ChatColor.GRAY);
-            isRedInBlockSec = false;
-            isRedInCombatSec = true;
-            isRedInToolsSec = false;
-            isRedInUtilitiesSec = false;
-            isRedInPotionsSec = false;
+        }
+        if (event.getPlayer().equals(redPlayer)) {
+            redPlayer.openInventory(redI);
+        } else if (event.getPlayer().equals(bluePlayer)) {
+            bluePlayer.openInventory(blueI);
+        } else if (event.getPlayer().equals(yellowPlayer)) {
+            yellowPlayer.openInventory(yellowI);
+        } else if (event.getPlayer().equals(greenPlayer)) {
+            yellowPlayer.openInventory(greenI);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        Player player = plugin.getServer().getPlayer(event.getWhoClicked().getName());
+        Inventory playerInventory = player.getInventory();
+
+        short swordType = -1;
+        short armorType = -1;
+        short pickaxeType = -1;
+        short axeType = -1;
+
+        if (event.getInventory() != redI||event.getInventory() != blueI||event.getInventory() != yellowI||event.getInventory() != greenI) {
             return;
-        } else if (event.getSlot() == 5 && event.getInventory().equals(redI)) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.RED);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (pickaxeType == 0) {
-                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 1) {
-                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
+        }
+        for (ItemStack i : player.getInventory()) {
+            if (i.equals(new ItemStack(Material.WOODEN_SWORD))) {
+                swordType = 0;
+            } else if (i.equals(new ItemStack(Material.STONE_SWORD))) {
+                swordType = 1;
+            } else if (i.equals(new ItemStack(Material.IRON_SWORD))) {
+                swordType = 2;
+            } else if (i.equals(new ItemStack(Material.DIAMOND_SWORD))) {
+                swordType = 3;
             }
-            short dm = 1;
-            if (axeType == 0) {
-                addItem(26, new ItemStack(Material.STONE_PICKAXE, 1, dm), true, " costs 10 iron", redI, ChatColor.GRAY);
-            } else if (axeType == 1) {
-                addItem(26, new ItemStack(Material.IRON_PICKAXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
-            } else if (axeType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
-            } else if (axeType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
+            if (i.equals(new ItemStack(Material.LEATHER_BOOTS))) {
+                armorType = 0;
+            } else if (i.equals(new ItemStack(Material.CHAINMAIL_BOOTS))) {
+                armorType = 1;
+            } else if (i.equals(new ItemStack(Material.IRON_BOOTS))) {
+                armorType = 2;
+            } else if (i.equals(new ItemStack(Material.DIAMOND_BOOTS))) {
+                armorType = 3;
             }
-            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
-            isRedInBlockSec = false;
-            isRedInCombatSec = false;
-            isRedInToolsSec = true;
-            isRedInUtilitiesSec = false;
-            isRedInPotionsSec = false;
-            return;
-        } else if (event.getSlot() == 7 && event.getInventory().equals(redI)) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(25, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
-            addItem(27, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            addItem(29, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
-            addItem(31, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            isRedInBlockSec = false;
-            isRedInCombatSec = false;
-            isRedInToolsSec = false;
-            isRedInUtilitiesSec = true;
-            isRedInPotionsSec = false;
-            return;
-        } else if (event.getSlot() == 9 && event.getInventory().equals(redI)) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            ItemStack potion = new ItemStack(Material.POTION);
-            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-            potionMeta.setBasePotionType(PotionType.LEAPING);
-            potion.setItemMeta(potionMeta);
-            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+            if (i.equals(new ItemStack(Material.WOODEN_PICKAXE))) {
+                pickaxeType = 0;
+            } else if (i.equals(new ItemStack(Material.STONE_PICKAXE))) {
+                pickaxeType = 1;
+            } else if (i.equals(new ItemStack(Material.IRON_PICKAXE))) {
+                pickaxeType = 2;
+            } else if (i.equals(new ItemStack(Material.DIAMOND_PICKAXE))) {
+                pickaxeType = 3;
+            }
+            if (i.equals(new ItemStack(Material.WOODEN_AXE))) {
+                axeType = 0;
+            } else if (i.equals(new ItemStack(Material.STONE_AXE))) {
+                axeType = 1;
+            } else if (i.equals(new ItemStack(Material.IRON_AXE))) {
+                axeType = 2;
+            } else if (i.equals(new ItemStack(Material.DIAMOND_AXE))) {
+                axeType = 3;
+            }
+        }
+        if (event.getInventory().equals(redI)) {
+            int index = event.getSlot();
+            Material woolmat = Material.RED_WOOL;
+            ChatColor color = ChatColor.RED;
+            TrimMaterial trimMaterial = TrimMaterial.REDSTONE;
+            Color armorColor = Color.RED;
+            boolean block = isRedInBlockSec;
+            boolean combat = isRedInCombatSec;
+            boolean tools = isRedInToolsSec;
+            boolean utilities = isRedInUtilitiesSec;
+            boolean potions = isRedInPotionsSec;
 
-            ItemStack strenghtPotion = new ItemStack(Material.POTION);
-            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
-            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
-            strenghtPotion.setItemMeta(strenghtPotionMeta);
-            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+            if (index == 1) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isRedInBlockSec = true;
+                isRedInCombatSec = false;
+                isRedInToolsSec = false;
+                isRedInUtilitiesSec = false;
+                isRedInPotionsSec = false;
+            } else if (index == 3) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isRedInBlockSec = false;
+                isRedInCombatSec = true;
+                isRedInToolsSec = false;
+                isRedInUtilitiesSec = false;
+                isRedInPotionsSec = false;
+            } else if (index == 5) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isRedInBlockSec = false;
+                isRedInCombatSec = false;
+                isRedInToolsSec = true;
+                isRedInUtilitiesSec = false;
+                isRedInPotionsSec = false;
+            } else if (index == 7) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isRedInBlockSec = false;
+                isRedInCombatSec = false;
+                isRedInToolsSec = false;
+                isRedInUtilitiesSec = true;
+                isRedInPotionsSec = false;
+            } else if (index == 9) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isRedInBlockSec = false;
+                isRedInCombatSec = false;
+                isRedInToolsSec = false;
+                isRedInUtilitiesSec = false;
+                isRedInPotionsSec = true;
+            } else if (index == 24 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(woolmat), 8, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 26 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.OAK_PLANKS), 20, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 28 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.END_STONE), 2, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30  && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.OBSIDIAN), 1, Material.EMERALD, player);
+            } else if (event.getSlot() == 24 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                if (swordType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_SWORD),
+                            new ItemStack(Material.STONE_SWORD),
+                            14,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (swordType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_SWORD),
+                            new ItemStack(Material.IRON_SWORD),
+                            8,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (swordType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.IRON_SWORD),
+                            new ItemStack(Material.DIAMOND_SWORD),
+                            4,
+                            Material.EMERALD,
+                            player);
+                }
+            } else if (event.getSlot() == 26 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                if (armorType == 0) {
+                    buyAndReplaceArmor(armorType, 16, Material.IRON_INGOT, player, armorColor, trimMaterial);
+                } else if (armorType == 1) {
+                    buyAndReplaceArmor(armorType, 32, Material.IRON_INGOT, player, armorColor, trimMaterial);
+                } else if (armorType == 2) {
+                    buyAndReplaceArmor(armorType, 6, Material.EMERALD, player, armorColor, trimMaterial);
+                }
+            } else if (event.getSlot() == 28 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.SNOWBALL), 2, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.BOW), 12, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 32 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.ARROW), 4, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 34 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.ARROW, 16), 64, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                if (pickaxeType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_PICKAXE),
+                            new ItemStack(Material.STONE_PICKAXE),
+                            10,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (pickaxeType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_PICKAXE),
+                            new ItemStack(Material.IRON_PICKAXE),
+                            5,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (pickaxeType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.IRON_PICKAXE),
+                            new ItemStack(Material.DIAMOND_PICKAXE),
+                            10,
+                            Material.GOLD_INGOT,
+                            player);
+                }
+            } else if (event.getSlot() == 26 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                if (axeType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
+                            new ItemStack(Material.STONE_AXE),
+                            10,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (axeType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_AXE),
+                            new ItemStack(Material.IRON_AXE),
+                            5,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (axeType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
+                            new ItemStack(Material.STONE_AXE),
+                            10,
+                            Material.GOLD_INGOT,
+                            player);
+                }
+            } else if (event.getSlot() == 28 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                buyItem(new ItemStack(Material.SHEARS), 17, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.GOLDEN_APPLE), 3, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 25 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.FIRE_CHARGE), 30, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 26 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.WIND_CHARGE), 25, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 27 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.ENDER_PEARL), 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 28 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.FISHING_ROD), 3, Material.EMERALD, player);
+            } else if (event.getSlot() == 29 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.CHORUS_FRUIT), 6, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), 120, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
-            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
-            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
-            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
-            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+                ItemStack strenghtPotion = new ItemStack(Material.POTION);
+                PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+                strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+                strenghtPotion.setItemMeta(strenghtPotionMeta);
+                buyItem(strenghtPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 26 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-            ItemStack jumpPotion = new ItemStack(Material.POTION);
-            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
-            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
-            jumpPotion.setItemMeta(jumpPotionMeta);
-            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+                ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+                PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+                invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+                invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+                buyItem(invisibilityPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 28 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-            ItemStack levitationPotion = new ItemStack(Material.POTION);
-            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
-            levitationPotionMeta.setBasePotionType(PotionType.WATER);
-            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
-            levitationPotion.setItemMeta(levitationPotionMeta);
-            addItem(30, new ItemStack(levitationPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+                ItemStack jumpPotion = new ItemStack(Material.POTION);
+                PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+                jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+                jumpPotion.setItemMeta(jumpPotionMeta);;
+                buyItem(jumpPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 30 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-            isRedInBlockSec = false;
-            isRedInCombatSec = false;
-            isRedInToolsSec = false;
-            isRedInUtilitiesSec = false;
-            isRedInPotionsSec = true;
-            return;
-        } else if (event.getSlot() == 24 && event.getInventory().equals(redI) && isRedInBlockSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.RED_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron", blueI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold", blueI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
-            if (ironAmount >= 8) {
-                int neededAmount = 8;
-                playerInventory.addItem(new ItemStack(Material.RED_WOOL, 16));
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                        if(i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount --;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have iron enough");
-                return;
+                ItemStack levitationPotion = new ItemStack(Material.POTION);
+                PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+                levitationPotionMeta.setBasePotionType(PotionType.WATER);
+                levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+                levitationPotion.setItemMeta(levitationPotionMeta);
+                buyItem(levitationPotion, 2, Material.EMERALD, player);
             }
-        } else if (event.getSlot() == 26 && event.getInventory().equals(redI) && isRedInBlockSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.RED_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron", blueI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold", blueI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
-            if (ironAmount >= 20) {
-                int neededAmount = 20;
-                playerInventory.addItem(new ItemStack(Material.OAK_PLANKS, 8));
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                        if(i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount --;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have iron enough");
-                return;
-            }
-        } else if (event.getSlot() == 28 && event.getInventory().equals(redI) && isRedInBlockSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.RED_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron", blueI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold", blueI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
-            if (goldAmount >= 2) {
-                int neededAmount = 2;
-                playerInventory.addItem(new ItemStack(Material.END_STONE, 4));
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                        if(i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount --;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have gold enough");
-                return;
-            }
-        } else if (event.getSlot() == 30 && event.getInventory().equals(redI) && isRedInBlockSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.RED_WOOL), false, "Blocks", blueI, ChatColor.RED);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.RED_WOOL, 16), true, " costs 8 iron", blueI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.OAK_PLANKS, 8), true, " costs 20 iron", blueI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.END_STONE, 4), true, " costs 2 gold", blueI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.OBSIDIAN, 2), true, " costs 1 emerald", blueI, ChatColor.GRAY);
-            if (emeraldAmount >= 1) {
-                int neededAmount = 1;
-                playerInventory.addItem(new ItemStack(Material.OBSIDIAN, 2));
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.EMERALD))) {
-                        if(i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount --;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have emerald enough");
-                return;
-            }
-        } else if (event.getSlot() == 24 && event.getInventory().equals(redI) && isRedInCombatSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", redI, ChatColor.RED);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (swordType == 0) {
-                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", redI, ChatColor.GRAY);
-                if (ironAmount >= 14) {
-                    int neededAmount = 14;
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.WOODEN_SWORD)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.STONE_SWORD));
-                        }
-                    }
-                    redSword ++;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have iron enough");
-                    return;
-                }
-            } else if (swordType == 1) {
-                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", redI, ChatColor.GRAY);
-                if (goldAmount >= 8) {
-                    int neededAmount = 8;
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.WOODEN_SWORD)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.IRON_SWORD));
-                        }
-                    }
-                    redSword ++;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have gold enough");
-                    return;
-                }
-            } else if (swordType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", redI, ChatColor.GRAY);
-                if (emeraldAmount >= 4) {
-                    int neededAmount = 8;
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.WOODEN_SWORD)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.DIAMOND_SWORD));
-                        }
-                    }
-                    redSword ++;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.EMERALD))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have emerald enough");
-                    return;
-                }
-            } else if (swordType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " can't upgrade sword anymore!", redI, ChatColor.GRAY);
-                player.sendMessage(ChatColor.RED + "can't upgrade sword anymore!");
-            }
-            if (armorType == 0) {
-                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 1) {
-                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", redI, ChatColor.GRAY);
-                return;
-            } else if (armorType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", redI, ChatColor.GRAY);
-            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", redI, ChatColor.GRAY);
-            addItem(34, new ItemStack(Material.ARROW, 16), true, " costs 64 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 26 && event.getInventory().equals(redI) && isRedInCombatSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", redI, ChatColor.RED);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (swordType == 0) {
-                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", redI, ChatColor.GRAY);
-            } else if (swordType == 1) {
-                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", redI, ChatColor.GRAY);
-            } else if (swordType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", redI, ChatColor.GRAY);
-            } else if (swordType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " can't upgrade sword anymore!", redI, ChatColor.GRAY);
-            }
-            if (armorType == 0) {
-                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", redI, ChatColor.GRAY);
-                if (ironAmount >= 8) {
-                    int neededAmount = 8;
-                    ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                    LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                    helmetMeta.setColor(Color.RED);
-                    helmet.setItemMeta(helmetMeta);
-                    player.getInventory().setHelmet(helmet);
+        } else if (event.getInventory().equals(blueI)) {
+            int index = event.getSlot();
+            Material woolmat = Material.BLUE_WOOL;
+            ChatColor color = ChatColor.BLUE;
+            TrimMaterial trimMaterial = TrimMaterial.LAPIS;
+            Color armorColor = Color.BLUE;
+            boolean block = isBlueInBlockSec;
+            boolean combat = isBlueInCombatSec;
+            boolean tools = isBlueInToolsSec;
+            boolean utilities = isBlueInUtilitiesSec;
+            boolean potions = isBlueInPotionsSec;
 
-                    ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                    LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                    chestplateMeta.setColor(Color.RED);
-                    chestplate.setItemMeta(chestplateMeta);
-                    player.getInventory().setChestplate(chestplate);
+            if (index == 1) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isBlueInBlockSec = true;
+                isBlueInCombatSec = false;
+                isBlueInToolsSec = false;
+                isBlueInUtilitiesSec = false;
+                isBlueInPotionsSec = false;
+            } else if (index == 3) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isBlueInBlockSec = false;
+                isBlueInCombatSec = true;
+                isBlueInToolsSec = false;
+                isBlueInUtilitiesSec = false;
+                isBlueInPotionsSec = false;
+            } else if (index == 5) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isBlueInBlockSec = false;
+                isBlueInCombatSec = false;
+                isBlueInToolsSec = true;
+                isBlueInUtilitiesSec = false;
+                isBlueInPotionsSec = false;
+            } else if (index == 7) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isBlueInBlockSec = false;
+                isBlueInCombatSec = false;
+                isBlueInToolsSec = false;
+                isBlueInUtilitiesSec = true;
+                isBlueInPotionsSec = false;
+            } else if (index == 9) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isBlueInBlockSec = false;
+                isBlueInCombatSec = false;
+                isBlueInToolsSec = false;
+                isBlueInUtilitiesSec = false;
+                isBlueInPotionsSec = true;
+            } else if (index == 24 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(woolmat), 8, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 26 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.OAK_PLANKS), 20, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 28 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.END_STONE), 2, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30  && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.OBSIDIAN), 1, Material.EMERALD, player);
+            } else if (event.getSlot() == 24 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                if (swordType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_SWORD),
+                            new ItemStack(Material.STONE_SWORD),
+                            14,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (swordType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_SWORD),
+                            new ItemStack(Material.IRON_SWORD),
+                            8,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (swordType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.IRON_SWORD),
+                            new ItemStack(Material.DIAMOND_SWORD),
+                            4,
+                            Material.EMERALD,
+                            player);
+                }
+            } else if (event.getSlot() == 26 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                if (armorType == 0) {
+                    buyAndReplaceArmor(armorType, 16, Material.IRON_INGOT, player, armorColor, trimMaterial);
+                } else if (armorType == 1) {
+                    buyAndReplaceArmor(armorType, 32, Material.IRON_INGOT, player, armorColor, trimMaterial);
+                } else if (armorType == 2) {
+                    buyAndReplaceArmor(armorType, 6, Material.EMERALD, player, armorColor, trimMaterial);
+                }
+            } else if (event.getSlot() == 28 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.SNOWBALL), 2, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.BOW), 12, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 32 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.ARROW), 4, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 34 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.ARROW, 16), 64, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                if (pickaxeType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_PICKAXE),
+                            new ItemStack(Material.STONE_PICKAXE),
+                            10,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (pickaxeType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_PICKAXE),
+                            new ItemStack(Material.IRON_PICKAXE),
+                            5,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (pickaxeType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.IRON_PICKAXE),
+                            new ItemStack(Material.DIAMOND_PICKAXE),
+                            10,
+                            Material.GOLD_INGOT,
+                            player);
+                }
+            } else if (event.getSlot() == 26 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                if (axeType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
+                            new ItemStack(Material.STONE_AXE),
+                            10,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (axeType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_AXE),
+                            new ItemStack(Material.IRON_AXE),
+                            5,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (axeType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
+                            new ItemStack(Material.STONE_AXE),
+                            10,
+                            Material.GOLD_INGOT,
+                            player);
+                }
+            } else if (event.getSlot() == 28 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                buyItem(new ItemStack(Material.SHEARS), 17, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.GOLDEN_APPLE), 3, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 25 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.FIRE_CHARGE), 30, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 26 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.WIND_CHARGE), 25, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 27 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.ENDER_PEARL), 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 28 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.FISHING_ROD), 3, Material.EMERALD, player);
+            } else if (event.getSlot() == 29 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.CHORUS_FRUIT), 6, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), 120, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-                    ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS, 1);
-                    ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                    leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                    leggings.setItemMeta(leggingsMeta);
-                    player.getInventory().setLeggings(leggings);
+                ItemStack strenghtPotion = new ItemStack(Material.POTION);
+                PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+                strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+                strenghtPotion.setItemMeta(strenghtPotionMeta);
+                buyItem(strenghtPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 26 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-                    ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS, 1);
-                    ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                    bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                    boots.setItemMeta(bootsMeta);
-                    player.getInventory().setBoots(boots);
-                    redArmor ++;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have iron enough");
-                    return;
-                }
-            } else if (armorType == 1) {
-                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", redI, ChatColor.GRAY);
-                if (ironAmount >= 32) {
-                    int neededAmount = 32;
-                    ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                    LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                    helmetMeta.setColor(Color.RED);
-                    helmet.setItemMeta(helmetMeta);
-                    player.getInventory().setHelmet(helmet);
+                ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+                PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+                invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+                invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+                buyItem(invisibilityPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 28 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-                    ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                    LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                    chestplateMeta.setColor(Color.RED);
-                    chestplate.setItemMeta(chestplateMeta);
-                    player.getInventory().setChestplate(chestplate);
+                ItemStack jumpPotion = new ItemStack(Material.POTION);
+                PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+                jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+                jumpPotion.setItemMeta(jumpPotionMeta);;
+                buyItem(jumpPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 30 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-                    ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS, 1);
-                    ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                    leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                    leggings.setItemMeta(leggingsMeta);
-                    player.getInventory().setLeggings(leggings);
+                ItemStack levitationPotion = new ItemStack(Material.POTION);
+                PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+                levitationPotionMeta.setBasePotionType(PotionType.WATER);
+                levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+                levitationPotion.setItemMeta(levitationPotionMeta);
+                buyItem(levitationPotion, 2, Material.EMERALD, player);
+            }
+        } else if (event.getInventory().equals(yellowI)) {
+            int index = event.getSlot();
+            Material woolmat = Material.YELLOW_WOOL;
+            ChatColor color = ChatColor.YELLOW;
+            TrimMaterial trimMaterial = TrimMaterial.GOLD;
+            Color armorColor = Color.YELLOW;
+            boolean block = isYellowInBlockSec;
+            boolean combat = isYellowInCombatSec;
+            boolean tools = isYellowInToolsSec;
+            boolean utilities = isYellowInUtilitiesSec;
+            boolean potions = isYellowInPotionsSec;
 
-                    ItemStack boots = new ItemStack(Material.IRON_BOOTS, 1);
-                    ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                    bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                    boots.setItemMeta(bootsMeta);
-                    player.getInventory().setBoots(boots);
-                    redArmor ++;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have iron enough");
-                    return;
+            if (index == 1) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isYellowInBlockSec = true;
+                isYellowInCombatSec = false;
+                isYellowInToolsSec = false;
+                isYellowInUtilitiesSec = false;
+                isYellowInPotionsSec = false;
+            } else if (index == 3) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isYellowInBlockSec = false;
+                isYellowInCombatSec = true;
+                isYellowInToolsSec = false;
+                isYellowInUtilitiesSec = false;
+                isYellowInPotionsSec = false;
+            } else if (index == 5) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isYellowInBlockSec = false;
+                isYellowInCombatSec = false;
+                isYellowInToolsSec = true;
+                isYellowInUtilitiesSec = false;
+                isYellowInPotionsSec = false;
+            } else if (index == 7) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isYellowInBlockSec = false;
+                isYellowInCombatSec = false;
+                isYellowInToolsSec = false;
+                isYellowInUtilitiesSec = true;
+                isYellowInPotionsSec = false;
+            } else if (index == 9) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isYellowInBlockSec = false;
+                isYellowInCombatSec = false;
+                isYellowInToolsSec = false;
+                isYellowInUtilitiesSec = false;
+                isYellowInPotionsSec = true;
+            } else if (index == 24 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(woolmat), 8, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 26 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.OAK_PLANKS), 20, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 28 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.END_STONE), 2, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30  && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.OBSIDIAN), 1, Material.EMERALD, player);
+            } else if (event.getSlot() == 24 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                if (swordType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_SWORD),
+                            new ItemStack(Material.STONE_SWORD),
+                            14,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (swordType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_SWORD),
+                            new ItemStack(Material.IRON_SWORD),
+                            8,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (swordType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.IRON_SWORD),
+                            new ItemStack(Material.DIAMOND_SWORD),
+                            4,
+                            Material.EMERALD,
+                            player);
                 }
-            } else if (armorType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", redI, ChatColor.GRAY);
-                if (emeraldAmount >= 6) {
-                    int neededAmount = 6;
-                    ItemStack helmet = new ItemStack(Material.LEATHER_HELMET, 1);
-                    LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-                    helmetMeta.setColor(Color.RED);
-                    helmet.setItemMeta(helmetMeta);
-                    player.getInventory().setHelmet(helmet);
+            } else if (event.getSlot() == 26 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                if (armorType == 0) {
+                    buyAndReplaceArmor(armorType, 16, Material.IRON_INGOT, player, armorColor, trimMaterial);
+                } else if (armorType == 1) {
+                    buyAndReplaceArmor(armorType, 32, Material.IRON_INGOT, player, armorColor, trimMaterial);
+                } else if (armorType == 2) {
+                    buyAndReplaceArmor(armorType, 6, Material.EMERALD, player, armorColor, trimMaterial);
+                }
+            } else if (event.getSlot() == 28 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.SNOWBALL), 2, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.BOW), 12, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 32 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.ARROW), 4, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 34 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.ARROW, 16), 64, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                if (pickaxeType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_PICKAXE),
+                            new ItemStack(Material.STONE_PICKAXE),
+                            10,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (pickaxeType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_PICKAXE),
+                            new ItemStack(Material.IRON_PICKAXE),
+                            5,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (pickaxeType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.IRON_PICKAXE),
+                            new ItemStack(Material.DIAMOND_PICKAXE),
+                            10,
+                            Material.GOLD_INGOT,
+                            player);
+                }
+            } else if (event.getSlot() == 26 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                if (axeType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
+                            new ItemStack(Material.STONE_AXE),
+                            10,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (axeType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_AXE),
+                            new ItemStack(Material.IRON_AXE),
+                            5,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (axeType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
+                            new ItemStack(Material.STONE_AXE),
+                            10,
+                            Material.GOLD_INGOT,
+                            player);
+                }
+            } else if (event.getSlot() == 28 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                buyItem(new ItemStack(Material.SHEARS), 17, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.GOLDEN_APPLE), 3, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 25 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.FIRE_CHARGE), 30, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 26 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.WIND_CHARGE), 25, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 27 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.ENDER_PEARL), 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 28 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.FISHING_ROD), 3, Material.EMERALD, player);
+            } else if (event.getSlot() == 29 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.CHORUS_FRUIT), 6, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), 120, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-                    ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-                    LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
-                    chestplateMeta.setColor(Color.RED);
-                    chestplate.setItemMeta(chestplateMeta);
-                    player.getInventory().setChestplate(chestplate);
+                ItemStack strenghtPotion = new ItemStack(Material.POTION);
+                PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+                strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+                strenghtPotion.setItemMeta(strenghtPotionMeta);
+                buyItem(strenghtPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 26 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-                    ItemStack leggings = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                    ArmorMeta leggingsMeta = (ArmorMeta) leggings.getItemMeta();
-                    leggingsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                    leggings.setItemMeta(leggingsMeta);
-                    player.getInventory().setLeggings(leggings);
+                ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+                PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+                invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+                invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+                buyItem(invisibilityPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 28 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-                    ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                    ArmorMeta bootsMeta = (ArmorMeta) boots.getItemMeta();
-                    bootsMeta.setTrim(new ArmorTrim(TrimMaterial.REDSTONE, TrimPattern.WILD));
-                    boots.setItemMeta(bootsMeta);
-                    player.getInventory().setBoots(boots);
-                    redArmor ++;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.EMERALD))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have emerald enough");
-                    return;
-                }
-            } else if (armorType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", redI, ChatColor.GRAY);
-            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", redI, ChatColor.GRAY);
-            addItem(34, new ItemStack(Material.ARROW, 16), true, " costs 64 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 28 && event.getInventory().equals(redI) && isRedInCombatSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", redI, ChatColor.RED);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (swordType == 0) {
-                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", redI, ChatColor.GRAY);
-            } else if (swordType == 1) {
-                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", redI, ChatColor.GRAY);
-            } else if (swordType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", redI, ChatColor.GRAY);
-            } else if (swordType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " can't upgrade sword anymore!", redI, ChatColor.GRAY);
-            }
-            if (armorType == 0) {
-                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 1) {
-                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", redI, ChatColor.GRAY);
-            } else if (armorType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", redI, ChatColor.GRAY);
-            if (goldAmount >= 2) {
-                playerInventory.addItem(new ItemStack(Material.SNOWBALL));
-                int neededAmount = 2;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                        if(i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount --;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have gold enough");
-                return;
-            }
-            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", redI, ChatColor.GRAY);
-            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", redI, ChatColor.GRAY);
-            addItem(34, new ItemStack(Material.ARROW, 16), true, " costs 64 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 30 && event.getInventory().equals(redI) && isRedInCombatSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", redI, ChatColor.RED);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (swordType == 0) {
-                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", redI, ChatColor.GRAY);
-            } else if (swordType == 1) {
-                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", redI, ChatColor.GRAY);
-            } else if (swordType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", redI, ChatColor.GRAY);
-            } else if (swordType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " can't upgrade sword anymore!", redI, ChatColor.GRAY);
-            }
-            if (armorType == 0) {
-                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 1) {
-                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", redI, ChatColor.GRAY);
-            } else if (armorType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", redI, ChatColor.GRAY);
-            if (goldAmount >= 12) {
-                playerInventory.addItem(new ItemStack(Material.BOW));
-                int neededAmount = 12;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                        if(i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount --;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have gold enough");
-                return;
-            }
-            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", redI, ChatColor.GRAY);
-            addItem(34, new ItemStack(Material.ARROW, 16), true, " costs 64 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 32 && event.getInventory().equals(redI) && isRedInCombatSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", redI, ChatColor.RED);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (swordType == 0) {
-                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", redI, ChatColor.GRAY);
-            } else if (swordType == 1) {
-                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", redI, ChatColor.GRAY);
-            } else if (swordType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", redI, ChatColor.GRAY);
-            } else if (swordType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " can't upgrade sword anymore!", redI, ChatColor.GRAY);
-            }
-            if (armorType == 0) {
-                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 1) {
-                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", redI, ChatColor.GRAY);
-            } else if (armorType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", redI, ChatColor.GRAY);
-            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", redI, ChatColor.GRAY);
-            if (ironAmount >= 4) {
-                playerInventory.addItem(new ItemStack(Material.ARROW));
-                int neededAmount = 4;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                        if(i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount --;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have iron enough");
-                return;
-            }
-            addItem(34, new ItemStack(Material.ARROW, 16), true, " costs 64 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 32 && event.getInventory().equals(redI) && isRedInCombatSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.DIAMOND_SWORD), false, "Weapons", redI, ChatColor.RED);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.WOODEN_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (swordType == 0) {
-                addItem(24, new ItemStack(Material.STONE_SWORD), true, " costs 14 iron", redI, ChatColor.GRAY);
-            } else if (swordType == 1) {
-                addItem(24, new ItemStack(Material.IRON_SWORD), true, " costs 8 gold", redI, ChatColor.GRAY);
-            } else if (swordType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_SWORD), true, " costs 4 emerald", redI, ChatColor.GRAY);
-            } else if (swordType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " can't upgrade sword anymore!", redI, ChatColor.GRAY);
-            }
-            if (armorType == 0) {
-                addItem(26, new ItemStack(Material.CHAINMAIL_CHESTPLATE), true, " costs 16 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 1) {
-                addItem(26, new ItemStack(Material.IRON_CHESTPLATE), true, " costs 32 iron", redI, ChatColor.GRAY);
-            } else if (armorType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_CHESTPLATE), true, " costs 6 emeralds", redI, ChatColor.GRAY);
-            } else if (armorType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE), true, " can't upgrade armor anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SNOWBALL), true, " costs 2 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.BOW), true, " costs 12 gold", redI, ChatColor.GRAY);
-            addItem(32, new ItemStack(Material.ARROW), true, " costs 4 iron", redI, ChatColor.GRAY);
-            addItem(34, new ItemStack(Material.ARROW, 16), true, " costs 64 iron", redI, ChatColor.GRAY);
-            if (ironAmount >= 64) {
-                playerInventory.addItem(new ItemStack(Material.ARROW, 64));
-                int neededAmount = 64;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                        if(i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount --;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have iron enough");
-                return;
-            }
-            return;
-        } else if (event.getSlot() == 24 && event.getInventory().equals(redI) && isRedInToolsSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.RED);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (pickaxeType == 0) {
-                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", redI, ChatColor.GRAY);
-                if (ironAmount >= 10) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.WOODEN_PICKAXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.STONE_PICKAXE));
-                        }
-                    }
-                    int neededAmount = 10;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have iron enough");
-                    return;
-                }
-            } else if (pickaxeType == 1) {
-                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", redI, ChatColor.GRAY);
-                if (goldAmount >= 5) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.STONE_PICKAXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.IRON_PICKAXE));
-                        }
-                    }
-                    int neededAmount = 5;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have gold enough");
-                    return;
-                }
-            } else if (pickaxeType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", redI, ChatColor.GRAY);
-                if (goldAmount >= 10) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.IRON_PICKAXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.DIAMOND_PICKAXE));
-                        }
-                    }
-                    int neededAmount = 10;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have gold enough");
-                    return;
-                }
-            } else if (pickaxeType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
-            }
-            short dm = 1;
-            if (axeType == 0) {
-                addItem(26, new ItemStack(Material.STONE_PICKAXE, 1, dm), true, " costs 10 iron", redI, ChatColor.GRAY);
-            } else if (axeType == 1) {
-                addItem(26, new ItemStack(Material.IRON_PICKAXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
-            } else if (axeType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
-            } else if (axeType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 26 && event.getInventory().equals(redI) && isRedInToolsSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.RED);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (pickaxeType == 0) {
-                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 1) {
-                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
-            }
-            short dm = 1;
-            if (axeType == 0) {
-                addItem(26, new ItemStack(Material.STONE_AXE, 1, dm), true, " costs 10 iron", redI, ChatColor.GRAY);
-                if (ironAmount >= 10) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.WOODEN_AXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.STONE_AXE));
-                        }
-                    }
-                    int neededAmount = 10;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have iron enough");
-                    return;
-                }
-            } else if (axeType == 1) {
-                addItem(26, new ItemStack(Material.IRON_AXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
-                if (goldAmount >= 5) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.STONE_AXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.IRON_AXE));
-                        }
-                    }
-                    int neededAmount = 5;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                            if(i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount --;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have gold enough");
-                    return;
-                }
-            } else if (axeType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
-                if (goldAmount >= 10) {
-                    for (ItemStack i : playerInventory) {
-                        if (i == new ItemStack(Material.IRON_AXE)) {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(Material.DIAMOND_AXE));
-                        }
-                    }
-                    int neededAmount = 10;
-                    for (ItemStack i : playerInventory) {
-                        if (neededAmount <= 0) {
-                            return;
-                        }
-                        if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                            if (i.getAmount() <= neededAmount) {
-                                playerInventory.remove(i);
-                                neededAmount--;
-                            } else {
-                                playerInventory.remove(i);
-                                playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    player.sendMessage("You don't have gold enough");
-                    return;
-                }
-            } else if (axeType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 28 && event.getInventory().equals(redI) && isRedInToolsSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.RED);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            if (pickaxeType == 0) {
-                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 1) {
-                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", redI, ChatColor.GRAY);
-            } else if (pickaxeType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", redI, ChatColor.GRAY);
-            }
-            short dm = 1;
-            if (axeType == 0) {
-                addItem(26, new ItemStack(Material.STONE_AXE, 1, dm), true, " costs 10 iron", redI, ChatColor.GRAY);
-            } else if (axeType == 1) {
-                addItem(26, new ItemStack(Material.IRON_AXE, 1, dm), true, " costs 5 gold", redI, ChatColor.GRAY);
-            } else if (axeType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", redI, ChatColor.GRAY);
-            } else if (axeType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", redI, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", redI, ChatColor.GRAY);
-            if (ironAmount >= 17) {
-                playerInventory.addItem(new ItemStack(Material.SHEARS));
-                int neededAmount = 17;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have iron enough");
-                return;
-            }
-            return;
-        } else if (event.getSlot() == 24 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
-            if (goldAmount >= 3) {
-                playerInventory.addItem(new ItemStack(Material.GOLDEN_APPLE));
-                int neededAmount = 3;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have gold enough");
-                return;
-            }
-            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
-            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
-            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 25 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
-            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
-            if (ironAmount >= 30) {
-                playerInventory.addItem(new ItemStack(Material.FIRE_CHARGE));
-                int neededAmount = 30;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have iron enough");
-                return;
-            }
-            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
-            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
-            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 26 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
-            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
-            if (ironAmount >= 25) {
-                playerInventory.addItem(new ItemStack(Material.WIND_CHARGE));
-                int neededAmount = 25;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have iron enough");
-                return;
-            }
-            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
-            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 27 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
-            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
-            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            if (emeraldAmount >= 2) {
-                playerInventory.addItem(new ItemStack(Material.ENDER_PEARL));
-                int neededAmount = 2;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.EMERALD))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have emerald enough");
-                return;
-            }
-            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
-            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 28 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
-            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
-            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
-            if (emeraldAmount >= 3) {
-                playerInventory.addItem(new ItemStack(Material.FISHING_ROD));
-                int neededAmount = 3;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.EMERALD))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have emerald enough");
-                return;
-            }
-            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 29 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
-            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
-            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
-            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
-            if (goldAmount >= 6) {
-                playerInventory.addItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG));
-                int neededAmount = 6;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.GOLD_INGOT))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have gold enough");
-                return;
-            }
-            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 29 && event.getInventory().equals(redI) && isRedInUtilitiesSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.ENDER_PEARL), false, "Utilities", redI, ChatColor.RED);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(9, new ItemStack(Material.POTION), false, "Potions", redI, ChatColor.GRAY);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(24, new ItemStack(Material.GOLDEN_APPLE), true, " costs 3 gold", redI, ChatColor.GRAY);
-            addItem(25, new ItemStack(Material.FIRE_CHARGE), true, " costs 30 iron", redI, ChatColor.GRAY);
-            addItem(26, new ItemStack(Material.WIND_CHARGE), true, " costs 25 iron", redI, ChatColor.GRAY);
-            addItem(27, new ItemStack(Material.ENDER_PEARL), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            addItem(28, new ItemStack(Material.FISHING_ROD), true, " costs 3 emerald", redI, ChatColor.GRAY);
-            addItem(29, new ItemStack(Material.CHORUS_FRUIT), true, " costs 6 gold", redI, ChatColor.GRAY);
-            addItem(30, new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), true, " costs 120 iron", redI, ChatColor.GRAY);
-            if (ironAmount >= 120) {
-                playerInventory.addItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG));
-                int neededAmount = 120;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.IRON_INGOT))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have iron enough");
-                return;
-            }
-            return;
-        } else if (event.getSlot() == 24 && event.getInventory().equals(redI) && isRedInPotionsSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            ItemStack potion = new ItemStack(Material.POTION);
-            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-            potionMeta.setBasePotionType(PotionType.LEAPING);
-            potion.setItemMeta(potionMeta);
-            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
+                ItemStack jumpPotion = new ItemStack(Material.POTION);
+                PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+                jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+                jumpPotion.setItemMeta(jumpPotionMeta);;
+                buyItem(jumpPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 30 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
 
-            ItemStack strenghtPotion = new ItemStack(Material.POTION);
-            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
-            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
-            strenghtPotion.setItemMeta(strenghtPotionMeta);
-            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            if (emeraldAmount >= 2) {
-                playerInventory.addItem(strenghtPotion);
-                int neededAmount = 2;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.EMERALD))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
-                }
-            } else {
-                player.sendMessage("You don't have emerald enough");
-                return;
+                ItemStack levitationPotion = new ItemStack(Material.POTION);
+                PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+                levitationPotionMeta.setBasePotionType(PotionType.WATER);
+                levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+                levitationPotion.setItemMeta(levitationPotionMeta);
+                buyItem(levitationPotion, 2, Material.EMERALD, player);
             }
-            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
-            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
-            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
-            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
-            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
+        } else if (event.getInventory().equals(greenI)) {
+            int index = event.getSlot();
+            Material woolmat = Material.GREEN_WOOL;
+            ChatColor color = ChatColor.GREEN;
+            TrimMaterial trimMaterial = TrimMaterial.EMERALD;
+            Color armorColor = Color.GREEN;
+            boolean block = isGreenInBlockSec;
+            boolean combat = isGreenInCombatSec;
+            boolean tools = isGreenInToolsSec;
+            boolean utilities = isGreenInUtilitiesSec;
+            boolean potions = isGreenInPotionsSec;
 
-            ItemStack jumpPotion = new ItemStack(Material.POTION);
-            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
-            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
-            jumpPotion.setItemMeta(jumpPotionMeta);
-            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-
-            ItemStack levitationPotion = new ItemStack(Material.POTION);
-            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
-            levitationPotionMeta.setBasePotionType(PotionType.WATER);
-            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
-            levitationPotion.setItemMeta(levitationPotionMeta);
-            addItem(30, new ItemStack(levitationPotion), false, "potion of levitation costs 2 emerald", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 26 && event.getInventory().equals(redI) && isRedInPotionsSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            ItemStack potion = new ItemStack(Material.POTION);
-            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-            potionMeta.setBasePotionType(PotionType.LEAPING);
-            potion.setItemMeta(potionMeta);
-            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-
-            ItemStack strenghtPotion = new ItemStack(Material.POTION);
-            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
-            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
-            strenghtPotion.setItemMeta(strenghtPotionMeta);
-            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-
-            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
-            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
-            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
-            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
-            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            if (emeraldAmount >= 2) {
-                playerInventory.addItem(invisibilityPotion);
-                int neededAmount = 2;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.EMERALD))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
+            if (index == 1) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isGreenInBlockSec = true;
+                isGreenInCombatSec = false;
+                isGreenInToolsSec = false;
+                isGreenInUtilitiesSec = false;
+                isGreenInPotionsSec = false;
+            } else if (index == 3) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isGreenInBlockSec = false;
+                isGreenInCombatSec = true;
+                isGreenInToolsSec = false;
+                isGreenInUtilitiesSec = false;
+                isGreenInPotionsSec = false;
+            } else if (index == 5) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isGreenInBlockSec = false;
+                isGreenInCombatSec = false;
+                isGreenInToolsSec = true;
+                isGreenInUtilitiesSec = false;
+                isGreenInPotionsSec = false;
+            } else if (index == 7) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isGreenInBlockSec = false;
+                isGreenInCombatSec = false;
+                isGreenInToolsSec = false;
+                isGreenInUtilitiesSec = true;
+                isGreenInPotionsSec = false;
+            } else if (index == 9) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, index, player);
+                isGreenInBlockSec = false;
+                isGreenInCombatSec = false;
+                isGreenInToolsSec = false;
+                isGreenInUtilitiesSec = false;
+                isGreenInPotionsSec = true;
+            } else if (index == 24 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(woolmat), 8, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 26 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.OAK_PLANKS), 20, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 28 && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.END_STONE), 2, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30  && block) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 1, player);
+                buyItem(new ItemStack(Material.OBSIDIAN), 1, Material.EMERALD, player);
+            } else if (event.getSlot() == 24 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                if (swordType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_SWORD),
+                            new ItemStack(Material.STONE_SWORD),
+                            14,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (swordType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_SWORD),
+                            new ItemStack(Material.IRON_SWORD),
+                            8,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (swordType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.IRON_SWORD),
+                            new ItemStack(Material.DIAMOND_SWORD),
+                            4,
+                            Material.EMERALD,
+                            player);
                 }
-            } else {
-                player.sendMessage("You don't have emerald enough");
-                return;
-            }
-
-            ItemStack jumpPotion = new ItemStack(Material.POTION);
-            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
-            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
-            jumpPotion.setItemMeta(jumpPotionMeta);
-            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-
-            ItemStack levitationPotion = new ItemStack(Material.POTION);
-            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
-            levitationPotionMeta.setBasePotionType(PotionType.WATER);
-            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
-            levitationPotion.setItemMeta(levitationPotionMeta);
-            addItem(30, new ItemStack(levitationPotion), false, "potion of levitation costs 2 emerald", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 28 && event.getInventory().equals(redI) && isRedInPotionsSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            ItemStack potion = new ItemStack(Material.POTION);
-            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-            potionMeta.setBasePotionType(PotionType.LEAPING);
-            potion.setItemMeta(potionMeta);
-            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-
-            ItemStack strenghtPotion = new ItemStack(Material.POTION);
-            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
-            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
-            strenghtPotion.setItemMeta(strenghtPotionMeta);
-            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-
-            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
-            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
-            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
-            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
-            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-
-            ItemStack jumpPotion = new ItemStack(Material.POTION);
-            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
-            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
-            jumpPotion.setItemMeta(jumpPotionMeta);
-            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-            if (emeraldAmount >= 2) {
-                playerInventory.addItem(jumpPotion);
-                int neededAmount = 2;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.EMERALD))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
+            } else if (event.getSlot() == 26 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                if (armorType == 0) {
+                    buyAndReplaceArmor(armorType, 16, Material.IRON_INGOT, player, armorColor, trimMaterial);
+                } else if (armorType == 1) {
+                    buyAndReplaceArmor(armorType, 32, Material.IRON_INGOT, player, armorColor, trimMaterial);
+                } else if (armorType == 2) {
+                    buyAndReplaceArmor(armorType, 6, Material.EMERALD, player, armorColor, trimMaterial);
                 }
-            } else {
-                player.sendMessage("You don't have emerald enough");
-                return;
-            }
-
-            ItemStack levitationPotion = new ItemStack(Material.POTION);
-            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
-            levitationPotionMeta.setBasePotionType(PotionType.WATER);
-            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
-            levitationPotion.setItemMeta(levitationPotionMeta);
-            addItem(30, new ItemStack(levitationPotion), false, "potion of levitation costs 2 emerald", redI, ChatColor.GRAY);
-            return;
-        } else if (event.getSlot() == 30 && event.getInventory().equals(redI) && isRedInPotionsSec) {
-            event.getInventory().clear();
-            addItem(0, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(1, new ItemStack(Material.WHITE_WOOL), false, "Blocks", blueI, ChatColor.GRAY);
-            addItem(2, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(3, new ItemStack(Material.WOODEN_SWORD), false, "Weapons", redI, ChatColor.GRAY);
-            addItem(4, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(5, new ItemStack(Material.DIAMOND_PICKAXE), false, "Tools", redI, ChatColor.GRAY);
-            addItem(6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            addItem(7, new ItemStack(Material.FIRE_CHARGE), false, "Utilities", redI, ChatColor.GRAY);
-            addItem(8, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-            ItemStack potion = new ItemStack(Material.POTION);
-            PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-            potionMeta.setBasePotionType(PotionType.LEAPING);
-            potion.setItemMeta(potionMeta);
-            addItem(9, new ItemStack(potion), false, "Potions", redI, ChatColor.RED);
-            addItem(10, new ItemStack(Material.BLACK_STAINED_GLASS_PANE), false, "", redI, ChatColor.BLACK);
-
-            ItemStack strenghtPotion = new ItemStack(Material.POTION);
-            PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
-            strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
-            strenghtPotion.setItemMeta(strenghtPotionMeta);
-            addItem(24, new ItemStack(strenghtPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-
-            ItemStack invisibilityPotion = new ItemStack(Material.POTION);
-            PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
-            invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
-            invisibilityPotion.setItemMeta(invisibilityPotionMeta);
-            addItem(26, new ItemStack(invisibilityPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-
-            ItemStack jumpPotion = new ItemStack(Material.POTION);
-            PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
-            jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
-            jumpPotion.setItemMeta(jumpPotionMeta);
-            addItem(28, new ItemStack(jumpPotion), true, " costs 2 emerald", redI, ChatColor.GRAY);
-
-            ItemStack levitationPotion = new ItemStack(Material.POTION);
-            PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
-            levitationPotionMeta.setBasePotionType(PotionType.WATER);
-            levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
-            levitationPotion.setItemMeta(levitationPotionMeta);
-            addItem(30, new ItemStack(levitationPotion), false, "potion of levitation costs 2 emerald", redI, ChatColor.GRAY);
-            if (emeraldAmount >= 2) {
-                playerInventory.addItem(levitationPotion);
-                int neededAmount = 2;
-                for (ItemStack i : playerInventory) {
-                    if (neededAmount <= 0) {
-                        return;
-                    }
-                    if (i.equals(new ItemStack(Material.EMERALD))) {
-                        if (i.getAmount() <= neededAmount) {
-                            playerInventory.remove(i);
-                            neededAmount--;
-                        } else {
-                            playerInventory.remove(i);
-                            playerInventory.addItem(new ItemStack(i.getType(), i.getAmount() - neededAmount));
-                            return;
-                        }
-                    }
+            } else if (event.getSlot() == 28 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.SNOWBALL), 2, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.BOW), 12, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 32 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.ARROW), 4, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 34 && combat) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 3, player);
+                buyItem(new ItemStack(Material.ARROW, 16), 64, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                if (pickaxeType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_PICKAXE),
+                            new ItemStack(Material.STONE_PICKAXE),
+                            10,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (pickaxeType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_PICKAXE),
+                            new ItemStack(Material.IRON_PICKAXE),
+                            5,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (pickaxeType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.IRON_PICKAXE),
+                            new ItemStack(Material.DIAMOND_PICKAXE),
+                            10,
+                            Material.GOLD_INGOT,
+                            player);
                 }
-            } else {
-                player.sendMessage("You don't have emerald enough");
-                return;
+            } else if (event.getSlot() == 26 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                if (axeType == 0) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
+                            new ItemStack(Material.STONE_AXE),
+                            10,
+                            Material.IRON_INGOT,
+                            player);
+                } else if (axeType == 1) {
+                    buyAndReplaceItem(new ItemStack(Material.STONE_AXE),
+                            new ItemStack(Material.IRON_AXE),
+                            5,
+                            Material.GOLD_INGOT,
+                            player);
+                } else if (axeType == 2) {
+                    buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
+                            new ItemStack(Material.STONE_AXE),
+                            10,
+                            Material.GOLD_INGOT,
+                            player);
+                }
+            } else if (event.getSlot() == 28 && tools) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 5, player);
+                buyItem(new ItemStack(Material.SHEARS), 17, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.GOLDEN_APPLE), 3, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 25 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.FIRE_CHARGE), 30, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 26 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.WIND_CHARGE), 25, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 27 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.ENDER_PEARL), 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 28 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.FISHING_ROD), 3, Material.EMERALD, player);
+            } else if (event.getSlot() == 29 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.CHORUS_FRUIT), 6, Material.GOLD_INGOT, player);
+            } else if (event.getSlot() == 30 && utilities) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+                buyItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), 120, Material.IRON_INGOT, player);
+            } else if (event.getSlot() == 24 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+
+                ItemStack strenghtPotion = new ItemStack(Material.POTION);
+                PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
+                strenghtPotionMeta.setBasePotionType(PotionType.STRENGTH);
+                strenghtPotion.setItemMeta(strenghtPotionMeta);
+                buyItem(strenghtPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 26 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+
+                ItemStack invisibilityPotion = new ItemStack(Material.POTION);
+                PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
+                invisibilityPotionMeta.setBasePotionType(PotionType.INVISIBILITY);
+                invisibilityPotion.setItemMeta(invisibilityPotionMeta);
+                buyItem(invisibilityPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 28 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+
+                ItemStack jumpPotion = new ItemStack(Material.POTION);
+                PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
+                jumpPotionMeta.setBasePotionType(PotionType.STRONG_LEAPING);
+                jumpPotion.setItemMeta(jumpPotionMeta);;
+                buyItem(jumpPotion, 2, Material.EMERALD, player);
+            } else if (event.getSlot() == 30 && potions) {
+                event.getInventory().clear();
+                setupTeamItemShop(woolmat, color, 7, player);
+
+                ItemStack levitationPotion = new ItemStack(Material.POTION);
+                PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
+                levitationPotionMeta.setBasePotionType(PotionType.WATER);
+                levitationPotionMeta.addCustomEffect(new PotionEffect(PotionEffectType.LEVITATION, 7, 2), true);
+                levitationPotion.setItemMeta(levitationPotionMeta);
+                buyItem(levitationPotion, 2, Material.EMERALD, player);
             }
-            return;
         }
     }
 
     @EventHandler
     public void onEnderChestAirClick(InventoryOpenEvent event) {
         if (event.getInventory().equals(event.getPlayer().getEnderChest())) {
-            if (!event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_SWORD))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_PICKAXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_AXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_SWORD))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_PICKAXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_AXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_SWORD))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_PICKAXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_AXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_SWORD))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_PICKAXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_AXE))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.SHEARS))||                    !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.AIR))) {
+            if (!NON_DROPPABLE_ITEMS.contains(event.getPlayer().getInventory().getItemInMainHand().getType())) {
                 event.setCancelled(true);
+                event.getPlayer().openInventory(event.getPlayer().getEnderChest());
             }
         }
     }
@@ -2209,7 +1777,7 @@ public class BedwarsGame implements Listener {
         if (!event.getClickedBlock().equals(BlockType.ENDER_CHEST)) {
             return;
         }
-        if (!event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_SWORD))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_PICKAXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.WOODEN_AXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_SWORD))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_PICKAXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.IRON_AXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_SWORD))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_PICKAXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.STONE_AXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_SWORD))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_PICKAXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.DIAMOND_AXE))||                !event.getPlayer().getInventory().getItemInMainHand().equals(new ItemStack(Material.SHEARS))) {
+        if (!NON_DROPPABLE_ITEMS.contains(event.getPlayer().getInventory().getItemInMainHand().getType())) {
             event.getPlayer().getEnderChest().addItem(event.getPlayer().getInventory().getItemInMainHand());
         }
     }
@@ -2281,6 +1849,17 @@ public class BedwarsGame implements Listener {
         }
     }
 
+    @EventHandler
+    public void onFireballInteract(PlayerInteractEvent event) {
+        if (!event.getItem().equals(new ItemStack(Material.FIRE_CHARGE))) {
+            return;
+        }
+        Player player = event.getPlayer();
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        {
+            player.launchProjectile(Fireball.class).setVelocity(player.getLocation().getDirection().multiply(0.5));
+        }
+    }
 
     public synchronized void gameLoop() {
         redGolems = null;
@@ -2308,6 +1887,8 @@ public class BedwarsGame implements Listener {
         greenAxe = 0;
         greenPickaxe = 0;
 
+        isRedInBlockSec = true;
+
         for (Player player : world.getPlayers()) {
             if (player.equals(redPlayer)) {
                 equipTeamArmor(player, Color.RED, 0, TrimMaterial.REDSTONE);
@@ -2319,6 +1900,12 @@ public class BedwarsGame implements Listener {
                 equipTeamArmor(player, Color.GREEN, 0, TrimMaterial.EMERALD);
             }
         }
+
+        world.spawnEntity(redItemShopPos, redIV);
+        world.spawnEntity(blueItemShopPos, blueIV);
+        world.spawnEntity(yellowItemShopPos, yellowIV);
+        world.spawnEntity(greenItemShopPos, greenIV);
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -2536,8 +2123,14 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onShopInteract(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked().getType() == redIV) {
+        if (event.getPlayer() == redPlayer) {
             event.getPlayer().openInventory(redI);
+        } else if (event.getPlayer() == bluePlayer) {
+            event.getPlayer().openInventory(blueI);
+        } else if (event.getPlayer() == yellowPlayer) {
+            event.getPlayer().openInventory(yellowI);
+        } else if (event.getPlayer() == greenPlayer) {
+            event.getPlayer().openInventory(greenI);
         }
     }
 
@@ -2883,6 +2476,14 @@ public class BedwarsGame implements Listener {
                                         player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                         redAxe--;
                                     }
+                                    for (ItemStack i : player.getInventory()) {
+                                        if (i.equals(new ItemStack(Material.IRON_INGOT)) ||
+                                                i.equals(new ItemStack(Material.GOLD_INGOT)) ||
+                                                i.equals(new ItemStack(Material.DIAMOND)) ||
+                                                i.equals(new ItemStack(Material.EMERALD))) {
+                                            player.getKiller().getInventory().addItem(i);
+                                        }
+                                    }
                                 }
                             }
                             cancel();
@@ -2965,7 +2566,15 @@ public class BedwarsGame implements Listener {
                                         player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                         blueAxe--;
                                     }
-                                }
+                                     for (ItemStack i : player.getInventory()) {
+                                         if (i.equals(new ItemStack(Material.IRON_INGOT)) ||
+                                                 i.equals(new ItemStack(Material.GOLD_INGOT)) ||
+                                                 i.equals(new ItemStack(Material.DIAMOND)) ||
+                                                 i.equals(new ItemStack(Material.EMERALD))) {
+                                             player.getKiller().getInventory().addItem(i);
+                                         }
+                                     }
+                                 }
                             }
                             cancel();
                             return;
@@ -3047,6 +2656,14 @@ public class BedwarsGame implements Listener {
                                         } else if (yellowAxe == 3) {
                                             player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                             yellowAxe--;
+                                        }
+                                        for (ItemStack i : player.getInventory()) {
+                                            if (i.equals(new ItemStack(Material.IRON_INGOT)) ||
+                                                    i.equals(new ItemStack(Material.GOLD_INGOT)) ||
+                                                    i.equals(new ItemStack(Material.DIAMOND)) ||
+                                                    i.equals(new ItemStack(Material.EMERALD))) {
+                                                player.getKiller().getInventory().addItem(i);
+                                            }
                                         }
                                     }
                                 }
@@ -3131,6 +2748,14 @@ public class BedwarsGame implements Listener {
                                         } else if (greenAxe == 3) {
                                             player.getInventory().addItem(new ItemStack(Material.IRON_AXE));
                                             greenAxe--;
+                                        }
+                                        for (ItemStack i : player.getInventory()) {
+                                            if (i.equals(new ItemStack(Material.IRON_INGOT)) ||
+                                                    i.equals(new ItemStack(Material.GOLD_INGOT)) ||
+                                                    i.equals(new ItemStack(Material.DIAMOND)) ||
+                                                    i.equals(new ItemStack(Material.EMERALD))) {
+                                                player.getKiller().getInventory().addItem(i);
+                                            }
                                         }
                                     }
                                 }
