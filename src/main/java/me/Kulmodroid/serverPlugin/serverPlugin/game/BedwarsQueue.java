@@ -347,21 +347,6 @@ public class BedwarsQueue {
         game.greenDiamondCooldown = 7;
         game.greenEmeraldCooldown = 15;
 
-        game.goldCount1 = 0;
-        game.goldCount2 = 0;
-        game.goldCount3 = 0;
-
-        game.diamondCount1 = 0;
-        game.diamondCount2 = 0;
-        game.diamondCount3 = 0;
-        game.diamondCount4 = 0;
-        game.diamondCount5 = 0;
-
-        game.emeraldCount1 = 0;
-        game.emeraldCount2 = 0;
-        game.emeraldCount3 = 0;
-        game.emeraldCount4 = 0;
-        game.emeraldCount5 = 0;
 
 
         game.alivePlayers = 4;
