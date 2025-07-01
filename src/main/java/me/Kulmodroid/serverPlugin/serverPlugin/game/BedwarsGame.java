@@ -2310,7 +2310,7 @@ public class BedwarsGame implements Listener {
                     int counter = 0;
                     for (Location loc : midGoldGenerators) {
                         if (counter == goldSize - 3) {
-                            if (goldCount3 < goldMax) {
+                            if (goldCount3 < goldMax && midGold3 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midGold3, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                                 goldMid3.add(item);
                                 goldCount3++;
@@ -2318,7 +2318,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == goldSize - 2) {
-                            if (goldCount2 < goldMax) {
+                            if (goldCount2 < goldMax && midGold2 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midGold2, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                                 goldMid2.add(item);
                                 goldCount2++;
@@ -2326,7 +2326,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == goldSize - 1) {
-                            if (goldCount1 < goldMax) {
+                            if (goldCount1 < goldMax && midGold1 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midGold1, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                                 goldMid1.add(item);
                                 goldCount1++;
@@ -2340,7 +2340,7 @@ public class BedwarsGame implements Listener {
                     int counter = 0;
                     for (Location loc : midDiamondGenerators) {
                         if (counter == diamondSize - 5) {
-                            if (diamondCount5 < 15) {
+                            if (diamondCount5 < 15 && midDiamond5 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midDiamond5, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                                 diamondMid5.add(item);
                                 diamondCount5++;
@@ -2348,7 +2348,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == diamondSize - 4) {
-                            if (diamondCount4 < 15) {
+                            if (diamondCount4 < 15 && midDiamond4 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midDiamond4, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                                 diamondMid4.add(item);
                                 diamondCount4++;
@@ -2356,7 +2356,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == diamondSize - 3) {
-                            if (diamondCount3 < 15) {
+                            if (diamondCount3 < 15 && midDiamond3 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midDiamond3, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                                 diamondMid3.add(item);
                                 diamondCount3++;
@@ -2364,7 +2364,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == diamondSize - 2) {
-                            if (diamondCount2 < 15) {
+                            if (diamondCount2 < 15 && midDiamond2 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midDiamond2, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                                 diamondMid2.add(item);
                                 diamondCount2++;
@@ -2372,7 +2372,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == diamondSize - 1) {
-                            if (diamondCount1 < 15) {
+                            if (diamondCount1 < 15 && midDiamond1 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midDiamond1, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                                 diamondMid1.add(item);
                                 diamondCount1++;
@@ -2386,7 +2386,7 @@ public class BedwarsGame implements Listener {
                     int counter = 0;
                     for (Location loc : midEmeraldGenerators) {
                         if (counter == emeraldSize - 5) {
-                            if (emeraldCount5 < 15) {
+                            if (emeraldCount5 < 15 && midEmerald5 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midEmerald5, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                                 emeraldMid5.add(item);
                                 emeraldCount5++;
@@ -2394,7 +2394,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == emeraldSize - 4) {
-                            if (emeraldCount4 < 15) {
+                            if (emeraldCount4 < 15 && midEmerald4 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midEmerald4, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                                 emeraldMid4.add(item);
                                 emeraldCount4++;
@@ -2402,7 +2402,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == emeraldSize - 3) {
-                            if (emeraldCount3 < 15) {
+                            if (emeraldCount3 < 15 && midEmerald3 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midEmerald3, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                                 emeraldMid3.add(item);
                                 emeraldCount3++;
@@ -2410,7 +2410,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == emeraldSize - 2) {
-                            if (emeraldCount2 < 15) {
+                            if (emeraldCount2 < 15 && midEmerald2 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midEmerald2, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                                 emeraldMid2.add(item);
                                 emeraldCount2++;
@@ -2418,7 +2418,7 @@ public class BedwarsGame implements Listener {
                             }
                         }
                         if (counter == emeraldSize - 1) {
-                            if (emeraldCount1 < 15) {
+                            if (emeraldCount1 < 15 && midEmerald1 != null) {
                                 ItemStack item = (world.dropItem(getExtentedLoc(midEmerald1, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                                 emeraldMid1.add(item);
                                 emeraldCount1++;
