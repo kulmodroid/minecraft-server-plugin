@@ -7,10 +7,7 @@ import org.bukkit.block.BlockType;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -2076,10 +2073,10 @@ public class BedwarsGame implements Listener {
             }
         }
 
-        LivingEntity redShop = (LivingEntity) world.spawnEntity(redItemShopPos, redIV);
-        LivingEntity blueShop = (LivingEntity) world.spawnEntity(blueItemShopPos, blueIV);
-        LivingEntity yellowShop = (LivingEntity) world.spawnEntity(yellowItemShopPos, yellowIV);
-        LivingEntity greenShop = (LivingEntity)  world.spawnEntity(greenItemShopPos, greenIV);
+        LivingEntity redShop = (LivingEntity) world.spawnEntity(getMovedLoc(redItemShopPos, 0.5), redIV);
+        LivingEntity blueShop = (LivingEntity) world.spawnEntity(getMovedLoc(blueItemShopPos, 0.5), blueIV);
+        LivingEntity yellowShop = (LivingEntity) world.spawnEntity(getMovedLoc(yellowItemShopPos, 0.5), yellowIV);
+        LivingEntity greenShop = (LivingEntity)  world.spawnEntity(getMovedLoc(greenItemShopPos, 0.5), greenIV);
 
         redShop.setAI(false);
         blueShop.setAI(false);
@@ -2095,12 +2092,12 @@ public class BedwarsGame implements Listener {
                 }
                 if (redUnlockedGen1) {
                     if (redIronCount - 10 < ironMax) {
-                        ItemStack item = (world.dropItem(redIronGenerator, new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(redIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
                         ironRed.add(item);
                         redIronCount += 2;
                     }
                     if (redGoldCount - 5 < goldMax && redGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(redGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(redGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                         goldRed.add(item);
                         redGoldCooldown = 5;
                         redGoldCount ++;
@@ -2108,24 +2105,24 @@ public class BedwarsGame implements Listener {
                     redGoldCooldown --;
                 } else if (redUnlockedGen2) {
                     if (redIronCount - 20 < ironMax) {
-                        ItemStack item = (world.dropItem(redIronGenerator, new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(redIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
                         ironRed.add(item);
                         redIronCount += 2;
                     }
                     if (redGoldCount - 5 < goldMax && redGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(redGoldGenerator, new ItemStack(Material.GOLD_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(redGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 2))).getItemStack();
                         goldRed.add(item);
                         redGoldCooldown = 5;
                         redGoldCount += 2;
                     }
                     if (redDiamondCount < diamonMax && redDiamondCooldown <= 0) {
-                        ItemStack item = (world.dropItem(redDiamondGenerator, new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(redDiamondGenerator, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                         diamondRed.add(item);
                         redDiamondCooldown = 7;
                         redDiamondCount ++;
                     }
                     if (redEmeraldCount < emeraldMax && redEmeraldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(redDiamondGenerator, new ItemStack(Material.EMERALD, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(redEmeraldGenerator, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                         emeraldRed.add(item);
                         redEmeraldCooldown = 15;
                         redEmeraldCount ++;
@@ -2135,12 +2132,12 @@ public class BedwarsGame implements Listener {
                     redEmeraldCooldown -= 1;
                 } else {
                     if (redIronCount < ironMax) {
-                        ItemStack item = (world.dropItem(redIronGenerator, new ItemStack(Material.IRON_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(redIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 1))).getItemStack();
                         ironRed.add(item);
                         redIronCount ++;
                     }
                     if (redGoldCount < goldMax && redGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(redGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(redGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                         goldRed.add(item);
                         redGoldCooldown = 5;
                         redGoldCount ++;
@@ -2149,12 +2146,12 @@ public class BedwarsGame implements Listener {
                 }
                 if (blueUnlockedGen1) {
                     if (blueIronCount - 10 < ironMax) {
-                        ItemStack item = (world.dropItem(blueIronGenerator, new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(blueIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
                         ironBlue.add(item);
                         blueIronCount += 2;
                     }
                     if (blueGoldCount - 5 < goldMax && blueGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(blueGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(blueGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                         goldBlue.add(item);
                         blueGoldCooldown = 5;
                         blueGoldCount ++;
@@ -2162,24 +2159,24 @@ public class BedwarsGame implements Listener {
                     blueGoldCooldown --;
                 } else if (blueUnlockedGen2) {
                     if (blueIronCount + 20 < ironMax) {
-                        ItemStack item = (world.dropItem(blueIronGenerator, new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(blueIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
                         ironBlue.add(item);
                         blueIronCount += 2;
                     }
                     if (blueGoldCount - 5 < goldMax && blueGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(blueGoldGenerator, new ItemStack(Material.GOLD_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(blueGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 2))).getItemStack();
                         goldBlue.add(item);
                         blueGoldCooldown = 5;
                         blueGoldCount += 2;
                     }
                     if (blueDiamondCount < diamonMax && blueDiamondCooldown <= 0) {
-                        ItemStack item = (world.dropItem(blueDiamondGenerator, new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(blueDiamondGenerator, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                         diamondBlue.add(item);
                         blueDiamondCooldown = 7;
                         blueDiamondCount ++;
                     }
                     if (blueEmeraldCount < emeraldMax && blueEmeraldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(blueEmeraldGenerator, new ItemStack(Material.EMERALD, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(blueEmeraldGenerator, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                         emeraldBlue.add(item);
                         blueEmeraldCooldown = 15;
                         blueEmeraldCount ++;
@@ -2189,12 +2186,12 @@ public class BedwarsGame implements Listener {
                     blueEmeraldCooldown -= 1;
                 } else {
                     if (blueIronCount < ironMax) {
-                        ItemStack item = (world.dropItem(blueIronGenerator, new ItemStack(Material.IRON_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(blueIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 1))).getItemStack();
                         ironBlue.add(item);
                         blueIronCount ++;
                     }
                     if (blueGoldCount < goldMax && blueGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(blueGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(blueGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                         goldBlue.add(item);
                         blueGoldCooldown = 5;
                         blueGoldCount ++;
@@ -2203,12 +2200,12 @@ public class BedwarsGame implements Listener {
                 }
                 if (greenUnlockedGen1) {
                     if (greenIronCount - 10 < ironMax) {
-                        ItemStack item = (world.dropItem(greenIronGenerator, new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(greenIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
                         ironGreen.add(item);
                         greenIronCount += 2;
                     }
                     if (greenGoldCount - 5 < goldMax && greenGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(greenGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(greenGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                         goldGreen.add(item);
                         greenGoldCooldown = 5;
                         greenGoldCount ++;
@@ -2216,24 +2213,24 @@ public class BedwarsGame implements Listener {
                     greenGoldCooldown --;
                 } else if (greenUnlockedGen2) {
                     if (greenIronCount + 20 < ironMax) {
-                        ItemStack item = (world.dropItem(greenIronGenerator, new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(greenIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
                         ironGreen.add(item);
                         greenIronCount += 2;
                     }
                     if (greenGoldCount - 5 < goldMax && greenGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(greenGoldGenerator, new ItemStack(Material.GOLD_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(greenGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 2))).getItemStack();
                         goldGreen.add(item);
                         greenGoldCooldown = 5;
                         greenGoldCount += 2;
                     }
                     if (greenDiamondCount < diamonMax && greenDiamondCooldown <= 0) {
-                        ItemStack item = (world.dropItem(greenDiamondGenerator, new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(greenDiamondGenerator, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                         diamondGreen.add(item);
                         greenDiamondCooldown = 7;
                         greenDiamondCount ++;
                     }
                     if (greenEmeraldCount < emeraldMax && greenEmeraldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(greenEmeraldGenerator, new ItemStack(Material.EMERALD, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(greenEmeraldGenerator, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                         emeraldGreen.add(item);
                         greenEmeraldCooldown = 15;
                         greenEmeraldCount ++;
@@ -2243,12 +2240,12 @@ public class BedwarsGame implements Listener {
                     greenEmeraldCooldown -= 1;
                 } else {
                     if (greenIronCount < ironMax) {
-                        ItemStack item = (world.dropItem(greenIronGenerator, new ItemStack(Material.IRON_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(greenIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 1))).getItemStack();
                         ironGreen.add(item);
                         greenIronCount ++;
                     }
                     if (greenGoldCount < goldMax && greenGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(greenGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(greenGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                         goldGreen.add(item);
                         greenGoldCooldown = 5;
                         greenGoldCount ++;
@@ -2257,12 +2254,12 @@ public class BedwarsGame implements Listener {
                 }
                 if (yellowUnlockedGen1) {
                     if (yellowIronCount - 10 < ironMax) {
-                        ItemStack item = (world.dropItem(yellowIronGenerator, new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(yellowIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
                         ironYellow.add(item);
                         yellowIronCount += 2;
                     }
                     if (yellowGoldCount - 5 < goldMax && yellowGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(yellowGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(yellowGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                         goldYellow.add(item);
                         yellowGoldCooldown = 5;
                         yellowGoldCount ++;
@@ -2270,24 +2267,24 @@ public class BedwarsGame implements Listener {
                     yellowGoldCooldown --;
                 } else if (yellowUnlockedGen2) {
                     if (yellowIronCount + 20 < ironMax) {
-                        ItemStack item = (world.dropItem(yellowIronGenerator, new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(yellowIronGenerator, 2), new ItemStack(Material.IRON_INGOT, 2))).getItemStack();
                         ironYellow.add(item);
                         yellowIronCount += 2;
                     }
                     if (yellowGoldCount - 5 < goldMax && yellowGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(yellowGoldGenerator, new ItemStack(Material.GOLD_INGOT, 2))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(yellowGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 2))).getItemStack();
                         goldYellow.add(item);
                         yellowGoldCooldown = 5;
                         yellowGoldCount += 2;
                     }
                     if (yellowDiamondCount < diamonMax && yellowDiamondCooldown <= 0) {
-                        ItemStack item = (world.dropItem(yellowDiamondGenerator, new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(yellowDiamondGenerator, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                         diamondYellow.add(item);
                         yellowDiamondCooldown = 7;
                         yellowDiamondCount ++;
                     }
                     if (yellowEmeraldCount < emeraldMax && yellowEmeraldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(yellowEmeraldGenerator, new ItemStack(Material.EMERALD, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(yellowEmeraldGenerator, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                         emeraldYellow.add(item);
                         yellowEmeraldCooldown = 15;
                         yellowEmeraldCount ++;
@@ -2302,7 +2299,7 @@ public class BedwarsGame implements Listener {
                         yellowIronCount ++;
                     }
                     if (yellowGoldCount < goldMax && yellowGoldCooldown <= 0) {
-                        ItemStack item = (world.dropItem(yellowGoldGenerator, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                        ItemStack item = (world.dropItem(getExtentedLoc(yellowGoldGenerator, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                         goldYellow.add(item);
                         yellowGoldCooldown = 5;
                         yellowGoldCount ++;
@@ -2313,132 +2310,122 @@ public class BedwarsGame implements Listener {
                     int counter = 0;
                     for (Location loc : midGoldGenerators) {
                         if (counter == goldSize - 3) {
-                            if (goldCount1 < goldMax) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
-                                goldMid1.add(item);
-                                goldCooldown = 7;
-                                goldCount1++;
+                            if (goldCount3 < goldMax) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midGold3, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                                goldMid3.add(item);
+                                goldCount3++;
                                 counter++;
                             }
                         }
                         if (counter == goldSize - 2) {
                             if (goldCount2 < goldMax) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                                ItemStack item = (world.dropItem(getExtentedLoc(midGold2, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
                                 goldMid2.add(item);
-                                goldCooldown = 7;
-                                goldCount1++;
+                                goldCount2++;
                                 counter++;
                             }
                         }
                         if (counter == goldSize - 1) {
-                            if (goldCount3 < goldMax) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
-                                goldMid3.add(item);
-                                goldCooldown = 7;
+                            if (goldCount1 < goldMax) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midGold1, 2), new ItemStack(Material.GOLD_INGOT, 1))).getItemStack();
+                                goldMid1.add(item);
                                 goldCount1++;
                                 counter++;
                             }
                         }
+                        goldCooldown = 7;
                     }
                 }
                 if (diamondCooldown <= 0) {
                     int counter = 0;
                     for (Location loc : midDiamondGenerators) {
                         if (counter == diamondSize - 5) {
-                            if (diamondCount1 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.DIAMOND, 1))).getItemStack();
-                                diamondMid1.add(item);
-                                diamondCooldown = 7;
-                                diamondCount1++;
+                            if (diamondCount5 < 15) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midDiamond5, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                                diamondMid5.add(item);
+                                diamondCount5++;
                                 counter++;
                             }
                         }
                         if (counter == diamondSize - 4) {
-                            if (diamondCount2 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.DIAMOND, 1))).getItemStack();
-                                diamondMid2.add(item);
-                                diamondCooldown = 7;
-                                diamondCount2++;
+                            if (diamondCount4 < 15) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midDiamond4, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                                diamondMid4.add(item);
+                                diamondCount4++;
                                 counter++;
                             }
                         }
                         if (counter == diamondSize - 3) {
                             if (diamondCount3 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                                ItemStack item = (world.dropItem(getExtentedLoc(midDiamond3, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
                                 diamondMid3.add(item);
-                                diamondCooldown = 7;
                                 diamondCount3++;
                                 counter++;
                             }
                         }
                         if (counter == diamondSize - 2) {
-                            if (diamondCount4 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.DIAMOND, 1))).getItemStack();
-                                diamondMid4.add(item);
-                                diamondCooldown = 7;
-                                diamondCount4++;
+                            if (diamondCount2 < 15) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midDiamond2, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                                diamondMid2.add(item);
+                                diamondCount2++;
                                 counter++;
                             }
                         }
-                        if (counter == diamondSize - 2) {
-                            if (diamondCount5 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.DIAMOND, 1))).getItemStack();
-                                diamondMid5.add(item);
-                                diamondCooldown = 7;
-                                diamondCount5++;
+                        if (counter == diamondSize - 1) {
+                            if (diamondCount1 < 15) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midDiamond1, 2), new ItemStack(Material.DIAMOND, 1))).getItemStack();
+                                diamondMid1.add(item);
+                                diamondCount1++;
                                 counter++;
                             }
                         }
+                        diamondCooldown = 15;
                     }
                 }
                 if (emeraldCooldown <= 0) {
                     int counter = 0;
                     for (Location loc : midEmeraldGenerators) {
                         if (counter == emeraldSize - 5) {
-                            if (emeraldCount1 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.EMERALD, 1))).getItemStack();
-                                emeraldMid1.add(item);
-                                emeraldCooldown = 7;
-                                emeraldCount1++;
+                            if (emeraldCount5 < 15) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midEmerald5, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
+                                emeraldMid5.add(item);
+                                emeraldCount5++;
                                 counter++;
                             }
                         }
                         if (counter == emeraldSize - 4) {
-                            if (emeraldCount2 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.EMERALD, 1))).getItemStack();
-                                emeraldMid2.add(item);
-                                emeraldCooldown = 7;
-                                emeraldCount2++;
+                            if (emeraldCount4 < 15) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midEmerald4, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
+                                emeraldMid4.add(item);
+                                emeraldCount4++;
                                 counter++;
                             }
                         }
                         if (counter == emeraldSize - 3) {
                             if (emeraldCount3 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.EMERALD, 1))).getItemStack();
+                                ItemStack item = (world.dropItem(getExtentedLoc(midEmerald3, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
                                 emeraldMid3.add(item);
-                                emeraldCooldown = 7;
                                 emeraldCount3++;
                                 counter++;
                             }
                         }
                         if (counter == emeraldSize - 2) {
-                            if (emeraldCount4 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.EMERALD, 1))).getItemStack();
-                                emeraldMid4.add(item);
-                                emeraldCooldown = 7;
-                                emeraldCount4++;
+                            if (emeraldCount2 < 15) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midEmerald2, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
+                                emeraldMid2.add(item);
+                                emeraldCount2++;
                                 counter++;
                             }
                         }
                         if (counter == emeraldSize - 1) {
-                            if (emeraldCount5 < 15) {
-                                ItemStack item = (world.dropItem(loc, new ItemStack(Material.EMERALD, 1))).getItemStack();
-                                emeraldMid5.add(item);
-                                emeraldCooldown = 7;
-                                emeraldCount5++;
+                            if (emeraldCount1 < 15) {
+                                ItemStack item = (world.dropItem(getExtentedLoc(midEmerald1, 2), new ItemStack(Material.EMERALD, 1))).getItemStack();
+                                emeraldMid1.add(item);
+                                emeraldCount1++;
                                 counter++;
                             }
                         }
+                        emeraldCooldown = 30;
                     }
                 }
 //                for (Location loc : midGoldGenerators) {
@@ -2462,6 +2449,13 @@ public class BedwarsGame implements Listener {
             }
         }.runTaskTimer(plugin, 0L, 20L);
         return;
+    }
+
+    public Location getExtentedLoc(Location loc, double extension) {
+        return new Location(loc.getWorld(), loc.getX(), loc.getY() + extension, loc.getZ());
+    }
+    public Location getMovedLoc(Location loc, double move) {
+        return new Location(loc.getWorld(), loc.getX() + move, loc.getY(), loc.getZ() + move);
     }
 
     @EventHandler
@@ -2847,9 +2841,7 @@ public class BedwarsGame implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        for (ItemStack i : event.getDrops()) {
-            event.getDrops().remove(i);
-        }
+        event.getDrops().clear();
         if (player == redPlayer) {
             if (canRedRespawn) {
                 player.setRespawnLocation(waitPos);
