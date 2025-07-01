@@ -25,6 +25,7 @@ import me.Kulmodroid.serverPlugin.serverPlugin.items.GameCompass;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.EditCompass;
 import me.Kulmodroid.serverPlugin.serverPlugin.game.BedwarsQueue;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public final class ServerPlugin extends JavaPlugin implements Listener {
 
@@ -44,6 +45,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private BedwarsQueue bedwarsQueue;
     private MapEditSelection mapEditSelection;
     private World lobbyWorld;
+    private boolean fireballOnCooldown;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -66,6 +68,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         player.getInventory().addItem(jumpBow.getItem());
         player.getInventory().addItem(new ItemStack(Material.ARROW, 3));
         player.getInventory().addItem(new ItemStack(Material.FIRE_CHARGE, 1));
+        fireballOnCooldown = false;
     }
 
     @EventHandler
@@ -77,6 +80,18 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
         {
             player.launchProjectile(Fireball.class).setVelocity(player.getLocation().getDirection().multiply(2.5));
+            fireballOnCooldown = true;
+            new BukkitRunnable() {
+                int secondsLeft = 5;
+                @Override
+                public void run() {
+                    if (secondsLeft <= 0) {
+                        fireballOnCooldown = false;
+                        cancel();
+                    }
+                    secondsLeft --;
+                }
+            }.runTaskTimer(Bukkit.getPluginManager().getPlugin("serverPlugin"), 0L, 20L);
         }
     }
 
@@ -186,5 +201,9 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+    }
+
+    public void setFireballOnCooldown(boolean fireballOnCooldown) {
+        this.fireballOnCooldown = fireballOnCooldown;
     }
 }
