@@ -25,6 +25,8 @@ import me.Kulmodroid.serverPlugin.serverPlugin.items.GameCompass;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.EditCompass;
 import me.Kulmodroid.serverPlugin.serverPlugin.game.BedwarsQueue;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public final class ServerPlugin extends JavaPlugin implements Listener {
@@ -68,6 +70,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         player.getInventory().addItem(jumpBow.getItem());
         player.getInventory().addItem(new ItemStack(Material.ARROW, 3));
         player.getInventory().addItem(new ItemStack(Material.FIRE_CHARGE, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 255));
         fireballOnCooldown = false;
     }
 
