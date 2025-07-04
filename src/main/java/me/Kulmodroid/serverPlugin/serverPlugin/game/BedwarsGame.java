@@ -1820,7 +1820,8 @@ public class BedwarsGame implements Listener {
                 e.getInventory().equals(blueI) ||
                 e.getInventory().equals(yellowI) ||
                 e.getInventory().equals(greenI) ||
-                e.getInventory().equals(e.getPlayer().getEnderChest())) {
+                e.getInventory().equals(e.getPlayer().getEnderChest()) ||
+                e.getPlayer().getInventory().equals(e.getInventory())) {
             return;
         }
         isChestOpened = false;
@@ -1828,10 +1829,7 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onChestInvClick(InventoryClickEvent e) {
-        if (e.getInventory().equals(redI) ||
-                e.getInventory().equals(blueI) ||
-                e.getInventory().equals(yellowI) ||
-                e.getInventory().equals(greenI)) {
+        if (!e.getWhoClicked().getInventory().equals(e.getInventory())) {
             return;
         }
         if (!isChestOpened) {
