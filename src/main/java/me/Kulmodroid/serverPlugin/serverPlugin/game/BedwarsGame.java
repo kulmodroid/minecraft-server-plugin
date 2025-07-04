@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
@@ -259,6 +260,8 @@ public class BedwarsGame implements Listener {
     EntityType greenIV = EntityType.VILLAGER;
 
     public boolean fireballOnCooldown;
+
+    public boolean isChestOpened;
 
     public boolean canRedRespawn;
     public boolean canBlueRespawn;
@@ -1803,12 +1806,35 @@ public class BedwarsGame implements Listener {
     }
 
     @EventHandler
-    public void onChestInvClick(InventoryClickEvent e) {
+    public void onChestOpened(PlayerInteractEvent e) {
+        if (e.hasBlock()) {
+            if (e.getClickedBlock().getType().equals(Material.CHEST)) {
+                isChestOpened = true;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onChestCloseEvent(InventoryCloseEvent e) {
         if (e.getInventory().equals(redI) ||
                 e.getInventory().equals(blueI) ||
                 e.getInventory().equals(yellowI) ||
                 e.getInventory().equals(greenI) ||
-                e.getInventory().equals(e.getWhoClicked().getEnderChest())) {
+                e.getInventory().equals(e.getPlayer().getEnderChest())) {
+            return;
+        }
+        isChestOpened = false;
+    }
+
+    @EventHandler
+    public void onChestInvClick(InventoryClickEvent e) {
+        if (e.getInventory().equals(redI) ||
+                e.getInventory().equals(blueI) ||
+                e.getInventory().equals(yellowI) ||
+                e.getInventory().equals(greenI)) {
+            return;
+        }
+        if (!isChestOpened) {
             return;
         }
         if (NON_DROPPABLE_ITEMS.contains(e.getInventory().getItem(e.getSlot()).getType())) {
@@ -1821,7 +1847,7 @@ public class BedwarsGame implements Listener {
         if (!event.hasBlock()) {
             return;
         }
-        if (!event.getClickedBlock().equals(BlockType.ENDER_CHEST)) {
+        if (!event.getClickedBlock().getType().equals(Material.ENDER_CHEST)) {
             return;
         }
         if (!NON_DROPPABLE_ITEMS.contains(event.getPlayer().getInventory().getItemInMainHand().getType())) {
@@ -1938,6 +1964,8 @@ public class BedwarsGame implements Listener {
     }
 
     public synchronized void gameLoop() {
+        isChestOpened = false;
+
         redArmor = 0;
         redSword = 0;
         redAxe = 0;
