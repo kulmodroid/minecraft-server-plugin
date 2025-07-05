@@ -25,6 +25,7 @@ import me.Kulmodroid.serverPlugin.serverPlugin.items.GameCompass;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.EditCompass;
 import me.Kulmodroid.serverPlugin.serverPlugin.game.BedwarsQueue;
 import me.Kulmodroid.serverPlugin.serverPlugin.items.JumpBow;
+import me.Kulmodroid.serverPlugin.serverPlugin.CraftingDisabler;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -41,6 +42,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
     private JumpBow jumpBow;
     private ZoneLimiter zoneLimiter;
     private BlockProtection blockProtection;
+    private CraftingDisabler craftingDisabler;
     private BackupManager backupManager;
     private GameCompass gameCompass;
     private EditCompass editCompass;
@@ -169,6 +171,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         breezeRod = new BreezeRod(this);
         jumpBow = new JumpBow(this);
         blockProtection = new BlockProtection();
+        craftingDisabler = new CraftingDisabler();
         backupManager = new BackupManager(this);
         BedwarsManager bedwarsManager = new BedwarsManager(
                 this,
@@ -193,6 +196,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(breezeRod, this);
         getServer().getPluginManager().registerEvents(jumpBow, this);
         getServer().getPluginManager().registerEvents(blockProtection, this);
+        getServer().getPluginManager().registerEvents(craftingDisabler, this);
         getServer().getPluginManager().registerEvents(backupManager, this);
         getServer().getPluginManager().registerEvents(mapEditSelection, this);
 

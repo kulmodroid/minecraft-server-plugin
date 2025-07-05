@@ -95,6 +95,10 @@ public class BedwarsGame implements Listener {
     private final Location yellowUpgradeShopPos;
     private final Location greenItemShopPos;
     private final Location greenUpgradeShopPos;
+    // public final short redVfacing;
+    // public final short blueVfacing;
+    // public final short yellowVfacing;
+    // public final short greenVfacing;
     private final Player redPlayer;
     private final Player bluePlayer;
     private final Player yellowPlayer;
@@ -192,6 +196,10 @@ public class BedwarsGame implements Listener {
                        Location blueUpgradeShopPos,
                        Location yellowItemShopPos,
                        Location yellowUpgradeShopPos,
+                       // short redVfacing,
+                       // short blueVfacing,
+                       // short yellowVfacing,
+                       // short greenVfacing,
                        Location greenItemShopPos,
                        Location greenUpgradeShopPos,
                        GameManager gameManger,
@@ -251,6 +259,10 @@ public class BedwarsGame implements Listener {
         this.yellowUpgradeShopPos = yellowUpgradeShopPos;
         this.greenItemShopPos = greenItemShopPos;
         this.greenUpgradeShopPos = greenUpgradeShopPos;
+        // this.redVfacing = redVfacing;
+        // this.blueVfacing = blueVfacing;
+        // this.yellowVfacing = yellowVfacing;
+        // this.greenVfacing = greenVfacing;
         this.gameManager = gameManger;
         this.ITEM = ITEM;
         cleanupOldShops();
@@ -370,8 +382,6 @@ public class BedwarsGame implements Listener {
     public short greenSword;
     public short greenAxe;
     public short greenPickaxe;
-
-    // redIV
 
     private final List<Entity> redGolems = Lists.newArrayList();
     private final List<Entity> blueGolems = Lists.newArrayList();
@@ -506,8 +516,8 @@ public class BedwarsGame implements Listener {
     public Inventory setupTeamItemShop(Material woolmat, ChatColor color, int sectionIndex, Player player) {
         short swordType = -1;
         short armorType = -1;
-        short pickaxeType = -1;
-        short axeType = -1;
+        short pickaxeType = -2;
+        short axeType = -2;
         for (ItemStack i : player.getInventory()) {
             if (i.equals(new ItemStack(Material.WOODEN_SWORD))) {
                 swordType = 0;
@@ -527,6 +537,12 @@ public class BedwarsGame implements Listener {
             } else if (i.equals(new ItemStack(Material.DIAMOND_BOOTS))) {
                 armorType = 3;
             }
+            if (!player.getInventory().contains(Material.WOODEN_PICKAXE) ||
+                    !player.getInventory().contains(Material.IRON_PICKAXE) ||
+                    !player.getInventory().contains(Material.STONE_PICKAXE) ||
+                    !player.getInventory().contains(Material.DIAMOND_PICKAXE)) {
+                pickaxeType = -1;
+            }
             if (i.equals(new ItemStack(Material.WOODEN_PICKAXE))) {
                 pickaxeType = 0;
             } else if (i.equals(new ItemStack(Material.STONE_PICKAXE))) {
@@ -535,6 +551,12 @@ public class BedwarsGame implements Listener {
                 pickaxeType = 2;
             } else if (i.equals(new ItemStack(Material.DIAMOND_PICKAXE))) {
                 pickaxeType = 3;
+            }
+            if (!player.getInventory().contains(Material.WOODEN_AXE) ||
+                    !player.getInventory().contains(Material.IRON_AXE) ||
+                    !player.getInventory().contains(Material.STONE_AXE) ||
+                    !player.getInventory().contains(Material.DIAMOND_AXE)) {
+                axeType = -1;
             }
             if (i.equals(new ItemStack(Material.WOODEN_AXE))) {
                 axeType = 0;
@@ -603,26 +625,6 @@ public class BedwarsGame implements Listener {
             return inv;
         } else if(sectionIndex == 7) {
             Inventory inv = setupSectionItemShopInventory(woolmat, color, 5);
-            if (pickaxeType == 0) {
-                addItem(24, new ItemStack(Material.STONE_PICKAXE), true, " costs 10 iron", inv, ChatColor.GRAY);
-            } else if (pickaxeType == 1) {
-                addItem(24, new ItemStack(Material.IRON_PICKAXE), true, " costs 5 gold", inv, ChatColor.GRAY);
-            } else if (pickaxeType == 2) {
-                addItem(24, new ItemStack(Material.DIAMOND_PICKAXE), true, " costs 10 gold", inv, ChatColor.GRAY);
-            } else if (pickaxeType == 3) {
-                addItem(24, new ItemStack(Material.BLACK_CONCRETE), false, " you can't upgrade your pickaxe anymore!", inv, ChatColor.GRAY);
-            }
-            short dm = 1;
-            if (axeType == 0) {
-                addItem(26, new ItemStack(Material.STONE_PICKAXE, 1, dm), true, " costs 10 iron", inv, ChatColor.GRAY);
-            } else if (axeType == 1) {
-                addItem(26, new ItemStack(Material.IRON_PICKAXE, 1, dm), true, " costs 5 gold", inv, ChatColor.GRAY);
-            } else if (axeType == 2) {
-                addItem(26, new ItemStack(Material.DIAMOND_AXE, 1, dm), true, " costs 10 gold", inv, ChatColor.GRAY);
-            } else if (axeType == 3) {
-                addItem(26, new ItemStack(Material.BLACK_CONCRETE, 1, dm), false, " you can't upgrade your axe anymore!", inv, ChatColor.GRAY);
-            }
-            addItem(28, new ItemStack(Material.SHEARS), true, " costs 17 iron", inv, ChatColor.GRAY);
             return inv;
         } else if (sectionIndex == 9) {
             Inventory inv = setupSectionItemShopInventory(woolmat, color, 9);
@@ -790,7 +792,8 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onShopOpen(InventoryOpenEvent event) {
-        if (event.getInventory() != redI||event.getInventory() != blueI||event.getInventory() != yellowI||event.getInventory() != greenI) {
+        if (event.getInventory() != redI && event.getInventory() != blueI &&
+                event.getInventory() != yellowI && event.getInventory() != greenI) {
             return;
         }
         if (event.getPlayer().equals(redPlayer)) {
@@ -806,7 +809,7 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onShopClick(PlayerInteractEntityEvent event) {
-        if (!event.getRightClicked().equals(EntityType.VILLAGER)) {
+        if (event.getRightClicked().getType() != EntityType.VILLAGER) {
             return;
         }
         if (event.getPlayer().equals(redPlayer)) {
@@ -816,7 +819,7 @@ public class BedwarsGame implements Listener {
         } else if (event.getPlayer().equals(yellowPlayer)) {
             yellowPlayer.openInventory(yellowI);
         } else if (event.getPlayer().equals(greenPlayer)) {
-            yellowPlayer.openInventory(greenI);
+            greenPlayer.openInventory(greenI);
         }
     }
 
@@ -830,7 +833,8 @@ public class BedwarsGame implements Listener {
         short pickaxeType = -1;
         short axeType = -1;
 
-        if (event.getInventory() != redI||event.getInventory() != blueI||event.getInventory() != yellowI||event.getInventory() != greenI) {
+        if (event.getInventory() != redI && event.getInventory() != blueI &&
+                event.getInventory() != yellowI && event.getInventory() != greenI) {
             return;
         }
         for (ItemStack i : player.getInventory()) {
@@ -885,7 +889,7 @@ public class BedwarsGame implements Listener {
 
             if (index == 1) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                redI = setupTeamItemShop(woolmat, color, index, player);
                 isRedInBlockSec = true;
                 isRedInCombatSec = false;
                 isRedInToolsSec = false;
@@ -893,7 +897,7 @@ public class BedwarsGame implements Listener {
                 isRedInPotionsSec = false;
             } else if (index == 3) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                redI = setupTeamItemShop(woolmat, color, index, player);
                 isRedInBlockSec = false;
                 isRedInCombatSec = true;
                 isRedInToolsSec = false;
@@ -901,7 +905,7 @@ public class BedwarsGame implements Listener {
                 isRedInPotionsSec = false;
             } else if (index == 5) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                redI = setupTeamItemShop(woolmat, color, index, player);
                 isRedInBlockSec = false;
                 isRedInCombatSec = false;
                 isRedInToolsSec = true;
@@ -909,7 +913,7 @@ public class BedwarsGame implements Listener {
                 isRedInPotionsSec = false;
             } else if (index == 7) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                redI = setupTeamItemShop(woolmat, color, index, player);
                 isRedInBlockSec = false;
                 isRedInCombatSec = false;
                 isRedInToolsSec = false;
@@ -917,7 +921,7 @@ public class BedwarsGame implements Listener {
                 isRedInPotionsSec = false;
             } else if (index == 9) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                redI = setupTeamItemShop(woolmat, color, index, player);
                 isRedInBlockSec = false;
                 isRedInCombatSec = false;
                 isRedInToolsSec = false;
@@ -925,23 +929,23 @@ public class BedwarsGame implements Listener {
                 isRedInPotionsSec = true;
             } else if (index == 24 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                redI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(woolmat), 8, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 26 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                redI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.OAK_PLANKS), 20, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 28 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                redI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.END_STONE), 2, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30  && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                redI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.OBSIDIAN), 1, Material.EMERALD, player);
             } else if (event.getSlot() == 24 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                redI = setupTeamItemShop(woolmat, color, 3, player);
                 if (swordType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_SWORD),
                             new ItemStack(Material.STONE_SWORD),
@@ -963,7 +967,7 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 26 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                redI = setupTeamItemShop(woolmat, color, 3, player);
                 if (armorType == 0) {
                     buyAndReplaceArmor(armorType, 16, Material.IRON_INGOT, player, armorColor, trimMaterial);
                 } else if (armorType == 1) {
@@ -973,23 +977,23 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 28 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                redI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.SNOWBALL), 2, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                redI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.BOW), 12, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 32 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                redI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.ARROW), 4, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 34 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                redI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.ARROW, 16), 64, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                redI = setupTeamItemShop(woolmat, color, 5, player);
                 if (pickaxeType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_PICKAXE),
                             new ItemStack(Material.STONE_PICKAXE),
@@ -1011,7 +1015,7 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 26 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                redI = setupTeamItemShop(woolmat, color, 5, player);
                 if (axeType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
                             new ItemStack(Material.STONE_AXE),
@@ -1033,39 +1037,39 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 28 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                redI = setupTeamItemShop(woolmat, color, 5, player);
                 buyItem(new ItemStack(Material.SHEARS), 17, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.GOLDEN_APPLE), 3, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 25 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.FIRE_CHARGE), 30, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 26 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.WIND_CHARGE), 25, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 27 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.ENDER_PEARL), 2, Material.EMERALD, player);
             } else if (event.getSlot() == 28 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.FISHING_ROD), 3, Material.EMERALD, player);
             } else if (event.getSlot() == 29 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.CHORUS_FRUIT), 6, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), 120, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack strenghtPotion = new ItemStack(Material.POTION);
                 PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
@@ -1074,7 +1078,7 @@ public class BedwarsGame implements Listener {
                 buyItem(strenghtPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 26 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack invisibilityPotion = new ItemStack(Material.POTION);
                 PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
@@ -1083,7 +1087,7 @@ public class BedwarsGame implements Listener {
                 buyItem(invisibilityPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 28 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack jumpPotion = new ItemStack(Material.POTION);
                 PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
@@ -1092,7 +1096,7 @@ public class BedwarsGame implements Listener {
                 buyItem(jumpPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 30 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                redI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack levitationPotion = new ItemStack(Material.POTION);
                 PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
@@ -1115,7 +1119,7 @@ public class BedwarsGame implements Listener {
 
             if (index == 1) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                blueI = setupTeamItemShop(woolmat, color, index, player);
                 isBlueInBlockSec = true;
                 isBlueInCombatSec = false;
                 isBlueInToolsSec = false;
@@ -1123,7 +1127,7 @@ public class BedwarsGame implements Listener {
                 isBlueInPotionsSec = false;
             } else if (index == 3) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                blueI = setupTeamItemShop(woolmat, color, index, player);
                 isBlueInBlockSec = false;
                 isBlueInCombatSec = true;
                 isBlueInToolsSec = false;
@@ -1131,7 +1135,7 @@ public class BedwarsGame implements Listener {
                 isBlueInPotionsSec = false;
             } else if (index == 5) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                blueI = setupTeamItemShop(woolmat, color, index, player);
                 isBlueInBlockSec = false;
                 isBlueInCombatSec = false;
                 isBlueInToolsSec = true;
@@ -1139,7 +1143,7 @@ public class BedwarsGame implements Listener {
                 isBlueInPotionsSec = false;
             } else if (index == 7) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                blueI = setupTeamItemShop(woolmat, color, index, player);
                 isBlueInBlockSec = false;
                 isBlueInCombatSec = false;
                 isBlueInToolsSec = false;
@@ -1147,7 +1151,7 @@ public class BedwarsGame implements Listener {
                 isBlueInPotionsSec = false;
             } else if (index == 9) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                blueI = setupTeamItemShop(woolmat, color, index, player);
                 isBlueInBlockSec = false;
                 isBlueInCombatSec = false;
                 isBlueInToolsSec = false;
@@ -1155,23 +1159,23 @@ public class BedwarsGame implements Listener {
                 isBlueInPotionsSec = true;
             } else if (index == 24 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                blueI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(woolmat), 8, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 26 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                blueI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.OAK_PLANKS), 20, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 28 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                blueI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.END_STONE), 2, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30  && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                blueI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.OBSIDIAN), 1, Material.EMERALD, player);
             } else if (event.getSlot() == 24 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                blueI = setupTeamItemShop(woolmat, color, 3, player);
                 if (swordType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_SWORD),
                             new ItemStack(Material.STONE_SWORD),
@@ -1193,7 +1197,7 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 26 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                blueI = setupTeamItemShop(woolmat, color, 3, player);
                 if (armorType == 0) {
                     buyAndReplaceArmor(armorType, 16, Material.IRON_INGOT, player, armorColor, trimMaterial);
                 } else if (armorType == 1) {
@@ -1203,23 +1207,23 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 28 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                blueI =  setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.SNOWBALL), 2, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                blueI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.BOW), 12, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 32 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                blueI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.ARROW), 4, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 34 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                blueI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.ARROW, 16), 64, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                blueI = setupTeamItemShop(woolmat, color, 5, player);
                 if (pickaxeType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_PICKAXE),
                             new ItemStack(Material.STONE_PICKAXE),
@@ -1241,7 +1245,7 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 26 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                blueI = setupTeamItemShop(woolmat, color, 5, player);
                 if (axeType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
                             new ItemStack(Material.STONE_AXE),
@@ -1263,39 +1267,39 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 28 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                blueI = setupTeamItemShop(woolmat, color, 5, player);
                 buyItem(new ItemStack(Material.SHEARS), 17, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.GOLDEN_APPLE), 3, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 25 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.FIRE_CHARGE), 30, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 26 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.WIND_CHARGE), 25, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 27 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.ENDER_PEARL), 2, Material.EMERALD, player);
             } else if (event.getSlot() == 28 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.FISHING_ROD), 3, Material.EMERALD, player);
             } else if (event.getSlot() == 29 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.CHORUS_FRUIT), 6, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), 120, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack strenghtPotion = new ItemStack(Material.POTION);
                 PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
@@ -1304,7 +1308,7 @@ public class BedwarsGame implements Listener {
                 buyItem(strenghtPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 26 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack invisibilityPotion = new ItemStack(Material.POTION);
                 PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
@@ -1313,7 +1317,7 @@ public class BedwarsGame implements Listener {
                 buyItem(invisibilityPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 28 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack jumpPotion = new ItemStack(Material.POTION);
                 PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
@@ -1322,7 +1326,7 @@ public class BedwarsGame implements Listener {
                 buyItem(jumpPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 30 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                blueI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack levitationPotion = new ItemStack(Material.POTION);
                 PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
@@ -1345,7 +1349,7 @@ public class BedwarsGame implements Listener {
 
             if (index == 1) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                yellowI = setupTeamItemShop(woolmat, color, index, player);
                 isYellowInBlockSec = true;
                 isYellowInCombatSec = false;
                 isYellowInToolsSec = false;
@@ -1353,7 +1357,7 @@ public class BedwarsGame implements Listener {
                 isYellowInPotionsSec = false;
             } else if (index == 3) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                yellowI = setupTeamItemShop(woolmat, color, index, player);
                 isYellowInBlockSec = false;
                 isYellowInCombatSec = true;
                 isYellowInToolsSec = false;
@@ -1361,7 +1365,7 @@ public class BedwarsGame implements Listener {
                 isYellowInPotionsSec = false;
             } else if (index == 5) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                yellowI = setupTeamItemShop(woolmat, color, index, player);
                 isYellowInBlockSec = false;
                 isYellowInCombatSec = false;
                 isYellowInToolsSec = true;
@@ -1369,7 +1373,7 @@ public class BedwarsGame implements Listener {
                 isYellowInPotionsSec = false;
             } else if (index == 7) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                yellowI = setupTeamItemShop(woolmat, color, index, player);
                 isYellowInBlockSec = false;
                 isYellowInCombatSec = false;
                 isYellowInToolsSec = false;
@@ -1377,7 +1381,7 @@ public class BedwarsGame implements Listener {
                 isYellowInPotionsSec = false;
             } else if (index == 9) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                yellowI = setupTeamItemShop(woolmat, color, index, player);
                 isYellowInBlockSec = false;
                 isYellowInCombatSec = false;
                 isYellowInToolsSec = false;
@@ -1385,23 +1389,23 @@ public class BedwarsGame implements Listener {
                 isYellowInPotionsSec = true;
             } else if (index == 24 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                yellowI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(woolmat), 8, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 26 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                yellowI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.OAK_PLANKS), 20, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 28 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                yellowI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.END_STONE), 2, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30  && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                yellowI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.OBSIDIAN), 1, Material.EMERALD, player);
             } else if (event.getSlot() == 24 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                yellowI = setupTeamItemShop(woolmat, color, 3, player);
                 if (swordType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_SWORD),
                             new ItemStack(Material.STONE_SWORD),
@@ -1423,7 +1427,7 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 26 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                yellowI = setupTeamItemShop(woolmat, color, 3, player);
                 if (armorType == 0) {
                     buyAndReplaceArmor(armorType, 16, Material.IRON_INGOT, player, armorColor, trimMaterial);
                 } else if (armorType == 1) {
@@ -1433,23 +1437,23 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 28 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                yellowI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.SNOWBALL), 2, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                yellowI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.BOW), 12, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 32 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                yellowI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.ARROW), 4, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 34 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                yellowI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.ARROW, 16), 64, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                yellowI = setupTeamItemShop(woolmat, color, 5, player);
                 if (pickaxeType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_PICKAXE),
                             new ItemStack(Material.STONE_PICKAXE),
@@ -1471,7 +1475,7 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 26 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                yellowI = setupTeamItemShop(woolmat, color, 5, player);
                 if (axeType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
                             new ItemStack(Material.STONE_AXE),
@@ -1493,39 +1497,39 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 28 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                yellowI = setupTeamItemShop(woolmat, color, 5, player);
                 buyItem(new ItemStack(Material.SHEARS), 17, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.GOLDEN_APPLE), 3, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 25 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.FIRE_CHARGE), 30, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 26 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.WIND_CHARGE), 25, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 27 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.ENDER_PEARL), 2, Material.EMERALD, player);
             } else if (event.getSlot() == 28 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.FISHING_ROD), 3, Material.EMERALD, player);
             } else if (event.getSlot() == 29 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.CHORUS_FRUIT), 6, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), 120, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack strenghtPotion = new ItemStack(Material.POTION);
                 PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
@@ -1534,7 +1538,7 @@ public class BedwarsGame implements Listener {
                 buyItem(strenghtPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 26 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack invisibilityPotion = new ItemStack(Material.POTION);
                 PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
@@ -1543,7 +1547,7 @@ public class BedwarsGame implements Listener {
                 buyItem(invisibilityPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 28 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack jumpPotion = new ItemStack(Material.POTION);
                 PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
@@ -1552,7 +1556,7 @@ public class BedwarsGame implements Listener {
                 buyItem(jumpPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 30 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                yellowI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack levitationPotion = new ItemStack(Material.POTION);
                 PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
@@ -1575,7 +1579,7 @@ public class BedwarsGame implements Listener {
 
             if (index == 1) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                greenI = setupTeamItemShop(woolmat, color, index, player);
                 isGreenInBlockSec = true;
                 isGreenInCombatSec = false;
                 isGreenInToolsSec = false;
@@ -1583,7 +1587,7 @@ public class BedwarsGame implements Listener {
                 isGreenInPotionsSec = false;
             } else if (index == 3) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                greenI = setupTeamItemShop(woolmat, color, index, player);
                 isGreenInBlockSec = false;
                 isGreenInCombatSec = true;
                 isGreenInToolsSec = false;
@@ -1591,7 +1595,7 @@ public class BedwarsGame implements Listener {
                 isGreenInPotionsSec = false;
             } else if (index == 5) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                greenI = setupTeamItemShop(woolmat, color, index, player);
                 isGreenInBlockSec = false;
                 isGreenInCombatSec = false;
                 isGreenInToolsSec = true;
@@ -1599,7 +1603,7 @@ public class BedwarsGame implements Listener {
                 isGreenInPotionsSec = false;
             } else if (index == 7) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                greenI = setupTeamItemShop(woolmat, color, index, player);
                 isGreenInBlockSec = false;
                 isGreenInCombatSec = false;
                 isGreenInToolsSec = false;
@@ -1607,7 +1611,7 @@ public class BedwarsGame implements Listener {
                 isGreenInPotionsSec = false;
             } else if (index == 9) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, index, player);
+                greenI = setupTeamItemShop(woolmat, color, index, player);
                 isGreenInBlockSec = false;
                 isGreenInCombatSec = false;
                 isGreenInToolsSec = false;
@@ -1615,23 +1619,23 @@ public class BedwarsGame implements Listener {
                 isGreenInPotionsSec = true;
             } else if (index == 24 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                greenI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(woolmat), 8, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 26 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                greenI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.OAK_PLANKS), 20, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 28 && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                greenI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.END_STONE), 2, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30  && block) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 1, player);
+                greenI = setupTeamItemShop(woolmat, color, 1, player);
                 buyItem(new ItemStack(Material.OBSIDIAN), 1, Material.EMERALD, player);
             } else if (event.getSlot() == 24 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                greenI = setupTeamItemShop(woolmat, color, 3, player);
                 if (swordType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_SWORD),
                             new ItemStack(Material.STONE_SWORD),
@@ -1653,7 +1657,7 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 26 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                greenI = setupTeamItemShop(woolmat, color, 3, player);
                 if (armorType == 0) {
                     buyAndReplaceArmor(armorType, 16, Material.IRON_INGOT, player, armorColor, trimMaterial);
                 } else if (armorType == 1) {
@@ -1663,23 +1667,23 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 28 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                greenI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.SNOWBALL), 2, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                greenI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.BOW), 12, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 32 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                greenI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.ARROW), 4, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 34 && combat) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 3, player);
+                greenI = setupTeamItemShop(woolmat, color, 3, player);
                 buyItem(new ItemStack(Material.ARROW, 16), 64, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                greenI = setupTeamItemShop(woolmat, color, 5, player);
                 if (pickaxeType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_PICKAXE),
                             new ItemStack(Material.STONE_PICKAXE),
@@ -1701,7 +1705,7 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 26 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                greenI = setupTeamItemShop(woolmat, color, 5, player);
                 if (axeType == 0) {
                     buyAndReplaceItem(new ItemStack(Material.WOODEN_AXE),
                             new ItemStack(Material.STONE_AXE),
@@ -1723,39 +1727,39 @@ public class BedwarsGame implements Listener {
                 }
             } else if (event.getSlot() == 28 && tools) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 5, player);
+                greenI = setupTeamItemShop(woolmat, color, 5, player);
                 buyItem(new ItemStack(Material.SHEARS), 17, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.GOLDEN_APPLE), 3, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 25 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.FIRE_CHARGE), 30, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 26 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.WIND_CHARGE), 25, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 27 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.ENDER_PEARL), 2, Material.EMERALD, player);
             } else if (event.getSlot() == 28 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.FISHING_ROD), 3, Material.EMERALD, player);
             } else if (event.getSlot() == 29 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.CHORUS_FRUIT), 6, Material.GOLD_INGOT, player);
             } else if (event.getSlot() == 30 && utilities) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
                 buyItem(new ItemStack(Material.IRON_GOLEM_SPAWN_EGG), 120, Material.IRON_INGOT, player);
             } else if (event.getSlot() == 24 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack strenghtPotion = new ItemStack(Material.POTION);
                 PotionMeta strenghtPotionMeta = (PotionMeta) strenghtPotion.getItemMeta();
@@ -1764,7 +1768,7 @@ public class BedwarsGame implements Listener {
                 buyItem(strenghtPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 26 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack invisibilityPotion = new ItemStack(Material.POTION);
                 PotionMeta invisibilityPotionMeta = (PotionMeta) invisibilityPotion.getItemMeta();
@@ -1773,7 +1777,7 @@ public class BedwarsGame implements Listener {
                 buyItem(invisibilityPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 28 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack jumpPotion = new ItemStack(Material.POTION);
                 PotionMeta jumpPotionMeta = (PotionMeta) jumpPotion.getItemMeta();
@@ -1782,7 +1786,7 @@ public class BedwarsGame implements Listener {
                 buyItem(jumpPotion, 2, Material.EMERALD, player);
             } else if (event.getSlot() == 30 && potions) {
                 event.getInventory().clear();
-                setupTeamItemShop(woolmat, color, 7, player);
+                greenI = setupTeamItemShop(woolmat, color, 7, player);
 
                 ItemStack levitationPotion = new ItemStack(Material.POTION);
                 PotionMeta levitationPotionMeta = (PotionMeta) levitationPotion.getItemMeta();
@@ -1971,6 +1975,11 @@ public class BedwarsGame implements Listener {
 
     public synchronized void gameLoop() {
         isChestOpened = false;
+
+        redI = setupTeamItemShop(Material.RED_WOOL, ChatColor.RED, 1, redPlayer);
+        blueI = setupTeamItemShop(Material.BLUE_WOOL, ChatColor.BLUE, 1, bluePlayer);
+        yellowI = setupTeamItemShop(Material.YELLOW_WOOL, ChatColor.YELLOW, 1, yellowPlayer);
+        greenI = setupTeamItemShop(Material.GREEN_WOOL, ChatColor.GREEN, 1, greenPlayer);
 
         redArmor = 0;
         redSword = 0;
