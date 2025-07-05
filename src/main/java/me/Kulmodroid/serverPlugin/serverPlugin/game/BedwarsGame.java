@@ -12,6 +12,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -369,6 +370,8 @@ public class BedwarsGame implements Listener {
     public short greenSword;
     public short greenAxe;
     public short greenPickaxe;
+
+    // redIV
 
     private final List<Entity> redGolems = Lists.newArrayList();
     private final List<Entity> blueGolems = Lists.newArrayList();
@@ -1829,13 +1832,18 @@ public class BedwarsGame implements Listener {
 
     @EventHandler
     public void onChestInvClick(InventoryClickEvent e) {
-        if (!e.getWhoClicked().getInventory().equals(e.getInventory())) {
+        if (e.getClickedInventory() == null ||
+                !e.getClickedInventory().equals(e.getWhoClicked().getInventory())) {
             return;
         }
-        if (!isChestOpened) {
+
+        InventoryType topType = e.getView().getTopInventory().getType();
+        if (topType != InventoryType.CHEST && topType != InventoryType.ENDER_CHEST) {
             return;
         }
-        if (NON_DROPPABLE_ITEMS.contains(e.getInventory().getItem(e.getSlot()).getType())) {
+
+        ItemStack item = e.getCurrentItem();
+        if (item != null && NON_DROPPABLE_ITEMS.contains(item.getType())) {
             e.setCancelled(true);
         }
     }
