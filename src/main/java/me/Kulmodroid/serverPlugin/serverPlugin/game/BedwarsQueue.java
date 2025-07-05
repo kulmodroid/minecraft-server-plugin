@@ -130,6 +130,10 @@ public class BedwarsQueue {
             return;
         }
         World world = Bukkit.createWorld(new WorldCreator(worldName));
+        if (world == null) {
+            plugin.getLogger().warning("Failed to create world " + worldName + ", using default world instead");
+            world = Bukkit.getWorlds().get(0);
+        }
         List<Location> spawns = new ArrayList<>();
 //        if (spawns.size() != capacity) {
 //            plugin.getLogger().warning("Spawn count " + spawns.size() + " does not match players " + capacity + " for map " + mapName);
@@ -346,8 +350,6 @@ public class BedwarsQueue {
         game.greenGoldCooldown = 5;
         game.greenDiamondCooldown = 7;
         game.greenEmeraldCooldown = 15;
-
-
 
         game.alivePlayers = 4;
 

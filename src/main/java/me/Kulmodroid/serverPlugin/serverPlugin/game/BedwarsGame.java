@@ -660,6 +660,7 @@ public class BedwarsGame implements Listener {
     }
 
     public boolean buyAndReplaceItem(ItemStack removeItem,ItemStack getItem, int costing, Material matType, Player player) {
+        assert (getItem != null);
         int ironAmount = 0;
         int goldAmount = 0;
         int emeraldAmount = 0;
@@ -751,6 +752,7 @@ public class BedwarsGame implements Listener {
     }
 
     public void buyItem(ItemStack item, int costing, Material matType, Player player) {
+        assert (item != null);
         int ironAmount = 0;
         int goldAmount = 0;
         int emeraldAmount = 0;
@@ -2004,8 +2006,6 @@ public class BedwarsGame implements Listener {
         isRedInBlockSec = true;
 
         initMidGeneratorCounts();
-
-
         for (Player player : world.getPlayers()) {
             player.getInventory().clear();
             if (player.equals(redPlayer)) {
@@ -2577,6 +2577,7 @@ public class BedwarsGame implements Listener {
         player.setDisplayName(ChatColor.GRAY + player.getName());
         player.setGameMode(GameMode.SPECTATOR);
         player.getInventory().clear();
+        assert(ITEM != null);
         player.getInventory().addItem(ITEM);
         alivePlayers -= 1;
     }

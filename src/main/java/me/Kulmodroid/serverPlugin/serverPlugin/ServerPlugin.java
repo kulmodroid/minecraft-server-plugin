@@ -34,7 +34,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
 
     private DuelManager duelManager;
     private GameSelection gameSelection;
-    // private WitchShop bedwarsShop;
+    private WitchShop bedwarsShop;
 
     private LightningStaff lightningStaff;
     private PigBow pigBow;
@@ -165,7 +165,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         mapEditSelection = new MapEditSelection(this);
         gameCompass = new GameCompass();
         editCompass = new EditCompass();
-        // bedwarsShop = new WitchShop(this);
+        bedwarsShop = new WitchShop(this);
         lightningStaff = new LightningStaff(this);
         pigBow = new PigBow(this);
         breezeRod = new BreezeRod(this);
@@ -190,7 +190,7 @@ public final class ServerPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(gameSelection, this);
         getServer().getPluginManager().registerEvents(duelManager, this);
-        // getServer().getPluginManager().registerEvents(bedwarsShop, this);
+        getServer().getPluginManager().registerEvents(bedwarsShop, this);
         getServer().getPluginManager().registerEvents(lightningStaff, this);
         getServer().getPluginManager().registerEvents(pigBow, this);
         getServer().getPluginManager().registerEvents(breezeRod, this);
